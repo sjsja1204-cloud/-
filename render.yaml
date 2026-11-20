@@ -1,0 +1,31 @@
+# Render Blueprint — 백엔드 API (server/)
+services:
+  - type: web
+    name: damaganet-api
+    runtime: node
+    region: singapore
+    plan: starter # free 플랜은 15분 무응답 시 잠들어 첫 접수가 느려짐
+    rootDir: server
+    buildCommand: npm install --omit=dev
+    preDeployCommand: npm run migrate # 유료 플랜 전용. free 면 startCommand 를 "npm run migrate && npm start" 로
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID
+        sync: false
+      - key: CLIENT_ORIGIN
+        sync: false # 예: https://damaganet.pages.dev,https://www.도메인
+      - key: TRUST_PROXY
+        value: "2" # Cloudflare Pages Functions 프록시 + Render
+      - key: COOKIE_SAMESITE
+        value: lax

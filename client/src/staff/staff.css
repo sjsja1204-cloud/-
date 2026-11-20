@@ -1,0 +1,30 @@
+.staff-page { max-width: 760px; margin: 0 auto; }
+
+.staff-filters { display: grid; gap: 8px; margin-bottom: 10px; }
+.seg { display: flex; gap: 6px; }
+.seg button, .seg input { min-height: 38px; padding: 0 14px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; font-weight: 600; font-size: 14px; cursor: pointer; }
+.seg input { flex: 1; min-width: 0; padding: 0 8px; font-weight: 500; }
+.seg .on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-dark); }
+.chips-scroll { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.chips-scroll .chip { min-height: 34px; flex: none; }
+
+.staff-summary { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 10px; scrollbar-width: none; }
+.staff-summary > * { flex: 1 0 64px; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 6px 4px; text-align: center; display: grid; cursor: pointer; }
+.staff-summary b { font-size: 18px; font-variant-numeric: tabular-nums; }
+.staff-summary span { font-size: 12px; color: var(--muted); }
+
+.staff-list { display: grid; gap: 8px; }
+.lead-card { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: flex; gap: 10px; align-items: center; }
+.lead-card.done { opacity: .6; }
+.lead-card-main { flex: 1; min-width: 0; cursor: pointer; }
+.lead-card-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.lead-name { font-size: 16px; }
+.lead-phone { font-size: 15px; font-variant-numeric: tabular-nums; margin: 2px 0; letter-spacing: .3px; }
+.lead-meta { font-size: 13px; color: var(--muted); }
+.lead-note { font-size: 13px; color: #374151; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lead-card-actions { display: grid; gap: 6px; flex: none; }
+.lead-card-actions .btn { min-height: 38px; }
+
+.sheet-phone { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: var(--bg-soft); border-radius: 10px; padding: 12px; margin-bottom: 12px; font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.status-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+.status-buttons .chip { min-height: 42px; padding: 0 16px; }
