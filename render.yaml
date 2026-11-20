@@ -4,11 +4,12 @@ services:
     name: damaganet-api
     runtime: node
     region: singapore
-    plan: starter # free 플랜은 15분 무응답 시 잠들어 첫 접수가 느려짐
+    # 테스트 배포: free 플랜 (15분 무응답 시 잠들어 첫 요청이 30초~1분 느림)
+    # 운영 전환 시: plan: starter, preDeployCommand: npm run migrate, startCommand: npm start
+    plan: free
     rootDir: server
     buildCommand: npm install --omit=dev
-    preDeployCommand: npm run migrate # 유료 플랜 전용. free 면 startCommand 를 "npm run migrate && npm start" 로
-    startCommand: npm start
+    startCommand: npm run migrate && npm start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV

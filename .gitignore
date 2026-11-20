@@ -5,3 +5,6 @@ dist/
 *.log
 .DS_Store
 .wrangler/
+
+# 의뢰자 공유용 화면 캡처
+_공유캡처/
