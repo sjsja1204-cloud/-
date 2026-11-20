@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { business } from "../../config/business";
+import { menu } from "../../config/site";
 
-/** business.js 의 값 중 비어 있지 않은 것만 표시 */
+/** 푸터: 메뉴 + business.js 의 값 중 비어 있지 않은 것만 표시 */
 export default function Footer() {
   const items = [
     ["상호", business.name],
@@ -16,6 +17,19 @@ export default function Footer() {
   return (
     <footer className="site-footer">
       <div className="site-inner">
+        <div className="footer-grid">
+          <div className="footer-brand">
+            <b>{business.name}</b>
+            <p>휴대폰 · 인터넷 · TV 가입을 비교하고<br />최대 혜택으로 상담해 드립니다.</p>
+            <Link to="/apply" className="btn btn-primary btn-sm">무료 상담 신청</Link>
+          </div>
+          {menu.map((m) => (
+            <div key={m.label} className="footer-col">
+              <b>{m.label}</b>
+              {(m.children || [m]).map((c) => <Link key={c.to + c.label} to={c.to}>{c.label}</Link>)}
+            </div>
+          ))}
+        </div>
         <nav className="footer-links">
           <Link to="/privacy"><b>개인정보처리방침</b></Link>
           <Link to="/terms">이용약관</Link>

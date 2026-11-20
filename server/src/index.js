@@ -13,6 +13,8 @@ import adminLeadRoutes from "./routes/admin/leads.js";
 import adminUserRoutes from "./routes/admin/users.js";
 import adminUploadRoutes from "./routes/admin/upload.js";
 import adminStatsRoutes from "./routes/admin/stats.js";
+import adminPostRoutes from "./routes/admin/posts.js";
+import contentRoutes from "./routes/content.js";
 
 const app = express();
 
@@ -41,6 +43,7 @@ app.get("/api/health", ah(async (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/public", publicRoutes);
+app.use("/api/public", contentRoutes);
 
 // 상태값 (로그인 사용자 공통)
 app.get(
@@ -58,6 +61,7 @@ app.use("/api/admin/leads", requireAuth("admin"), adminLeadRoutes);
 app.use("/api/admin/users", requireAuth("admin"), adminUserRoutes);
 app.use("/api/admin/upload", requireAuth("admin"), adminUploadRoutes);
 app.use("/api/admin/stats", requireAuth("admin"), adminStatsRoutes);
+app.use("/api/admin/posts", requireAuth("admin"), adminPostRoutes);
 
 app.use("/api", (req, res) => res.status(404).json({ error: "존재하지 않는 API 입니다." }));
 

@@ -3,7 +3,7 @@ import SiteLayout from "../components/site/SiteLayout";
 
 export default function NotFound() {
   return (
-    <SiteLayout>
+    <SiteLayout title="페이지를 찾을 수 없음">
       <div className="site-inner doc" style={{ textAlign: "center", padding: "72px 16px" }}>
         <p style={{ fontSize: 56, fontWeight: 800, color: "var(--accent)", margin: 0 }}>404</p>
         <h1>페이지를 찾을 수 없습니다</h1>

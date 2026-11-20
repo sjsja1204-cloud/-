@@ -10,6 +10,7 @@ export default function AdminLayout() {
         ["/admin/upload", "엑셀 업로드"],
         ["/admin/users", "직원 관리"],
         ["/admin/stats", "통계"],
+        ["/admin/posts", "게시판 관리"],
         ["/admin/account", "내 계정"],
       ]}
     />

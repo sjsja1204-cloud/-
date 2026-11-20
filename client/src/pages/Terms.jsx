@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import SiteLayout from "../components/site/SiteLayout";
 import { business } from "../config/business";
 
@@ -6,10 +5,9 @@ const T = ({ children }) => <span className="todo">[확인필요{children ? `: $
 
 /** 이용약관 초안 */
 export default function Terms() {
-  useEffect(() => { document.title = `이용약관 | ${business.name}`; }, []);
   const b = business;
   return (
-    <SiteLayout>
+    <SiteLayout title="이용약관">
       <article className="site-inner doc">
         <h1>이용약관</h1>
 

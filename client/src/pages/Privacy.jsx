@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import SiteLayout from "../components/site/SiteLayout";
 import { business } from "../config/business";
 
@@ -6,10 +5,9 @@ const T = ({ children }) => <span className="todo">[확인필요{children ? `: $
 
 /** 개인정보처리방침 초안 — 상호·연락처는 business.js 에서, 미확정 항목은 [확인필요] 표시 */
 export default function Privacy() {
-  useEffect(() => { document.title = `개인정보처리방침 | ${business.name}`; }, []);
   const b = business;
   return (
-    <SiteLayout>
+    <SiteLayout title="개인정보처리방침">
       <article className="site-inner doc">
         <h1>개인정보처리방침</h1>
         <p>{b.name}(이하 "회사")는 「개인정보 보호법」 등 관련 법령을 준수하며, 이용자의 개인정보를 보호하기 위해 다음과 같이 개인정보처리방침을 수립·공개합니다.</p>
@@ -30,6 +28,7 @@ export default function Privacy() {
           <li>휴대폰·인터넷·TV 가입 상담 및 상품·요금·할인 혜택 안내</li>
           <li>상담 이력 관리 및 고객 문의 응대</li>
           <li>부정 이용 방지 및 서비스 개선을 위한 통계</li>
+          <li>홈페이지 "실시간 상담 현황" 표시 (이름 첫 글자 외 가림, 관심 상품·진행 상태만 표시하며 연락처는 표시하지 않음, 최근 30일)</li>
         </ul>
 
         <h2>제3조 (보유 및 이용 기간)</h2>

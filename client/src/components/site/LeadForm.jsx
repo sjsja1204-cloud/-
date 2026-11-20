@@ -6,8 +6,9 @@ import { api } from "../../lib/api";
 import { getAttribution } from "../../lib/utm";
 
 /** 고객 상담 신청 폼 */
-export default function LeadForm() {
-  const [value, setValue] = useState(emptyLead);
+export default function LeadForm({ initial, submitLabel = "무료 상담 신청하기" }) {
+  const start = { ...emptyLead, ...(initial || {}) };
+  const [value, setValue] = useState(start);
   const [consent, setConsent] = useState(false);
   const [showConsent, setShowConsent] = useState(false);
   const [website, setWebsite] = useState(""); // honeypot
@@ -43,7 +44,7 @@ export default function LeadForm() {
         <div className="form-done-icon" aria-hidden>✓</div>
         <h3>접수되었습니다.</h3>
         <p>곧 연락드리겠습니다.</p>
-        <button className="btn" onClick={() => { setValue(emptyLead); setConsent(false); setDone(false); }}>
+        <button className="btn" onClick={() => { setValue(start); setConsent(false); setDone(false); }}>
           처음으로
         </button>
       </div>
@@ -78,7 +79,7 @@ export default function LeadForm() {
       {serverError && <p className="err" role="alert">{serverError}</p>}
 
       <button className="btn btn-primary btn-lg btn-block" disabled={submitting}>
-        {submitting ? "접수 중…" : "무료 상담 신청하기"}
+        {submitting ? "접수 중…" : submitLabel}
       </button>
     </form>
   );

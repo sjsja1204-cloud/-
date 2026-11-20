@@ -1,6 +1,9 @@
 import pg from "pg";
 import { config } from "./config.js";
 
+// DATE 컬럼은 시간대 변환 없이 YYYY-MM-DD 문자열로
+pg.types.setTypeParser(1082, (v) => v);
+
 const needsSsl = /sslmode=require|neon\.tech/.test(config.databaseUrl);
 
 export const pool = new pg.Pool({

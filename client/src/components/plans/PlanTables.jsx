@@ -2,7 +2,7 @@ import { useState } from "react";
 import { carriers, formatWon } from "./telecomPlans";
 import "./plan-tables.css";
 
-function PriceTable({ table }) {
+export function PriceTable({ table }) {
   // 가장 저렴한 요금 강조
   const min = Math.min(...table.rows.flatMap((r) => r.prices));
   return (
@@ -66,7 +66,7 @@ function InfoBox({ box }) {
   );
 }
 
-function DiscountTable({ table }) {
+export function DiscountTable({ table }) {
   return (
     <section className="pt-section">
       <h3 className="pt-title">{table.title}</h3>

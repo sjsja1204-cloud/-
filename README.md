@@ -2,10 +2,14 @@
 
 | 경로 | 화면 |
 |---|---|
-| `/` | 고객용 홈 (히어로 · 상담 신청 폼 · 요금표 · 이벤트 팝업 · 플로팅 버튼) |
+| `/` | 메인: 슬라이드 배너 · 빠른 메뉴 · 실시간 상담 현황(롤링) · 통신사 요금 카드 · 진행 단계 · 후기 · 공지/FAQ · 상담 폼 · 이벤트 팝업 |
+| `/internet`, `/internet/:id` | 인터넷·TV 전체 비교 / 통신사별(kt·lg·sk·skylife) 요금·결합할인 |
+| `/mobile`, `/bundle` | 휴대폰 가입 안내 / 통신사별 결합할인 |
+| `/event`, `/event/:id` | 이벤트 (관리자 게시판에서 작성) |
+| `/support/notice` · `/support/reviews` · `/support/faq` · `/apply` | 고객센터: 공지사항 · 상담후기 · FAQ · 상담 신청(`?product=인터넷&carrier=KT` 미리 선택) |
 | `/login` | 관리자/직원 로그인 (역할에 따라 `/admin` 또는 `/staff` 로 이동) |
 | `/staff` | 직원: 오늘 내 DB, 전화걸기, 상태·메모, 직접 접수 (`/staff/new`) |
-| `/admin` | 관리자: DB 목록·상세·배정·분배·엑셀 다운로드, 업로드(`/admin/upload`), 직원 관리(`/admin/users`), 통계(`/admin/stats`) |
+| `/admin` | 관리자: DB 목록·상세·배정·분배·엑셀 다운로드, 업로드(`/admin/upload`), 직원 관리(`/admin/users`), 통계(`/admin/stats`), 게시판 관리(`/admin/posts`) |
 | `/privacy`, `/terms` | 개인정보처리방침, 이용약관 (초안, `[확인필요]` 표시 항목 보완 필요) |
 
 ```
@@ -54,6 +58,9 @@ API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> 
 ## 자주 바꾸는 설정
 
 - **사업자 정보**: `client/src/config/business.js` — 주소·사업자번호·통신판매업번호·대표번호를 채우면 푸터/약관에 표시되고, 대표번호가 있으면 우측 하단에 전화 버튼이 생깁니다.
+- **메뉴·메인 배너·롤링 문구**: `client/src/config/site.js` — 상단 메뉴 구조, 슬라이드 배너 3개, 실시간 현황이 부족할 때 보여줄 혜택 문구.
+- **실시간 상담 현황**: 최근 30일 홈페이지 접수(동의 완료) 중 이름 첫 글자·관심상품·상태만 표시. `ticker.minRealItems`(기본 5건) 미만이면 혜택 안내 문구로 대체 — 가짜 접수는 만들지 않음.
+- **공지·이벤트·후기·FAQ**: 관리자 > 게시판 관리. 본문은 텍스트로만 표시(HTML 불가). 후기는 실제 고객 후기만 등록.
 - **팝업**: `client/src/config/popup.js` — `enabled`, 기간(`startDate`/`endDate`), `image`(client/public 아래 경로), `link`. 새 이벤트로 바꿀 땐 `id` 를 바꾸면 "오늘 하루 보지 않기" 기록이 초기화됩니다.
 - **상태값**: DB `lead_statuses` 테이블 (이름·순서·최종 여부). 기본: 신규/부재/상담중/개통완료/거절.
 - **유입경로**: 광고 링크에 `?utm_source=naver&utm_medium=cpc&utm_campaign=11월` 처럼 붙이면 접수 시 저장됩니다.
