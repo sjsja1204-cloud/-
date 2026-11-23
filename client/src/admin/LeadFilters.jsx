@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { api } from "../lib/api";
-import { SOURCE_LABEL } from "../lib/format";
+import { SOURCE_LABEL, INQUIRY_LABEL } from "../lib/format";
 
-export const emptyFilter = { q: "", from: "", to: "", status: "", assignee: "", source: "", utm: "", unassigned: false, duplicate: false };
+export const emptyFilter = { q: "", from: "", to: "", status: "", assignee: "", source: "", inquiryType: "", utm: "", unassigned: false, duplicate: false };
 
 export default function LeadFilters({ value, onChange, onSearch, statuses, staff }) {
   const [utms, setUtms] = useState([]);
@@ -44,6 +44,12 @@ export default function LeadFilters({ value, onChange, onSearch, statuses, staff
           <select className="select" value={value.source} onChange={(e) => set("source", e.target.value)}>
             <option value="">전체</option>
             {Object.entries(SOURCE_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+          </select>
+        </label>
+        <label>접수 유형 (홈페이지)
+          <select className="select" value={value.inquiryType || ""} onChange={(e) => set("inquiryType", e.target.value)}>
+            <option value="">전체</option>
+            {Object.entries(INQUIRY_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
         </label>
         <label>유입경로 (utm_source)

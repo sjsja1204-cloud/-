@@ -1,6 +1,7 @@
 import { config } from "../config.js";
 import { maskPhone } from "./phone.js";
 import { getSetting } from "./settings.js";
+import { INQUIRY_LABELS, quoteSummary } from "./constants.js";
 
 const escapeHtml = (s) => String(s ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
 
@@ -11,10 +12,13 @@ const escapeHtml = (s) => String(s ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp
 export async function notifyNewLead(lead) {
   const lines = [
     "📥 <b>[담아가넷] 신규 상담 접수</b>",
+    `접수 유형: ${escapeHtml(INQUIRY_LABELS[lead.inquiry_type] || "상담 폼")}`,
     `이름: ${escapeHtml(lead.name)}`,
     `연락처: ${maskPhone(lead.phone)}`,
-    `관심상품: ${escapeHtml((lead.products || []).join(", ") || "-")}`,
-    `희망통신사: ${escapeHtml(lead.carrier || "-")}`,
+    lead.products?.length ? `관심상품: ${escapeHtml(lead.products.join(", "))}` : null,
+    lead.carrier ? `희망통신사: ${escapeHtml(lead.carrier)}` : null,
+    lead.quote_carrier ? `견적 조건: ${escapeHtml(quoteSummary(lead))}` : null,
+    lead.quote_carrier ? `예상 월요금: ${lead.quote_estimated_price ? lead.quote_estimated_price.toLocaleString("ko-KR") + "원" : "상담 시 안내"}` : null,
     lead.call_time ? `통화가능: ${escapeHtml(lead.call_time)}` : null,
     `유입: ${escapeHtml([lead.utm_source, lead.utm_medium, lead.utm_campaign].filter(Boolean).join(" / ") || "직접")}`,
     `접수번호: #${lead.id}`,

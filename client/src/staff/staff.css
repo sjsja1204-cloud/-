@@ -4,7 +4,7 @@
 .seg { display: flex; gap: 6px; }
 .seg button, .seg input { min-height: 38px; padding: 0 14px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; font-weight: 600; font-size: 14px; cursor: pointer; }
 .seg input { flex: 1; min-width: 0; padding: 0 8px; font-weight: 500; }
-.seg .on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-dark); }
+.seg .on { border-color: var(--brand); background: var(--brand-soft); color: var(--brand-strong); }
 .chips-scroll { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
 .chips-scroll .chip { min-height: 34px; flex: none; }
 

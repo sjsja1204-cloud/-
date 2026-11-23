@@ -5,7 +5,7 @@ import { Field, ItemTools, ImageUpload } from "./content/bits";
 import Icon from "../components/site/Icon";
 import "./content/editor.css";
 
-const THEMES = [["orange", "주황 (밝은 배경)"], ["navy", "남색 (어두운 배경)"], ["mint", "민트 (밝은 배경)"]];
+const THEMES = [["teal", "청록 (밝은 배경)"], ["navy", "남색 (어두운 배경)"], ["sand", "옅은 노랑 (밝은 배경)"]];
 const ICONS = [
   ["shield", "방패(안심)"], ["calc", "계산기"], ["headset", "상담원"], ["check", "체크"], ["star", "별"], ["gift", "선물"],
   ["wifi", "와이파이"], ["tv", "TV"], ["phone", "휴대폰"], ["link", "결합"], ["wrench", "설치"], ["clipboard", "신청서"],
@@ -21,9 +21,10 @@ export default function SitePage() {
       <p className="page-desc">첫 화면의 문구를 바꿀 수 있어요. 고친 뒤 <b>미리보기</b>로 확인하고 <b>사이트에 반영하기</b>를 누르세요.</p>
       <div className="etabs">
         <button type="button" className={tab === "hero" ? "on" : ""} onClick={() => setTab("hero")}>맨 위 배너</button>
+        <button type="button" className={tab === "quote" ? "on" : ""} onClick={() => setTab("quote")}>간편 견적</button>
         <button type="button" className={tab === "benefits" ? "on" : ""} onClick={() => setTab("benefits")}>혜택 강조 · 안내 문구</button>
       </div>
-      {tab === "hero" ? <HeroEditor /> : <BenefitsEditor />}
+      {tab === "hero" ? <HeroEditor /> : tab === "quote" ? <QuoteEditor /> : <BenefitsEditor />}
     </div>
   );
 }
@@ -66,7 +67,7 @@ function HeroEditor() {
         </section>
       ))}
       <button type="button" className="btn btn-sm" disabled={banners.length >= 5}
-        onClick={() => setBanners([...banners, { kicker: "", title: "", desc: "", cta: { label: "상담 신청", to: "/apply" }, theme: "orange", image: "" }])}>
+        onClick={() => setBanners([...banners, { kicker: "", title: "", desc: "", cta: { label: "상담 신청", to: "/apply" }, theme: "teal", image: "" }])}>
         + 배너 추가
       </button>
     </>
@@ -117,6 +118,88 @@ function BenefitsEditor() {
             </div>
           ))}
           <button type="button" className="btn btn-sm" disabled={d.promos.length >= 10} onClick={() => set({ promos: [...d.promos, { tag: "", text: "" }] })}>+ 안내 문구</button>
+        </div>
+      </section>
+    </>
+  );
+}
+
+const SPEED_KEYS = ["100M", "200M", "500M", "1G"];
+const SERVICE_KEYS = [["internet", "인터넷만"], ["internet_tv", "인터넷 + TV"], ["internet_tv_usim", "인터넷 + TV + 유심"]];
+
+/** 간편 견적 블록 문구 (요금은 '요금표' 메뉴의 속도 분류·인터넷 단독 요금에서 계산) */
+function QuoteEditor() {
+  const ed = useContentEditor("quote");
+  if (!ed.data) return <div className="center-msg">{ed.msg?.text || "불러오는 중…"}</div>;
+  const d = ed.data;
+  const set = (patch) => ed.update({ ...d, ...patch });
+  const inp = (k, label, max, ph, wide) => (
+    <Field label={label} wide={wide}>
+      <input className="input" value={d[k]} maxLength={max} placeholder={ph || ""} onChange={(e) => set({ [k]: e.target.value })} />
+    </Field>
+  );
+  return (
+    <>
+      <PublishBar ed={ed} contentKey="quote" previewPath="/" label="간편 견적" />
+      <section className="ecard open">
+        <header className="ecard-head"><b>블록 표시</b><span className="hint">메인 배너 바로 아래</span></header>
+        <div className="ecard-body">
+          <label className="switch-row">
+            <input type="checkbox" checked={d.enabled} onChange={(e) => set({ enabled: e.target.checked })} />
+            <span><b>메인 화면에 간편 견적 보이기</b> — 끄면 빠른 메뉴의 '상품 찾기' 버튼은 상담 신청 창을 엽니다.</span>
+          </label>
+          <div className="efields">
+            {inp("kicker", "작은 제목", 30, "예: 3초 견적")}
+            {inp("liveBadge", "상담중 배지 문구", 20, "예: 실시간 상담중")}
+            {inp("title", "큰 제목", 100, "", true)}
+            {inp("desc", "설명", 300, "", true)}
+          </div>
+          <p className="hint">상담중 배지는 <b>사이트 설정 → 사업자 정보</b>의 상담 시작·종료 시간 안에만 보여요.</p>
+        </div>
+      </section>
+
+      <section className="ecard open">
+        <header className="ecard-head"><b>가입 서비스 이름</b></header>
+        <div className="ecard-body">
+          <div className="efields">
+            {SERVICE_KEYS.map(([k, l]) => (
+              <Field key={k} label={l}>
+                <input className="input" value={d.services[k]} maxLength={30} onChange={(e) => set({ services: { ...d.services, [k]: e.target.value } })} />
+              </Field>
+            ))}
+            <Field label="유심 포함 선택 시 안내 문구" wide>
+              <textarea className="textarea" value={d.usimNotice} maxLength={300} onChange={(e) => set({ usimNotice: e.target.value })} />
+            </Field>
+          </div>
+        </div>
+      </section>
+
+      <section className="ecard open">
+        <header className="ecard-head"><b>인터넷 속도 설명</b><span className="hint">통신사에 실제 있는 속도만 고객에게 보여요 (요금표의 '속도 분류')</span></header>
+        <div className="ecard-body">
+          {SPEED_KEYS.map((s) => (
+            <div key={s} className="speed-row">
+              <b className="speed-tag">{s}</b>
+              <input className="input" value={d.speeds[s].short} maxLength={30} placeholder="짧은 설명 (버튼 아래)"
+                onChange={(e) => set({ speeds: { ...d.speeds, [s]: { ...d.speeds[s], short: e.target.value } } })} />
+              <input className="input grow" value={d.speeds[s].detail} maxLength={200} placeholder="자세한 설명 (물음표에 표시)"
+                onChange={(e) => set({ speeds: { ...d.speeds, [s]: { ...d.speeds[s], detail: e.target.value } } })} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="ecard open">
+        <header className="ecard-head"><b>휴대폰 결합 · 결과</b></header>
+        <div className="ecard-body">
+          <div className="efields">
+            {inp("mobileNo", "선택 안 함 버튼", 20)}
+            {inp("mobileYes", "결합 선택 버튼", 20)}
+            {inp("mobileNote", "결합 선택 시 결과 안내", 200, "", true)}
+            {inp("resultNote", "결과 아래 작은 안내", 300, "", true)}
+            {inp("ctaLabel", "상담 신청 버튼 문구", 30)}
+          </div>
+          <p className="hint">금액·보상률 같은 광고 문구는 확정된 내용만 입력하세요.</p>
         </div>
       </section>
     </>

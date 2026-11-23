@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../lib/api";
-import { fmtDateTime } from "../lib/format";
+import { fmtDateTime, quoteSummary, formatWon } from "../lib/format";
 import NoteList from "../components/panel/NoteList";
 import CallButton from "./CallButton";
 import StatusButtons from "./StatusButtons";
@@ -57,6 +57,7 @@ export default function StaffLeadSheet({ id, statuses, onClose, onUpdated }) {
                   <CallButton leadId={l.id} className="btn btn-primary" />
                 </div>
                 <dl className="kv">
+                  {l.quote_carrier && <><dt>견적 조건</dt><dd><b>{quoteSummary(l)}</b><br /><span className="hint">예상 월요금 {l.quote_estimated_price ? formatWon(l.quote_estimated_price) : "상담 시 안내"}</span></dd></>}
                   <dt>관심상품</dt><dd>{l.products.join(", ") || "-"}</dd>
                   <dt>희망통신사</dt><dd>{l.carrier || "-"}</dd>
                   <dt>통화가능</dt><dd>{l.call_time || "-"}</dd>

@@ -56,7 +56,7 @@ export default function StatsPage() {
                 <td className="num">{r.daily_quota}</td>
                 <td className="num">{r.assigned_today}</td>
                 <td className="num">{r.processed_today}</td>
-                <td className="num" style={{ color: r.opened_today ? "var(--accent)" : undefined, fontWeight: r.opened_today ? 700 : 400 }}>{r.opened_today}</td>
+                <td className="num" style={{ color: r.opened_today ? "var(--brand)" : undefined, fontWeight: r.opened_today ? 700 : 400 }}>{r.opened_today}</td>
                 <td className="num">{r.open_total}</td>
               </tr>
             ))}

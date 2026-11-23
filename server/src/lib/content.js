@@ -6,7 +6,11 @@ import { HttpError } from "./http.js";
 
 export const VERSION_KEEP = 30;
 export const ICONS = ["wifi", "tv", "phone", "link", "gift", "headset", "check", "star", "calc", "clipboard", "wrench", "shield", "bell", "chat", "question"];
-export const THEMES = ["orange", "navy", "mint"];
+export const THEMES = ["teal", "navy", "sand"];
+// 예전 테마 이름(통신사 색과 겹치던 주황 등) → 새 이름
+const LEGACY_THEME = { orange: "teal", mint: "sand" };
+export const SPEEDS = ["100M", "200M", "500M", "1G"];
+export const SERVICES = ["internet", "internet_tv", "internet_tv_usim"];
 
 const str = (max) => z.string().max(max, `${max}자 이내로 입력하세요.`).default("");
 const LINK_RE = /^(\/|#|https?:\/\/)/;
@@ -33,7 +37,8 @@ const carrier = z.object({
   id: z.string().regex(/^[a-z0-9-]{1,30}$/, "통신사 주소용 영문 id 가 올바르지 않습니다."),
   name: str(50),
   hidden: z.boolean().default(false),
-  color: z.string().regex(/^#[0-9a-fA-F]{6}$/, "색상 값이 올바르지 않습니다.").default("#f26a21"),
+  // 통신사 고유색은 쓰지 않음. 로고는 사용 권한이 있을 때만 (선택)
+  logo: str(500).optional().default(""),
   tagline: str(200),
   formCarrier: str(50),
   priceTable: z.object({
@@ -42,6 +47,8 @@ const carrier = z.object({
     tvPlans: z.array(str(50)).max(10),
     rows: z.array(z.object({
       internet: str(50),
+      speed: z.enum(SPEEDS).nullable().default(null), // 간편 견적용 속도 분류
+      internetOnly: z.number().int().min(0).max(10_000_000).nullable().default(null), // 인터넷 단독 월요금 (비우면 '상담 시 안내')
       prices: z.array(z.number().int().min(0).max(10_000_000).nullable()).max(10),
     })).max(20),
     notes: z.array(str(500)).max(30).default([]),
@@ -57,7 +64,7 @@ export const contentSchemas = {
       title: str(200),
       desc: str(300),
       cta: z.object({ label: str(30), to: str(300) }),
-      theme: z.enum(THEMES).default("orange"),
+      theme: z.preprocess((v) => LEGACY_THEME[v] ?? v, z.enum(THEMES).default("teal")),
       image: str(500).optional(),
     })).max(5),
   }),
@@ -66,6 +73,22 @@ export const contentSchemas = {
     title: str(200),
     items: z.array(z.object({ icon: z.enum(ICONS), title: str(50), desc: str(200) })).max(4),
     promos: z.array(z.object({ tag: str(10), text: str(100) })).max(10),
+  }),
+  // 간편 견적 블록 (메인 화면 배너 바로 아래)
+  quote: z.object({
+    enabled: z.boolean().default(true),
+    kicker: str(30),
+    title: str(100),
+    desc: str(300),
+    liveBadge: str(20),
+    services: z.object(Object.fromEntries(SERVICES.map((s) => [s, str(30)]))),
+    usimNotice: str(300),
+    speeds: z.object(Object.fromEntries(SPEEDS.map((s) => [s, z.object({ short: str(30), detail: str(200) })]))),
+    mobileNo: str(20),
+    mobileYes: str(20),
+    mobileNote: str(200),
+    resultNote: str(300),
+    ctaLabel: str(30),
   }),
 };
 export const CONTENT_KEYS = Object.keys(contentSchemas);
@@ -84,6 +107,7 @@ export function publishIssues(key, d) {
       if (blank(c.name)) add(cn, "통신사 이름이 비어 있습니다.");
       if (ids.has(c.id)) add(cn, "통신사 id 가 다른 통신사와 같습니다.");
       ids.add(c.id);
+      if (!isImage(c.logo)) add(cn, "로고 이미지 주소가 올바르지 않습니다.");
       const pt = c.priceTable;
       if (blank(pt.title)) add(`${cn} › 요금표`, "요금표 제목이 비어 있습니다.");
       if (!pt.tvPlans.length) add(`${cn} › 요금표`, "TV 상품(열)이 1개 이상 있어야 합니다.");
@@ -118,6 +142,13 @@ export function publishIssues(key, d) {
       if (!isLink(b.cta.to)) add(w, "버튼 링크는 / 또는 # 또는 https:// 로 시작해야 합니다.");
       if (!isImage(b.image)) add(w, "배경 이미지 주소가 올바르지 않습니다.");
     });
+  }
+  if (key === "quote") {
+    if (blank(d.title)) add("간편 견적", "제목이 비어 있습니다.");
+    if (blank(d.ctaLabel)) add("간편 견적", "상담 신청 버튼 문구가 비어 있습니다.");
+    SERVICES.forEach((s) => blank(d.services[s]) && add("간편 견적 › 가입 서비스", "서비스 이름이 비어 있습니다."));
+    SPEEDS.forEach((s) => blank(d.speeds[s].short) && add(`간편 견적 › 속도 ${s}`, "짧은 설명이 비어 있습니다."));
+    if (blank(d.mobileNo) || blank(d.mobileYes)) add("간편 견적 › 휴대폰 결합", "선택지 이름이 비어 있습니다.");
   }
   if (key === "benefits") {
     if (blank(d.title)) add("혜택 강조", "제목이 비어 있습니다.");

@@ -1,4 +1,4 @@
-.pt-wrap { --pt-accent: #f26a21; --pt-line: #e5e5e5; --pt-head: #f8f8f8; max-width: 1000px; margin: 0 auto; font-family: "Pretendard", "Noto Sans KR", sans-serif; color: #222; }
+.pt-wrap { --pt-accent: var(--brand); --pt-line: #e5e5e5; --pt-head: #f8f8f8; max-width: 1000px; margin: 0 auto; font-family: "Pretendard", "Noto Sans KR", sans-serif; color: #222; }
 .pt-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
 .pt-tab { padding: 10px 18px; border: 1px solid var(--pt-line); border-radius: 999px; background: #fff; font-size: 15px; font-weight: 600; cursor: pointer; }
 .pt-tab.active { background: var(--pt-accent); border-color: var(--pt-accent); color: #fff; }

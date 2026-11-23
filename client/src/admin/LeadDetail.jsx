@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../lib/api";
-import { fmtDateTime, hyphenPhone, SOURCE_LABEL } from "../lib/format";
+import { fmtDateTime, hyphenPhone, SOURCE_LABEL, quoteSummary, inquiryLabel, formatWon } from "../lib/format";
 import NoteList from "../components/panel/NoteList";
 import { StatusBadge, selectableStatuses } from "../components/panel/hooks";
 
@@ -56,6 +56,8 @@ export default function LeadDetail({ id, statuses, staff, onClose, onChanged, on
                 <dl className="kv">
                   <dt>연락처</dt>
                   <dd><a href={`tel:${l.phone}`}>{hyphenPhone(l.phone)}</a> {l.is_duplicate && <span className="badge badge-dup">중복</span>}</dd>
+                  {l.source === "web" && <><dt>접수 유형</dt><dd>{inquiryLabel(l)}</dd></>}
+                  {l.quote_carrier && <><dt>견적 조건</dt><dd><b>{quoteSummary(l)}</b><br /><span className="hint">예상 월요금 {l.quote_estimated_price ? formatWon(l.quote_estimated_price) : "상담 시 안내"} (접수 당시)</span></dd></>}
                   <dt>관심상품</dt><dd>{l.products.join(", ") || "-"}</dd>
                   <dt>희망통신사</dt><dd>{l.carrier || "-"}</dd>
                   <dt>통화가능</dt><dd>{l.call_time || "-"}</dd>

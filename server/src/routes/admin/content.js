@@ -7,7 +7,7 @@ import { logAccess } from "../../lib/accessLog.js";
 import { CONTENT_KEYS, contentSchemas, getRow, saveDraft, publish, publishIssues } from "../../lib/content.js";
 
 const router = Router();
-const LABEL = { plans: "요금표", hero: "메인 배너", benefits: "혜택 강조 문구" };
+const LABEL = { plans: "요금표", hero: "메인 배너", benefits: "혜택 강조 문구", quote: "간편 견적" };
 
 function keyOf(req) {
   const key = req.params.key;

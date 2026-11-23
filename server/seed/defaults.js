@@ -9,7 +9,6 @@ export const content = {
         "id": "kt",
         "name": "KT",
         "hidden": false,
-        "color": "#e4002b",
         "tagline": "기가인터넷 대표 사업자, 안정적인 속도",
         "formCarrier": "KT",
         "priceTable": {
@@ -23,6 +22,8 @@ export const content = {
           "rows": [
             {
               "internet": "슬림 100M",
+              "speed": "100M",
+              "internetOnly": null,
               "prices": [
                 42900,
                 46200,
@@ -31,6 +32,8 @@ export const content = {
             },
             {
               "internet": "베이직 500M",
+              "speed": "500M",
+              "internetOnly": null,
               "prices": [
                 48400,
                 51700,
@@ -39,6 +42,8 @@ export const content = {
             },
             {
               "internet": "1G",
+              "speed": "1G",
+              "internetOnly": null,
               "prices": [
                 52800,
                 56100,
@@ -132,13 +137,13 @@ export const content = {
               }
             ]
           }
-        ]
+        ],
+        "logo": ""
       },
       {
         "id": "lg",
         "name": "LG U+",
         "hidden": false,
-        "color": "#e6007e",
         "tagline": "U+tv 콘텐츠와 휴대폰 결합 혜택",
         "formCarrier": "LG U+",
         "priceTable": {
@@ -151,6 +156,8 @@ export const content = {
           "rows": [
             {
               "internet": "광랜 100M",
+              "speed": "100M",
+              "internetOnly": null,
               "prices": [
                 39600,
                 42900
@@ -158,6 +165,8 @@ export const content = {
             },
             {
               "internet": "슬림 500M",
+              "speed": "500M",
+              "internetOnly": null,
               "prices": [
                 45100,
                 48400
@@ -165,6 +174,8 @@ export const content = {
             },
             {
               "internet": "기가 1G",
+              "speed": "1G",
+              "internetOnly": null,
               "prices": [
                 50600,
                 53900
@@ -233,13 +244,13 @@ export const content = {
               "가족 데이터 제공: 결합 모바일 1명당 1,000MB 제공"
             ]
           }
-        ]
+        ],
+        "logo": ""
       },
       {
         "id": "sk",
         "name": "SK브로드밴드",
         "hidden": false,
-        "color": "#ea002c",
         "tagline": "B tv와 SKT 가족결합 할인",
         "formCarrier": "SK",
         "priceTable": {
@@ -253,6 +264,8 @@ export const content = {
           "rows": [
             {
               "internet": "광랜 100M",
+              "speed": "100M",
+              "internetOnly": null,
               "prices": [
                 36300,
                 39600,
@@ -261,6 +274,8 @@ export const content = {
             },
             {
               "internet": "기가 500M",
+              "speed": "500M",
+              "internetOnly": null,
               "prices": [
                 42900,
                 46200,
@@ -269,6 +284,8 @@ export const content = {
             },
             {
               "internet": "기가 1G",
+              "speed": "1G",
+              "internetOnly": null,
               "prices": [
                 48400,
                 51700,
@@ -356,13 +373,13 @@ export const content = {
               }
             ]
           }
-        ]
+        ],
+        "logo": ""
       },
       {
         "id": "skylife",
         "name": "KT스카이라이프",
         "hidden": false,
-        "color": "#0066b3",
         "tagline": "합리적인 요금의 인터넷+TV",
         "formCarrier": "KT스카이라이프",
         "priceTable": {
@@ -375,6 +392,8 @@ export const content = {
           "rows": [
             {
               "internet": "스카이안심 200M",
+              "speed": "200M",
+              "internetOnly": null,
               "prices": [
                 36300,
                 37400
@@ -382,6 +401,8 @@ export const content = {
             },
             {
               "internet": "스카이안심 500M",
+              "speed": "500M",
+              "internetOnly": null,
               "prices": [
                 41800,
                 42900
@@ -392,7 +413,8 @@ export const content = {
             "요금할인형 홈번들 30%는 별도 문의 바랍니다."
           ]
         },
-        "discountTables": []
+        "discountTables": [],
+        "logo": ""
       }
     ]
   },
@@ -406,7 +428,7 @@ export const content = {
           "label": "요금 비교하기",
           "to": "/internet"
         },
-        "theme": "orange"
+        "theme": "teal"
       },
       {
         "kicker": "휴대폰 + 인터넷 결합",
@@ -426,7 +448,7 @@ export const content = {
           "label": "상담 신청",
           "to": "/apply"
         },
-        "theme": "mint"
+        "theme": "sand"
       }
     ]
   },
@@ -472,6 +494,42 @@ export const content = {
         "text": "약정 만료 고객 재약정 vs 신규 가입 비교"
       }
     ]
+  },
+  "quote": {
+    "enabled": true,
+    "kicker": "3초 견적",
+    "title": "내 조건으로 월 요금 바로 확인",
+    "desc": "통신사와 속도만 고르면 예상 월 요금을 바로 보여드려요.",
+    "liveBadge": "실시간 상담중",
+    "services": {
+      "internet": "인터넷",
+      "internet_tv": "인터넷+TV",
+      "internet_tv_usim": "인터넷+TV+유심"
+    },
+    "usimNotice": "유심 요금제·회선 수·유지 조건은 상담 시 확인합니다. 표시 월요금은 인터넷·TV 요금이며 유심 통신요금은 별도입니다.",
+    "speeds": {
+      "100M": {
+        "short": "검색·기본 사용",
+        "detail": "웹 검색, 메신저, SNS 위주로 1~2명이 쓰기에 알맞아요."
+      },
+      "200M": {
+        "short": "영상 시청 무난",
+        "detail": "HD 영상 시청과 일반 사용을 2~3명이 함께 쓰기 좋아요."
+      },
+      "500M": {
+        "short": "동영상·게임 원활",
+        "detail": "4K 영상, 온라인 게임, 여러 기기를 동시에 써도 여유 있어요."
+      },
+      "1G": {
+        "short": "대용량·여러 기기",
+        "detail": "대용량 다운로드, 재택근무, 가족 여럿이 동시에 쓰기 좋아요."
+      }
+    },
+    "mobileNo": "선택 안 함",
+    "mobileYes": "휴대폰 결합",
+    "mobileNote": "결합 할인은 휴대폰 요금제·회선 수에 따라 추가로 적용됩니다.",
+    "resultNote": "요금표 기준 예상 금액이며, 실제 요금은 약정·할인 조건에 따라 달라질 수 있어요.",
+    "ctaLabel": "이 조건으로 상담 신청"
   }
 };
 
@@ -505,6 +563,54 @@ export const settings = {
   },
   "telegram": {
     "chatId": ""
+  },
+  "brand": {
+    "color": "#0E8F7E"
+  },
+  "consult": {
+    "menu": [
+      {
+        "type": "subsidy",
+        "label": "비밀지원금 안내",
+        "enabled": true
+      },
+      {
+        "type": "consult",
+        "label": "맞춤 상담 신청",
+        "enabled": true
+      },
+      {
+        "type": "recommend",
+        "label": "나에게 맞는 상품 찾기",
+        "enabled": true
+      },
+      {
+        "type": "call",
+        "label": "전화 상담",
+        "enabled": true
+      }
+    ],
+    "modals": {
+      "subsidy": {
+        "title": "지원금 안내를 문자로 받아보세요",
+        "desc": "이름과 연락처를 남겨 주시면 받을 수 있는 지원 내용을 안내해 드려요."
+      },
+      "consult": {
+        "title": "상담사가 조건에 맞는 요금제를 안내해 드려요",
+        "desc": "사용 중인 통신사와 요금을 여쭤보고 더 나은 조건을 찾아 드려요."
+      },
+      "recommend": {
+        "title": "나에게 맞는 상품을 찾아 드려요",
+        "desc": "사용 환경을 여쭤보고 알맞은 인터넷·TV 상품을 추천해 드려요."
+      },
+      "quote": {
+        "title": "이 조건으로 상담을 신청할까요?",
+        "desc": "선택하신 조건을 바탕으로 상담사가 연락드려요."
+      }
+    },
+    "submitLabel": "상담 신청하기",
+    "doneTitle": "신청이 접수되었습니다",
+    "doneDesc": "상담 운영시간에 순서대로 연락드릴게요."
   }
 };
 

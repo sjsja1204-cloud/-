@@ -16,9 +16,9 @@ router.get("/plans", ah(async (req, res) => {
 }));
 
 router.get("/site", ah(async (req, res) => {
-  const [hero, benefits] = await Promise.all([getPublished("hero"), getPublished("benefits")]);
+  const [hero, benefits, quote] = await Promise.all([getPublished("hero"), getPublished("benefits"), getPublished("quote")]);
   noCache(res);
-  res.json({ hero, benefits });
+  res.json({ hero, benefits, quote });
 }));
 
 router.get("/popups", ah(async (req, res) => {
@@ -35,9 +35,11 @@ router.get("/popups", ah(async (req, res) => {
 }));
 
 router.get("/settings/public", ah(async (req, res) => {
-  const [business, formOptions] = await Promise.all([getSetting("business"), getSetting("form_options")]);
+  const [business, formOptions, brand, consult] = await Promise.all(
+    ["business", "form_options", "brand", "consult"].map((k) => getSetting(k))
+  );
   noCache(res);
-  res.json({ business, formOptions });
+  res.json({ business, formOptions, brand, consult });
 }));
 
 export default router;

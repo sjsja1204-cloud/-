@@ -9,6 +9,7 @@ import { changeLeadStatus, addLeadNote, getLeadNotes, getLeadStatusHistory } fro
 import { logAccess } from "../../lib/accessLog.js";
 import { formatPhone } from "../../lib/phone.js";
 import { distributeUnassigned } from "../../lib/distribute.js";
+import { INQUIRY_LABELS, quoteSummary } from "../../lib/constants.js";
 
 const router = Router();
 const SOURCE_LABEL = { web: "홈페이지", staff: "직원접수", upload: "엑셀업로드" };
@@ -58,6 +59,9 @@ router.get(
       { header: "연락처", key: "phone", width: 16 },
       { header: "관심상품", key: "products", width: 22 },
       { header: "희망통신사", key: "carrier", width: 14 },
+      { header: "접수유형", key: "inquiry", width: 12 },
+      { header: "견적조건", key: "quote", width: 32 },
+      { header: "예상월요금", key: "quote_estimated_price", width: 12 },
       { header: "통화가능시간", key: "call_time", width: 16 },
       { header: "문의내용", key: "message", width: 30 },
       { header: "상태", key: "status_name", width: 10 },
@@ -77,6 +81,8 @@ router.get(
         ...r,
         created_at: kst(r.created_at),
         assigned_at: kst(r.assigned_at),
+        inquiry: r.source === "web" ? INQUIRY_LABELS[r.inquiry_type] || "" : "",
+        quote: quoteSummary(r),
         phone: formatPhone(r.phone),
         products: (r.products || []).join(", "),
         source: SOURCE_LABEL[r.source] || r.source,

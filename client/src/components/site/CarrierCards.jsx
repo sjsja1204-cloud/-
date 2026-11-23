@@ -13,8 +13,8 @@ export default function CarrierCards() {
         const min = minPrice(c);
         const speeds = c.priceTable.rows.map((r) => r.internet).join(" · ");
         return (
-          <Link key={c.id} to={`/internet/${c.id}`} className="cc" style={{ "--brand": c.color }}>
-            <span className="cc-name">{c.name}</span>
+          <Link key={c.id} to={`/internet/${c.id}`} className="cc">
+            <span className="cc-name">{c.logo ? <img src={c.logo} alt="" className="cc-logo" /> : null}{c.name}</span>
             <span className="cc-tag">{c.tagline}</span>
             {min != null && <span className="cc-price"><small>인터넷+TV 월</small> <b>{formatWon(min)}</b><small>~</small></span>}
             <span className="cc-speeds">{speeds}</span>

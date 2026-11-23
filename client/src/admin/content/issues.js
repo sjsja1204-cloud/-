@@ -11,6 +11,7 @@ export function findIssues(key, d) {
     if (!d.carriers.some((c) => !c.hidden)) add("통신사", "공개된 통신사가 1곳 이상 있어야 합니다.");
     const ids = new Set();
     d.carriers.forEach((c, ci) => {
+      if (!isImage(c.logo)) add(c.name || `${ci + 1}번째 통신사`, "로고 이미지 주소가 올바르지 않습니다.");
       const cn = c.name || `${ci + 1}번째 통신사`;
       if (blank(c.name)) add(cn, "통신사 이름이 비어 있습니다.");
       if (!/^[a-z0-9-]{1,30}$/.test(c.id)) add(cn, "주소용 영문 이름은 영어 소문자·숫자·- 만 쓸 수 있습니다.");
@@ -50,6 +51,13 @@ export function findIssues(key, d) {
       if (!isLink(b.cta.to)) add(w, "버튼 링크는 / 또는 # 또는 https:// 로 시작해야 합니다.");
       if (!isImage(b.image)) add(w, "배경 이미지 주소가 올바르지 않습니다.");
     });
+  }
+  if (key === "quote") {
+    if (blank(d.title)) add("간편 견적", "제목이 비어 있습니다.");
+    if (blank(d.ctaLabel)) add("간편 견적", "상담 신청 버튼 문구가 비어 있습니다.");
+    Object.values(d.services).some(blank) && add("간편 견적 › 가입 서비스", "서비스 이름이 비어 있습니다.");
+    Object.entries(d.speeds).forEach(([s, v]) => blank(v.short) && add(`간편 견적 › 속도 ${s}`, "짧은 설명이 비어 있습니다."));
+    if (blank(d.mobileNo) || blank(d.mobileYes)) add("간편 견적 › 휴대폰 결합", "선택지 이름이 비어 있습니다.");
   }
   if (key === "benefits") {
     if (blank(d.title)) add("혜택 강조", "제목이 비어 있습니다.");

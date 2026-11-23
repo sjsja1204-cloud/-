@@ -8,7 +8,7 @@ import { SETTING_KEYS, settingSchemas, getSetting, saveSetting } from "../../lib
 import { config } from "../../config.js";
 
 const router = Router();
-const LABEL = { business: "사업자 정보", form_options: "접수 폼 선택지", telegram: "텔레그램 알림" };
+const LABEL = { business: "사업자 정보", form_options: "접수 폼 선택지", telegram: "텔레그램 알림", brand: "브랜드 색상", consult: "빠른 상담 메뉴" };
 
 router.get("/", ah(async (req, res) => {
   const out = {};

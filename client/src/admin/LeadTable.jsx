@@ -1,4 +1,4 @@
-import { fmtDateTime, SOURCE_LABEL, hyphenPhone } from "../lib/format";
+import { fmtDateTime, SOURCE_LABEL, hyphenPhone, quoteSummary, inquiryLabel } from "../lib/format";
 import { StatusBadge } from "../components/panel/hooks";
 
 export default function LeadTable({ items, loading, selected, setSelected, onOpen }) {
@@ -28,7 +28,7 @@ export default function LeadTable({ items, loading, selected, setSelected, onOpe
             <th>통신사</th>
             <th>상태</th>
             <th>담당자</th>
-            <th>출처</th>
+            <th>출처 · 유형</th>
             <th>유입</th>
             <th>최근 메모</th>
           </tr>
@@ -44,11 +44,14 @@ export default function LeadTable({ items, loading, selected, setSelected, onOpe
               <td className="nowrap">
                 {hyphenPhone(l.phone)} {l.is_duplicate && <span className="badge badge-dup">중복</span>}
               </td>
-              <td className="nowrap">{(l.products || []).join(", ")}</td>
+              <td className="nowrap">
+                {(l.products || []).join(", ")}
+                {l.quote_carrier && <div className="quote-line">{quoteSummary(l)}</div>}
+              </td>
               <td className="nowrap">{l.carrier || "-"}</td>
               <td><StatusBadge name={l.status_name} isFinal={l.is_final} /></td>
               <td className="nowrap">{l.assignee_name || <span className="muted">미배정</span>}</td>
-              <td className="nowrap muted">{SOURCE_LABEL[l.source]}</td>
+              <td className="nowrap muted">{SOURCE_LABEL[l.source]}{inquiryLabel(l) && <> · <span className={`itype itype-${l.inquiry_type}`}>{inquiryLabel(l)}</span></>}</td>
               <td className="nowrap muted">{l.utm_source || "-"}</td>
               <td className="ellipsis muted">{l.last_note || ""}</td>
             </tr>

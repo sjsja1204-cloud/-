@@ -9,7 +9,7 @@
 .pubbar-state { font-weight: 700; font-size: 14px; padding: 4px 10px; border-radius: 999px; }
 .pubbar-state.ok { background: #dcfce7; color: #166534; }
 .pubbar-state.info { background: #eff6ff; color: #1d4ed8; }
-.pubbar-state.warn { background: #fff7d6; color: #92400e; }
+.pubbar-state.warn { background: #fff7d6; color: #6b5200; }
 .pubbar-issues ul { margin: 8px 0 0; padding-left: 18px; max-height: 220px; overflow: auto; font-size: 13.5px; }
 .ver-list { list-style: none; margin: 0; padding: 0; }
 .ver-list li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--line); }
@@ -17,7 +17,7 @@
 /* 탭 */
 .etabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 14px; overflow-x: auto; }
 .etabs button { flex: none; padding: 10px 14px; border: 0; background: none; font-weight: 700; color: #6b7280; border-bottom: 3px solid transparent; cursor: pointer; }
-.etabs button.on { color: var(--accent); border-bottom-color: var(--accent); }
+.etabs button.on { color: var(--brand); border-bottom-color: var(--brand); }
 
 /* 입력 묶음 */
 .efields { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px 14px; margin-bottom: 12px; }
@@ -50,10 +50,10 @@
 .egrid .addcol { vertical-align: middle; border-right: 0; }
 .cell { width: 100%; min-width: 110px; height: 38px; border: 1px solid transparent; border-radius: 6px; padding: 0 8px; background: transparent; font-size: 15px; }
 .cell:hover { border-color: var(--line); }
-.cell:focus { outline: none; border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px var(--accent-soft); }
+.cell:focus { outline: none; border-color: var(--brand); background: #fff; box-shadow: 0 0 0 3px var(--brand-soft); }
 .cell.head { font-weight: 700; }
 .cell.num { text-align: right; font-variant-numeric: tabular-nums; min-width: 100px; }
-.cell.bad { background: #fef2f2; border-color: #fecaca; }
+.cell.bad { background: var(--notice-bg); border-color: #e2c55a; }
 .won { display: flex; align-items: center; gap: 2px; }
 .won i { font-style: normal; color: var(--muted); font-size: 13px; }
 .cell-tools { display: flex; gap: 2px; justify-content: center; margin-top: 2px; }
@@ -68,14 +68,14 @@
 .plans-layout { display: grid; grid-template-columns: 220px 1fr; gap: 16px; align-items: start; }
 .carrier-list { display: grid; gap: 6px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px; position: sticky; top: 110px; }
 .carrier-item { display: flex; align-items: center; gap: 4px; border-radius: 8px; }
-.carrier-item.on { background: var(--accent-soft); }
+.carrier-item.on { background: var(--brand-soft); }
 .carrier-pick { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; padding: 8px; border: 0; background: none; cursor: pointer; font-weight: 700; text-align: left; }
 .carrier-pick i { width: 12px; height: 12px; border-radius: 50%; flex: none; }
 .carrier-pick span:not(.badge) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .carrier-item .itools .ibtn { width: 26px; height: 26px; }
 .carrier-edit { min-width: 0; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 4px 14px 14px; }
 .switch-row { display: flex; align-items: center; gap: 8px; font-size: 14.5px; }
-.switch-row input { width: 20px; height: 20px; accent-color: var(--accent); flex: none; }
+.switch-row input { width: 20px; height: 20px; accent-color: var(--brand); flex: none; }
 
 /* 혜택 박스 */
 .boxlist { display: grid; gap: 8px; padding: 10px; border: 1px dashed #d8dbe0; border-radius: 10px; }
@@ -93,7 +93,7 @@
 .benefit-row .input { flex: 1 1 160px; min-width: 0; }
 .benefit-row .input.grow { flex: 3 1 240px; }
 .benefit-row .input.tag { flex: 0 1 100px; }
-.benefit-ic { width: 38px; height: 38px; border-radius: 10px; background: #1f2328; color: #fff; display: grid; place-items: center; flex: none; }
+.benefit-ic { width: 38px; height: 38px; border-radius: 10px; background: var(--ink); color: #fff; display: grid; place-items: center; flex: none; }
 
 /* 이미지 업로드 */
 .imgup { display: grid; gap: 8px; }
@@ -106,12 +106,12 @@
 .popup-list { display: grid; gap: 10px; }
 .popup-card { display: flex; gap: 14px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
 .popup-card.off { opacity: .6; }
-.popup-thumb { width: 84px; height: 84px; flex: none; border-radius: 8px; overflow: hidden; background: #fff3ec; display: grid; place-items: center; font-size: 12px; text-align: center; padding: 4px; color: var(--accent-dark); font-weight: 700; }
+.popup-thumb { width: 84px; height: 84px; flex: none; border-radius: 8px; overflow: hidden; background: #e6f5f2; display: grid; place-items: center; font-size: 12px; text-align: center; padding: 4px; color: var(--brand-strong); font-weight: 700; }
 .popup-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .popup-info { flex: 1; min-width: 0; display: grid; gap: 3px; }
 .popup-actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: flex-end; }
 .toggle { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 700; font-size: 14px; white-space: nowrap; }
-.toggle input { width: 20px; height: 20px; accent-color: var(--accent); }
+.toggle input { width: 20px; height: 20px; accent-color: var(--brand); }
 
 /* 설정 */
 .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -129,3 +129,26 @@
   .cell { min-width: 90px; }
   .cell.num { min-width: 84px; }
 }
+
+/* 요금표 행: 간편 견적용 속도 분류·인터넷 단독 요금 */
+.row-quote { display: flex; gap: 4px; margin-top: 4px; }
+.cell.sub { height: 32px; font-size: 13px; min-width: 0; border-color: var(--line); background: #fff; }
+select.cell.sub { width: auto; padding: 0 4px; }
+.row-quote .won { flex: 1; min-width: 96px; }
+.notice-box { margin: 0 0 8px; padding: 10px 12px; border-radius: 8px; background: var(--notice-bg); color: #5c4a00; font-size: 13px; }
+.speed-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.speed-tag { flex: none; width: 52px; text-align: center; padding: 6px 0; border-radius: 8px; background: var(--brand-soft); color: var(--brand-strong); font-size: 13px; }
+.speed-row .input { flex: 1; min-width: 0; }
+.speed-row .input.grow { flex: 2; }
+@media (max-width: 640px) { .speed-row { flex-wrap: wrap; } .speed-row .input { flex-basis: calc(100% - 60px); } .speed-row .input.grow { flex-basis: 100%; } }
+.color-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.color-row input[type=color] { width: 56px; height: 44px; padding: 2px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+.color-swatches { display: flex; gap: 8px; }
+.color-swatches span { width: 44px; height: 32px; border-radius: 6px; display: grid; place-items: center; font-size: 11px; color: #fff; }
+.qm-row { display: grid; grid-template-columns: auto 1fr auto auto; gap: 8px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.qm-type { font-size: 12px; color: var(--muted); white-space: nowrap; }
+@media (max-width: 640px) { .qm-row { grid-template-columns: 1fr auto; } .qm-row .qm-type { grid-column: 1 / -1; } }
+.days { display: flex; gap: 4px; flex-wrap: wrap; }
+.days label { display: inline-flex; align-items: center; gap: 2px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; cursor: pointer; }
+.days label:has(input:checked) { border-color: var(--brand); background: var(--brand-soft); color: var(--brand-strong); font-weight: 700; }
+.days input { position: absolute; opacity: 0; pointer-events: none; }

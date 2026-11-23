@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import SiteLayout from "../components/site/SiteLayout";
 import HeroSlider from "../components/site/HeroSlider";
 import LiveTicker from "../components/site/LiveTicker";
@@ -6,6 +7,7 @@ import CarrierCards from "../components/site/CarrierCards";
 import ProcessSteps from "../components/site/ProcessSteps";
 import ReviewCard from "../components/site/ReviewCard";
 import ApplySection from "../components/site/ApplySection";
+import QuoteWidget from "../components/site/QuoteWidget";
 import EventPopup from "../components/site/EventPopup";
 import Icon from "../components/site/Icon";
 import { usePosts, fmtDay } from "../lib/posts";
@@ -20,7 +22,12 @@ const QUICK = [
 
 
 export default function Home() {
-  const { benefits } = useSiteData();
+  const { benefits, status } = useSiteData();
+  const { state } = useLocation();
+  // 다른 페이지에서 빠른 메뉴 "상품 찾기"로 왔을 때 간편 견적 위치로
+  useEffect(() => {
+    if (state?.scrollTo && status === "ready") document.getElementById(state.scrollTo)?.scrollIntoView({ behavior: "smooth" });
+  }, [state, status]);
   const reviews = usePosts("review", { pageSize: 3 });
   const notices = usePosts("notice", { pageSize: 4 });
   const faqs = usePosts("faq", { pageSize: 4 });
@@ -28,6 +35,7 @@ export default function Home() {
   return (
     <SiteLayout>
       <HeroSlider />
+      <QuoteWidget />
 
       <section className="quick">
         <div className="site-inner quick-grid">
@@ -119,7 +127,7 @@ export default function Home() {
             </div>
             <ul className="board-list">
               {faqs.items.map((f) => (
-                <li key={f.id}><Link to={`/support/faq#q${f.id}`}><b style={{ color: "var(--accent)" }}>Q.</b> {f.title}</Link></li>
+                <li key={f.id}><Link to={`/support/faq#q${f.id}`}><b style={{ color: "var(--brand)" }}>Q.</b> {f.title}</Link></li>
               ))}
             </ul>
           </div>

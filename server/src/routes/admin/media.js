@@ -7,7 +7,7 @@ import { saveImage, MAX_UPLOAD_BYTES } from "../../lib/storage.js";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_UPLOAD_BYTES, files: 1 } }).single("file");
-const SIZES = { popup: { maxWidth: 800, maxHeight: 1600 }, banner: { maxWidth: 1200, maxHeight: 900 } };
+const SIZES = { popup: { maxWidth: 800, maxHeight: 1600 }, banner: { maxWidth: 1200, maxHeight: 900 }, logo: { maxWidth: 400, maxHeight: 200 } };
 
 router.post(
   "/",

@@ -28,7 +28,7 @@ export default function CarrierPage() {
 
       <section className="sec">
         <div className="site-inner">
-          <div className="brand-band" style={{ "--brand": page.color }}>
+          <div className="brand-band">
             <div>
               <span className="brand-name">{page.name}</span>
               {min != null && <p>인터넷 + TV 월 <b>{formatWon(min)}</b>부터</p>}

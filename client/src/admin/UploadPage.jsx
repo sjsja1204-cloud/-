@@ -84,7 +84,7 @@ export default function UploadPage() {
           <div className="stat-grid">
             <div className="stat"><b>{preview.summary.total}</b><span>총 건수</span></div>
             <div className="stat"><b style={{ color: "var(--ok)" }}>{preview.summary.new}</b><span>신규</span></div>
-            <div className="stat"><b style={{ color: "#b45309" }}>{preview.summary.duplicate}</b><span>중복</span></div>
+            <div className="stat"><b style={{ color: "#7a5c00" }}>{preview.summary.duplicate}</b><span>중복</span></div>
             <div className="stat"><b style={{ color: "var(--danger)" }}>{preview.summary.error}</b><span>오류</span></div>
           </div>
 
@@ -140,7 +140,7 @@ function RowTable({ title, rows }) {
               <tr key={r.row}>
                 <td>{r.row}</td><td>{r.name || "-"}</td><td className="nowrap">{r.phoneDisplay || "-"}</td>
                 <td>{r.products?.join(", ") || "-"}</td><td>{r.carrier || "-"}</td>
-                <td style={{ color: r.kind === "error" ? "var(--danger)" : r.kind === "duplicate" ? "#b45309" : "inherit" }}>{r.reason || "신규"}</td>
+                <td style={{ color: r.kind === "error" ? "var(--danger)" : r.kind === "duplicate" ? "#7a5c00" : "inherit" }}>{r.reason || "신규"}</td>
               </tr>
             ))}
           </tbody>

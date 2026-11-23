@@ -2,12 +2,13 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import SiteHeader from "./SiteHeader";
 import Footer from "./Footer";
-import FloatingButtons from "./FloatingButtons";
+import QuickMenu from "./QuickMenu";
+import ConsultModal from "./ConsultModal";
 import { captureAttribution } from "../../lib/utm";
 import { useSiteData } from "../../lib/siteData";
 import "./site.css";
 
-/** 고객용 페이지 공통 틀 (헤더 + 본문 + 푸터 + 플로팅 버튼) */
+/** 고객용 페이지 공통 틀 (헤더 + 본문 + 푸터 + 빠른 상담 메뉴 + 공통 접수 창) */
 export default function SiteLayout({ children, title }) {
   const { pathname } = useLocation();
   const { preview, exitPreview, business } = useSiteData();
@@ -33,7 +34,8 @@ export default function SiteLayout({ children, title }) {
       <SiteHeader />
       <main>{children}</main>
       <Footer />
-      <FloatingButtons />
+      <QuickMenu />
+      <ConsultModal />
     </div>
   );
 }

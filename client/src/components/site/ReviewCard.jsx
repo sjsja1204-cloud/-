@@ -7,7 +7,7 @@ export default function ReviewCard({ post, clamp = true }) {
       <div className="rv-top">
         <span className="rv-stars" aria-label={`별점 ${post.review_rating || 5}점`}>
           {Array.from({ length: 5 }, (_, k) => (
-            <Icon key={k} name="star" size={15} style={{ color: k < (post.review_rating || 5) ? "#f5a524" : "#e5e7eb" }} />
+            <Icon key={k} name="star" size={15} style={{ color: k < (post.review_rating || 5) ? "var(--accent)" : "#e5e7eb" }} />
           ))}
         </span>
         {post.review_tag && <span className="badge badge-accent">{post.review_tag}</span>}

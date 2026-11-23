@@ -2,6 +2,7 @@
 // 미리보기: 관리자가 ?preview=1 로 열면 이 탭에서만 임시저장본을 보여준다 (sessionStorage 에 표시).
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { api } from "./api";
+import { brandVars } from "./color";
 
 const PREVIEW_KEY = "dg_preview";
 const Ctx = createContext(null);
@@ -13,6 +14,9 @@ const EMPTY = {
   benefits: { kicker: "", title: "", items: [], promos: [] },
   business: { name: "담아가넷" },
   formOptions: { products: [], carriers: [] },
+  quote: { enabled: false, services: {}, speeds: {} },
+  brand: { color: "" },
+  consult: { menu: [], modals: {}, submitLabel: "상담 신청하기", doneTitle: "신청이 접수되었습니다", doneDesc: "" },
 };
 
 function readPreviewFlag() {
@@ -37,11 +41,11 @@ export function SiteDataProvider({ children }) {
   const load = useCallback(async () => {
     try {
       const [plans, site, settings] = await Promise.all([api("/plans"), api("/site"), api("/settings/public")]);
-      let next = { carriers: plans.carriers, hero: site.hero, benefits: site.benefits, ...settings };
+      let next = { carriers: plans.carriers, hero: site.hero, benefits: site.benefits, quote: site.quote, ...settings };
       if (preview) {
         try {
           const d = await api("/admin/content/preview");
-          next = { ...next, carriers: d.plans.carriers.filter((c) => !c.hidden), hero: d.hero, benefits: d.benefits };
+          next = { ...next, carriers: d.plans.carriers.filter((c) => !c.hidden), hero: d.hero, benefits: d.benefits, quote: d.quote || next.quote };
         } catch {
           // 관리자 로그인이 아니면 미리보기 해제
           sessionStorage.removeItem(PREVIEW_KEY);
@@ -59,18 +63,33 @@ export function SiteDataProvider({ children }) {
     load();
   }, [load]);
 
+  // 관리자 > 사이트 설정의 브랜드 색을 CSS 변수로 적용
+  useEffect(() => {
+    const vars = brandVars(data.brand?.color);
+    const el = document.documentElement;
+    if (vars) Object.entries(vars).forEach(([k, v]) => el.style.setProperty(k, v));
+  }, [data.brand?.color]);
+
+  // 공통 접수 창: { type: subsidy|consult|recommend|quote, quote? }
+  const [consultModal, setConsultModal] = useState(null);
+  const openConsult = useCallback((type, quote = null) => setConsultModal({ type, quote }), []);
+  const closeConsult = useCallback(() => setConsultModal(null), []);
+
   const value = useMemo(
     () => ({
       ...data,
       status,
       preview,
       reload: load,
+      consultModal,
+      openConsult,
+      closeConsult,
       exitPreview: () => {
         sessionStorage.removeItem(PREVIEW_KEY);
         setPreview(false);
       },
     }),
-    [data, status, preview, load]
+    [data, status, preview, load, consultModal, openConsult, closeConsult]
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

@@ -1,21 +1,27 @@
+/* 담아가넷 컬러 — 통신사 고유색(빨강·주황·마젠타) 사용 금지. --brand 계열은 관리자 > 사이트 설정에서 변경 */
 :root {
-  --accent: #f26a21;
-  --accent-dark: #d9561a;
-  --accent-soft: #fff3ec;
-  --text: #1f2328;
-  --muted: #6b7280;
-  --line: #e5e7eb;
-  --bg: #ffffff;
-  --bg-soft: #f7f7f8;
-  --danger: #dc2626;
-  --ok: #16a34a;
+  --brand: #0E8F7E;
+  --brand-strong: #0A6E61;
+  --brand-soft: #E6F5F2;
+  --ink: #1C2A39;
+  --ink-sub: #5B6B7A;
+  --accent: #F2B705;      /* 혜택·금액 강조: 배경·배지에만 (글자로 쓸 땐 --ink 배경 위) */
+  --bg: #F7F9FA;
+  --line: #E3E8EC;
+  --notice-bg: #FFF8E1;
+  --surface: #ffffff;
+  --text: var(--ink);
+  --muted: var(--ink-sub);
+  --bg-soft: var(--bg);
+  --danger: #C0392B;      /* 에러 문구 전용 */
+  --ok: #15803d;
   --radius: 12px;
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--surface);
   color: var(--text);
   font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
   font-size: 15px;
@@ -36,11 +42,11 @@ img { max-width: 100%; }
 }
 .btn:hover { background: var(--bg-soft); }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
-.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-.btn-primary:hover { background: var(--accent-dark); }
+.btn-primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+.btn-primary:hover { background: var(--brand-strong); }
 .btn-dark { background: #222; border-color: #222; color: #fff; }
 .btn-dark:hover { background: #000; }
-.btn-danger { color: var(--danger); border-color: #fecaca; }
+.btn-danger { color: var(--danger); border-color: var(--line); }
 .btn-sm { min-height: 32px; padding: 0 10px; font-size: 13px; border-radius: 6px; }
 .btn-lg { min-height: 54px; font-size: 17px; border-radius: 10px; padding: 0 22px; }
 .btn-block { width: 100%; }
@@ -49,10 +55,10 @@ img { max-width: 100%; }
   width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff;
 }
 .textarea { min-height: 84px; resize: vertical; }
-.input:focus, .select:focus, .textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: var(--accent); }
+.input:focus, .select:focus, .textarea:focus { outline: 2px solid var(--brand); outline-offset: -1px; border-color: var(--brand); }
 .field { display: grid; gap: 6px; margin-bottom: 14px; }
 .field > label, .field-label { font-weight: 600; font-size: 14px; }
-.req { color: var(--accent); margin-left: 2px; }
+.req { color: var(--brand); margin-left: 2px; }
 .err { color: var(--danger); font-size: 13px; }
 .hint { color: var(--muted); font-size: 13px; }
 
@@ -63,12 +69,12 @@ img { max-width: 100%; }
   user-select: none;
 }
 .chip input { position: absolute; opacity: 0; pointer-events: none; }
-.chip.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-dark); font-weight: 700; }
-.chip:has(input:focus-visible) { outline: 2px solid var(--accent); }
+.chip.on { border-color: var(--brand); background: var(--brand-soft); color: var(--brand-strong); font-weight: 700; }
+.chip:has(input:focus-visible) { outline: 2px solid var(--brand); }
 
 .badge { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 12px; font-weight: 700; background: #eef2f7; color: #374151; white-space: nowrap; }
-.badge-dup { background: #fee2e2; color: #b91c1c; }
-.badge-accent { background: var(--accent-soft); color: var(--accent-dark); }
+.badge-dup { background: var(--notice-bg); color: #6b5200; }
+.badge-accent { background: var(--brand-soft); color: var(--brand-strong); }
 .badge-final { background: #dcfce7; color: #166534; }
 
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -78,4 +84,4 @@ img { max-width: 100%; }
 /* ── 로고 ── */
 .logo { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; color: var(--text); }
 .logo img { height: 34px; width: auto; }
-.logo b { color: var(--accent); }
+.logo b { color: var(--brand); }

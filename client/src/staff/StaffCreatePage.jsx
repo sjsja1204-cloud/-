@@ -44,7 +44,7 @@ export default function StaffCreatePage() {
           <textarea id="staffnew-memo" className="textarea" value={memo} maxLength={2000} onChange={(e) => setMemo(e.target.value)} />
         </div>
         <label className="consent-check" style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 8 }}>
-          <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ width: 20, height: 20, accentColor: "var(--accent)" }} />
+          <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ width: 20, height: 20, accentColor: "var(--brand)" }} />
           <span>고객에게 개인정보 수집·이용 동의를 받았습니다.</span>
         </label>
         {errors.consent && <p className="err">{errors.consent}</p>}

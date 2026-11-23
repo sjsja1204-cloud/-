@@ -2,6 +2,12 @@
 export const formatWon = (n) => (typeof n === "number" ? n.toLocaleString("ko-KR") + "원" : "-");
 export const CALL_TIMES = ["언제든 가능", "오전 (9~12시)", "오후 (12~18시)", "저녁 (18시 이후)"];
 export const SOURCE_LABEL = { web: "홈페이지", staff: "직원접수", upload: "엑셀업로드" };
+// 홈페이지 접수 유형 (값은 고정, 고객 화면 버튼 문구는 관리자에서 변경)
+export const INQUIRY_LABEL = { form: "상담 폼", subsidy: "지원금 안내", consult: "맞춤 상담", recommend: "상품 찾기", quote: "간편 견적" };
+export const inquiryLabel = (l) => (l.source === "web" ? INQUIRY_LABEL[l.inquiry_type] || "상담 폼" : "");
+/** 견적 조건 한 줄: "SK · 인터넷+TV · 500M · 휴대폰 결합" */
+export const quoteSummary = (l) =>
+  l.quote_carrier ? [l.quote_carrier, l.quote_service, l.quote_speed, l.quote_mobile_bundle ? "휴대폰 결합" : null].filter(Boolean).join(" · ") : "";
 
 /** 입력 중 자동 하이픈: 01012345678 → 010-1234-5678 */
 export function hyphenPhone(v) {

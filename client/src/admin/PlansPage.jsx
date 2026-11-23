@@ -3,7 +3,7 @@ import { useContentEditor, moveItem, removeAt, setAt } from "./content/useConten
 import PublishBar from "./content/PublishBar";
 import PriceGrid from "./content/PriceGrid";
 import DiscountEditor from "./content/DiscountEditor";
-import { Field, LinesInput } from "./content/bits";
+import { Field, LinesInput, ImageUpload } from "./content/bits";
 import { useSiteData } from "../lib/siteData";
 import "./content/editor.css";
 
@@ -11,10 +11,10 @@ const newCarrier = (n) => ({
   id: `carrier-${Date.now().toString(36)}`,
   name: "",
   hidden: true, // 다 채우기 전엔 숨김
-  color: "#f26a21",
+  logo: "",
   tagline: "",
   formCarrier: "",
-  priceTable: { title: "", desc: "와이파이 공유기(AP) 포함 월 요금입니다.", tvPlans: [""], rows: [{ internet: "", prices: [null] }], notes: [] },
+  priceTable: { title: "", desc: "와이파이 공유기(AP) 포함 월 요금입니다.", tvPlans: [""], rows: [{ internet: "", speed: null, internetOnly: null, prices: [null] }], notes: [] },
   discountTables: [],
   _n: n,
 });
@@ -59,7 +59,6 @@ export default function PlansPage() {
           {carriers.map((c, i) => (
             <div key={i} className={`carrier-item ${c === cur ? "on" : ""}`}>
               <button type="button" className="carrier-pick" onClick={() => setSel(i)}>
-                <i style={{ background: c.color }} />
                 <span>{c.name || "(이름 없음)"}</span>
                 {c.hidden && <span className="badge">숨김</span>}
               </button>
@@ -113,7 +112,6 @@ function CarrierInfo({ c, onChange }) {
     <div className="ecard-body">
       <div className="efields">
         <Field label="통신사 이름"><input className="input" value={c.name} maxLength={50} onChange={(e) => onChange({ name: e.target.value })} placeholder="예: KT" /></Field>
-        <Field label="대표 색상"><input type="color" className="input color" value={c.color} onChange={(e) => onChange({ color: e.target.value })} /></Field>
         <Field label="한 줄 소개" wide><input className="input" value={c.tagline} maxLength={200} onChange={(e) => onChange({ tagline: e.target.value })} placeholder="예: 기가인터넷 대표 사업자, 안정적인 속도" /></Field>
         <Field label="주소용 영문 이름" hint={`(홈페이지 주소 /internet/${c.id} 에 쓰여요. 영어 소문자·숫자·-)`}>
           <input className="input" value={c.id} maxLength={30} onChange={(e) => onChange({ id: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "") })} />
@@ -124,6 +122,11 @@ function CarrierInfo({ c, onChange }) {
             {formOptions.carriers.map((x) => <option key={x}>{x}</option>)}
           </select>
         </Field>
+      </div>
+      <div className="efield wide" style={{ marginBottom: 14 }}>
+        <p className="efield-label">통신사 로고 <span className="hint">(선택)</span></p>
+        <p className="notice-box">로고 사용 권한이 있는 경우에만 등록하세요. 등록하지 않으면 통신사 이름이 글자로 표시됩니다. 로고를 올려도 선택 표시 색은 담아가넷 색상이에요.</p>
+        <ImageUpload value={c.logo || ""} kind="logo" onChange={(v) => onChange({ logo: v })} />
       </div>
       <label className="switch-row">
         <input type="checkbox" checked={!c.hidden} onChange={(e) => onChange({ hidden: !e.target.checked })} />

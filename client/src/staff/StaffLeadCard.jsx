@@ -1,4 +1,4 @@
-import { fmtDateTime } from "../lib/format";
+import { fmtDateTime, quoteSummary } from "../lib/format";
 import { StatusBadge } from "../components/panel/hooks";
 import CallButton from "./CallButton";
 
@@ -17,6 +17,7 @@ export default function StaffLeadCard({ lead: l, onOpen }) {
           {(l.products || []).join(", ") || "-"} · {l.carrier || "-"}
           {l.call_time && <> · {l.call_time}</>}
         </div>
+        {l.quote_carrier && <div className="lead-meta quote-line">견적: {quoteSummary(l)}</div>}
         <div className="lead-meta">배정 {fmtDateTime(l.assigned_at)}</div>
         {l.last_note && <div className="lead-note">💬 {l.last_note}</div>}
       </div>
