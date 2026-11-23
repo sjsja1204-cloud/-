@@ -9,20 +9,25 @@
 | `/support/notice` · `/support/reviews` · `/support/faq` · `/apply` | 고객센터: 공지사항 · 상담후기 · FAQ · 상담 신청(`?product=인터넷&carrier=KT` 미리 선택) |
 | `/login` | 관리자/직원 로그인 (역할에 따라 `/admin` 또는 `/staff` 로 이동) |
 | `/staff` | 직원: 오늘 내 DB, 전화걸기, 상태·메모, 직접 접수 (`/staff/new`) |
-| `/admin` | 관리자: DB 목록·상세·배정·분배·엑셀 다운로드, 업로드(`/admin/upload`), 직원 관리(`/admin/users`), 통계(`/admin/stats`), 게시판 관리(`/admin/posts`) |
+| `/admin` | 관리자: DB 목록·상세·배정·분배·엑셀 다운로드, 업로드(`/admin/upload`), 직원 관리(`/admin/users`), 통계(`/admin/stats`), 게시판 관리(`/admin/posts`), **요금표(`/admin/plans`), 팝업(`/admin/popups`), 메인 화면(`/admin/site`), 사이트 설정(`/admin/settings`)** |
 | `/privacy`, `/terms` | 개인정보처리방침, 이용약관 (초안, `[확인필요]` 표시 항목 보완 필요) |
 
 ```
 client/   React + Vite (Cloudflare Pages)
   functions/api/[[path]].js   Pages Functions: /api → Render 프록시
-  src/config/business.js      ★ 사업자 정보 (빈 값은 화면에 표시 안 됨)
-  src/config/popup.js         ★ 이벤트 팝업 설정
-  src/components/plans/       요금표 (전달받은 컴포넌트 그대로)
+  src/config/site.js          상단 메뉴 구조 (인터넷 하위 메뉴는 요금표 데이터로 자동 생성)
+  src/lib/siteData.jsx        요금표·배너·사업자 정보 등 관리자 콘텐츠를 API 에서 받아 공급
+  src/admin/content/          관리자 콘텐츠 편집기 (임시저장·미리보기·반영·이전 버전)
 server/   Node + Express API (Render)
   migrations/*.sql            DB 스키마 (순서대로 1회 실행)
   scripts/migrate.js          npm run migrate
   scripts/seed-admin.js       npm run seed:admin
+  seed/defaults.js            요금표·배너·사업자 정보·팝업 초기값 (최초 migrate 때 DB 에 1회 입력)
   scripts/api-test.js         완료 기준 자동 점검 (테스트 데이터 생성 — 운영 DB 금지)
+  scripts/content-test.js     관리자 콘텐츠 관리 기능 점검 (43개, 끝나면 원래대로 되돌림)
+  uploads/                    R2 미설정 시 이미지 저장 위치 (로컬 개발용, git 제외)
+docs/관리자_매뉴얼.md           운영자용 사용 설명서
+docs/납품_체크리스트.md          계정 소유권·환경변수·백업 확인
 _원본자료/                     전달받은 원본 파일 보관 (배포 대상 아님)
 ```
 
@@ -35,7 +40,7 @@ _원본자료/                     전달받은 원본 파일 보관 (배포 대
 cd server
 npm install
 cp ../.env.example .env        # DATABASE_URL, JWT_SECRET 수정
-npm run migrate                # 테이블 + 기본 상태값 생성
+npm run migrate                # 테이블 + 기본 상태값 + 콘텐츠 초기값 생성
 npm run seed:admin             # 최초 관리자 (아이디/비밀번호를 입력받음)
 npm run dev                    # http://localhost:4000
 
@@ -55,14 +60,29 @@ API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> 
 ```
 접수·honeypot·IP 제한·로그인 잠금·권한(403)·마스킹·분배 할당량·엑셀 업로드/다운로드·통계 41개 항목을 확인합니다. **테스트 직원/DB 를 생성하므로 운영 DB 에서 실행하지 마세요.**
 
-## 자주 바꾸는 설정
+```bash
+API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> node --env-file=.env scripts/content-test.js
+```
+요금표 반영·검증·미리보기·버전 되돌리기·팝업·이미지 업로드·사업자 정보·폼 선택지·상태값·권한 43개 항목을 확인하고, 끝나면 내용을 원래대로 되돌립니다.
 
-- **사업자 정보**: `client/src/config/business.js` — 주소·사업자번호·통신판매업번호·대표번호를 채우면 푸터/약관에 표시되고, 대표번호가 있으면 우측 하단에 전화 버튼이 생깁니다.
-- **메뉴·메인 배너·롤링 문구**: `client/src/config/site.js` — 상단 메뉴 구조, 슬라이드 배너 3개, 실시간 현황이 부족할 때 보여줄 혜택 문구.
-- **실시간 상담 현황**: 최근 30일 홈페이지 접수(동의 완료) 중 이름 첫 글자·관심상품·상태만 표시. `ticker.minRealItems`(기본 5건) 미만이면 혜택 안내 문구로 대체 — 가짜 접수는 만들지 않음.
-- **공지·이벤트·후기·FAQ**: 관리자 > 게시판 관리. 본문은 텍스트로만 표시(HTML 불가). 후기는 실제 고객 후기만 등록.
-- **팝업**: `client/src/config/popup.js` — `enabled`, 기간(`startDate`/`endDate`), `image`(client/public 아래 경로), `link`. 새 이벤트로 바꿀 땐 `id` 를 바꾸면 "오늘 하루 보지 않기" 기록이 초기화됩니다.
-- **상태값**: DB `lead_statuses` 테이블 (이름·순서·최종 여부). 기본: 신규/부재/상담중/개통완료/거절.
+## 자주 바꾸는 내용 — 관리자 화면에서 (코드 수정 불필요)
+
+자세한 사용법은 `docs/관리자_매뉴얼.md`.
+
+| 내용 | 관리자 메뉴 | 반영 |
+|---|---|---|
+| 통신사·요금표·결합할인표·혜택 박스 | 요금표 | 임시저장 → 미리보기 → 사이트에 반영하기 (버전 30개 보관, 되돌리기 가능) |
+| 메인 배너, 혜택 강조, 안내 문구 | 메인 화면 | 위와 동일 |
+| 이벤트 팝업 (여러 개, 기간·순서·켜기/끄기, 이미지 2MB jpg/png/webp → R2) | 팝업 | 저장 즉시 |
+| 사업자 정보 (푸터·약관·전화 버튼), 상담 운영시간 | 사이트 설정 → 사업자 정보 | 저장 즉시, 빈 값은 표시 안 함 |
+| 상담 폼 관심상품·희망통신사 | 사이트 설정 → 상담 폼 선택지 | 저장 즉시, 기존 DB 값은 유지 |
+| 상담 상태값 (추가·이름·순서·숨기기) | 사이트 설정 → 상담 상태값 | 쓰인 상태는 삭제 불가, 숨기기만 |
+| 텔레그램 Chat ID | 사이트 설정 → 알림 | 봇 토큰은 서버 환경변수 |
+| 공지·이벤트·후기·FAQ | 게시판 관리 | 본문은 텍스트만, 후기는 실제 고객 후기만 |
+
+- 콘텐츠는 DB(`site_content` draft/published jsonb, zod 검증)에 저장되고, 반영할 때마다 `content_versions` 에 스냅샷이 남습니다. 반영·되돌리기·설정 변경은 `access_logs` 에 기록됩니다.
+- 공개 API(`/api/plans`, `/api/site`, `/api/popups`, `/api/settings/public`)는 서버 메모리 캐시 + `Cache-Control: no-cache`(ETag). 반영 즉시 캐시가 비워집니다.
+- **실시간 상담 현황**: 최근 30일 홈페이지 접수(동의 완료) 중 이름 첫 글자·관심상품·상태만 표시. 5건 미만이면 '혜택 안내 문구'로 대체 — 가짜 접수는 만들지 않음.
 - **유입경로**: 광고 링크에 `?utm_source=naver&utm_medium=cpc&utm_campaign=11월` 처럼 붙이면 접수 시 저장됩니다.
 
 ## 동작 규칙 요약
@@ -83,7 +103,8 @@ API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> 
 
 ### 2. Render (API)
 1. GitHub 저장소 연결 → **New → Blueprint** 로 루트의 `render.yaml` 사용 (또는 Web Service 수동 생성: Root Directory `server`, Build `npm install --omit=dev`, Start `npm start`).
-2. 환경변수: `DATABASE_URL`, `JWT_SECRET`(자동 생성), `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `CLIENT_ORIGIN`(Pages 도메인), `TRUST_PROXY=2`, `COOKIE_SAMESITE=lax`, `NODE_ENV=production`.
+2. 환경변수: `DATABASE_URL`, `JWT_SECRET`(자동 생성), `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `R2_ACCOUNT_ID`·`R2_ACCESS_KEY_ID`·`R2_SECRET_ACCESS_KEY`·`R2_BUCKET`·`R2_PUBLIC_URL`(팝업·배너 이미지), `CLIENT_ORIGIN`(Pages 도메인), `TRUST_PROXY=2`, `COOKIE_SAMESITE=lax`, `NODE_ENV=production`. 뜻은 `docs/납품_체크리스트.md` 참고.
+   - R2 미설정 시 이미지가 서버 디스크에 저장되어 재배포 때 사라집니다 (로그에 경고).
 3. 배포 후 `https://<서비스>.onrender.com/api/health` → `{"ok":true}` 확인.
 
 ### 3. Cloudflare Pages (프론트)
@@ -91,6 +112,10 @@ API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> 
 2. 환경변수: `API_ORIGIN=https://<서비스>.onrender.com` (Functions 프록시용), `NODE_VERSION=22`.
 3. `client/functions/api/[[path]].js` 가 `/api/*` 를 Render 로 전달 → 프론트와 API 가 같은 도메인이 되어 로그인 쿠키가 Safari 에서도 동작합니다.
 4. SPA 라우팅은 Pages 기본 동작(404.html 없으면 index.html)으로 처리됩니다.
+
+### 4. Cloudflare R2 (이미지)
+1. R2 → 버킷 생성 → Settings 에서 Public access(r2.dev) 켜기 또는 커스텀 도메인 연결 → 그 주소가 `R2_PUBLIC_URL`.
+2. R2 → Manage API Tokens → Object Read & Write 토큰 생성 → `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`. 계정 ID 는 `R2_ACCOUNT_ID`.
 
 ### 텔레그램 봇
 1. @BotFather → `/newbot` → 토큰 발급 → `TELEGRAM_BOT_TOKEN`.
@@ -104,16 +129,17 @@ API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> 
 - [ ] `/api/health` 정상, 홈에서 테스트 접수 → 텔레그램 알림 수신 → 관리자 목록에서 확인 후 삭제/거절 처리
 - [ ] 관리자 로그인 → 직원 계정 생성 → 할당량 설정 → 분배 실행 → 직원 로그인 확인
 - [ ] 휴대폰(375px)에서 홈·직원 화면 확인, [전화걸기] 동작 확인
-- [ ] `business.js` 사업자 정보, `popup.js` 이벤트 내용, 약관의 `[확인필요]` 항목 확정
+- [ ] 관리자 **사이트 설정**에 사업자 정보 입력, **팝업** 이벤트 내용 확인, 약관의 `[확인필요]` 항목 확정
+- [ ] 계정 소유권·결제수단·비밀값 교체: `docs/납품_체크리스트.md`
 - [ ] Render free 플랜이면 잠들기 방지 또는 starter 플랜 사용 (첫 접수 지연 방지)
 
 ## 확인 필요 (TODO)
 
 | 항목 | 위치 |
 |---|---|
-| 원본 `telecomPlans.js` 미전달 → 요금표 미리보기 HTML 번들에서 데이터를 그대로 추출함. 원본 받으면 교체 | `client/src/components/plans/telecomPlans.js` |
-| 주소·사업자번호·통신판매업번호·대표번호, 개인정보 보호책임자 | `client/src/config/business.js` |
-| 이벤트 팝업 이미지/문구 | `client/src/config/popup.js` |
+| 요금표 초기값은 미리보기 HTML 번들에서 추출함 → 실제 요금은 관리자 **요금표**에서 확인·수정 | 관리자 > 요금표 |
+| 주소·사업자번호·통신판매업번호·대표번호, 개인정보 보호책임자 | 관리자 > 사이트 설정 |
+| 이벤트 팝업 이미지/문구 | 관리자 > 팝업 |
 | 개인정보 보관 기간, 제3자 제공처, 시행일 등 | `/privacy`, `/terms` |
 | 직원 화면 구성 (참고 영상 분석 결과 반영) | `client/src/staff/*` (작게 분리해 둠) |
 | 엑셀 업로드 중복 행 기본 처리 (현재: 기본 제외, 체크 시 저장) | `server/src/routes/admin/upload.js` |
@@ -124,5 +150,4 @@ API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> 
 ## 2차 범위 확장 포인트 (미구현)
 - 자동 분배 cron: `server/src/lib/distribute.js` 의 `distributeUnassigned()` 를 스케줄러에서 호출
 - 미처리 DB 회수: `leads.assigned_at` + `lead_statuses.is_final` 기준으로 조회해 `assignee_id` 해제
-- 팝업·요금표 관리자 편집: `config/popup.js`, `telecomPlans.js` 를 API 응답으로 대체
 - 카카오 알림톡: `server/src/lib/telegram.js` 옆에 알림 모듈 추가 후 `public.js` 에서 호출

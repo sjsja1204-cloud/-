@@ -5,6 +5,7 @@ import { z } from "zod";
 import { query } from "../db.js";
 import { ah, parse } from "../lib/http.js";
 import { leadBaseSchema, defaultStatusId } from "../lib/leadQueries.js";
+import { assertFormOptions } from "../lib/settings.js";
 import { notifyNewLead } from "../lib/telegram.js";
 
 const router = Router();
@@ -40,6 +41,7 @@ router.post(
       return res.status(201).json({ ok: true });
     }
     const d = parse(submitSchema, req.body);
+    await assertFormOptions(d);
     const statusId = await defaultStatusId();
     const { rows } = await query(
       `INSERT INTO leads (name, phone, products, carrier, call_time, message, source,

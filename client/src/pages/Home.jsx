@@ -9,6 +9,7 @@ import ApplySection from "../components/site/ApplySection";
 import EventPopup from "../components/site/EventPopup";
 import Icon from "../components/site/Icon";
 import { usePosts, fmtDay } from "../lib/posts";
+import { useSiteData } from "../lib/siteData";
 
 const QUICK = [
   { to: "/internet", icon: "wifi", title: "인터넷·TV", desc: "통신사별 요금 비교" },
@@ -17,13 +18,9 @@ const QUICK = [
   { to: "/event", icon: "gift", title: "이벤트", desc: "진행 중인 혜택" },
 ];
 
-const WHY = [
-  { icon: "shield", title: "투명한 비교", desc: "통신사 4곳 요금을 같은 기준으로 비교해 드려요." },
-  { icon: "calc", title: "숨은 비용까지", desc: "위약금·설치비·약정 조건을 미리 계산해 드려요." },
-  { icon: "headset", title: "끝까지 책임 상담", desc: "설치·개통 완료까지 담당 상담사가 챙겨드려요." },
-];
 
 export default function Home() {
+  const { benefits } = useSiteData();
   const reviews = usePosts("review", { pageSize: 3 });
   const notices = usePosts("notice", { pageSize: 4 });
   const faqs = usePosts("faq", { pageSize: 4 });
@@ -48,11 +45,11 @@ export default function Home() {
         <div className="site-inner live-grid">
           <LiveTicker />
           <div className="why">
-            <p className="sec-kicker">WHY 담아가넷</p>
-            <h2 className="sec-title">복잡한 통신 가입,<br />담아가넷이 대신 비교해 드려요</h2>
+            {benefits.kicker && <p className="sec-kicker">{benefits.kicker}</p>}
+            <h2 className="sec-title">{benefits.title.split("\n").map((l, j) => <span key={j}>{j > 0 && <br />}{l}</span>)}</h2>
             <ul>
-              {WHY.map((w) => (
-                <li key={w.title}>
+              {benefits.items.map((w, k) => (
+                <li key={k}>
                   <span className="why-ic"><Icon name={w.icon} /></span>
                   <div><b>{w.title}</b><p>{w.desc}</p></div>
                 </li>

@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
-import { business } from "../../config/business";
-import { menu } from "../../config/site";
+import { menu as baseMenu } from "../../config/site";
+import { useSiteData, buildMenu } from "../../lib/siteData";
 
-/** 푸터: 메뉴 + business.js 의 값 중 비어 있지 않은 것만 표시 */
+/** 푸터: 메뉴 + 사업자 정보(관리자 > 사이트 설정) 중 비어 있지 않은 것만 표시 */
 export default function Footer() {
+  const { business, carriers } = useSiteData();
+  const menu = buildMenu(baseMenu, carriers);
   const items = [
     ["상호", business.name],
     ["대표자", business.ceo],
@@ -12,6 +14,7 @@ export default function Footer() {
     ["통신판매업 신고번호", business.ecommerceNumber],
     ["대표번호", business.phone],
     ["이메일", business.email],
+    ["상담시간", business.hours],
   ].filter(([, v]) => v && String(v).trim());
 
   return (

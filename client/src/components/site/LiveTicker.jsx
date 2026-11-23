@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../../lib/api";
 import { ticker } from "../../config/site";
+import { useSiteData } from "../../lib/siteData";
 
 const ago = (d) => {
   const m = Math.max(0, Math.floor((Date.now() - new Date(d)) / 60000));
@@ -16,6 +17,7 @@ const ago = (d) => {
  * 실제 접수(이름 가림)만 표시하고, 최근 접수가 적으면 혜택 안내 문구로 대체한다.
  */
 export default function LiveTicker({ rows = 4 }) {
+  const { benefits, status } = useSiteData();
   const [real, setReal] = useState(null);
   const [idx, setIdx] = useState(0);
 
@@ -24,7 +26,7 @@ export default function LiveTicker({ rows = 4 }) {
   }, []);
 
   const useReal = real && real.length >= ticker.minRealItems;
-  const items = !real
+  const items = !real || (!useReal && status === "loading")
     ? []
     : useReal
       ? real.map((r) => ({
@@ -33,7 +35,7 @@ export default function LiveTicker({ rows = 4 }) {
           side: r.status,
           time: ago(r.createdAt),
         }))
-      : ticker.promos.map((p) => ({ tag: p.tag, text: p.text }));
+      : benefits.promos.filter((p) => p.text).map((p) => ({ tag: p.tag, text: p.text }));
 
   const reduced = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
   useEffect(() => {

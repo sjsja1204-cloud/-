@@ -11,6 +11,10 @@ export default function AdminLayout() {
         ["/admin/users", "직원 관리"],
         ["/admin/stats", "통계"],
         ["/admin/posts", "게시판 관리"],
+        ["/admin/plans", "요금표"],
+        ["/admin/popups", "팝업"],
+        ["/admin/site", "메인 화면"],
+        ["/admin/settings", "사이트 설정"],
         ["/admin/account", "내 계정"],
       ]}
     />

@@ -3,12 +3,14 @@ import SiteLayout from "../../components/site/SiteLayout";
 import PageHero from "../../components/site/PageHero";
 import ApplySection from "../../components/site/ApplySection";
 import LiveTicker from "../../components/site/LiveTicker";
-import { PRODUCTS, CARRIERS } from "../../lib/format";
+import { useSiteData } from "../../lib/siteData";
 import { supportTabs } from "./supportTabs";
 
 /** 상담 신청 전용 페이지. ?product=인터넷&carrier=KT 로 미리 선택 가능 (광고 링크용) */
 export default function ApplyPage() {
   const [sp] = useSearchParams();
+  const { formOptions, status } = useSiteData();
+  const { products: PRODUCTS, carriers: CARRIERS } = formOptions;
   const product = sp.get("product");
   const carrier = sp.get("carrier");
   const initial = {
@@ -18,7 +20,8 @@ export default function ApplyPage() {
   return (
     <SiteLayout title="상담 신청">
       <PageHero title="상담 신청" desc="1분이면 충분해요. 남겨주시면 바로 연락드립니다." crumbs={[["고객센터"], ["상담 신청"]]} tabs={supportTabs} />
-      <ApplySection title="무료 상담 신청" initial={initial} />
+      {/* 선택지를 받은 뒤 그려야 광고 링크의 미리 선택이 적용됨 */}
+      {status !== "loading" && <ApplySection title="무료 상담 신청" initial={initial} />}
       <section className="sec" style={{ paddingTop: 0 }}>
         <div className="site-inner narrow"><LiveTicker rows={4} /></div>
       </section>

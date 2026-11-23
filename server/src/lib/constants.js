@@ -1,4 +1,2 @@
-// 고객 폼 / 엑셀 업로드 / 직원 접수에서 공통으로 쓰는 선택지
-export const PRODUCTS = ["휴대폰", "인터넷", "인터넷+TV", "결합상품"];
-export const CARRIERS = ["KT", "LG U+", "SK", "KT스카이라이프", "상관없음"];
+// 접수 출처 (관심 상품·통신사 선택지는 관리자 > 사이트 설정에서 관리 — lib/settings.js)
 export const SOURCES = ["web", "staff", "upload"];

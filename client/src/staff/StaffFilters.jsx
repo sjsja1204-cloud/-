@@ -13,7 +13,7 @@ export default function StaffFilters({ value, onChange, statuses }) {
       </div>
       <div className="chips-scroll" role="group" aria-label="상태">
         <button className={`chip ${!value.status ? "on" : ""}`} onClick={() => onChange({ ...value, status: "" })}>전체</button>
-        {statuses.map((s) => (
+        {statuses.filter((s) => !s.is_hidden || String(s.id) === value.status).map((s) => (
           <button key={s.id} className={`chip ${String(value.status) === String(s.id) ? "on" : ""}`} onClick={() => onChange({ ...value, status: String(s.id) })}>
             {s.name}
           </button>

@@ -24,6 +24,16 @@ services:
         sync: false
       - key: TELEGRAM_CHAT_ID
         sync: false
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET
+        sync: false
+      - key: R2_PUBLIC_URL
+        sync: false # 예: https://pub-xxxx.r2.dev 또는 https://img.도메인
       - key: CLIENT_ORIGIN
         sync: false # 예: https://damaganet.pages.dev,https://www.도메인
       - key: TRUST_PROXY

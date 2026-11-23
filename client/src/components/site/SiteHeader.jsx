@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import Logo from "./Logo";
 import Icon from "./Icon";
-import { menu } from "../../config/site";
-import { business } from "../../config/business";
+import { menu as baseMenu } from "../../config/site";
+import { useSiteData, buildMenu } from "../../lib/siteData";
 
 /** 상단 헤더: PC 는 드롭다운 메뉴, 모바일은 햄버거 → 전체 메뉴 */
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const { business, carriers } = useSiteData();
+  const menu = buildMenu(baseMenu, carriers);
   const loc = useLocation();
   useEffect(() => setOpen(false), [loc.pathname]);
   useEffect(() => {

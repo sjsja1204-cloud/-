@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { api } from "../lib/api";
 import { fmtDateTime, hyphenPhone, SOURCE_LABEL } from "../lib/format";
 import NoteList from "../components/panel/NoteList";
-import { StatusBadge } from "../components/panel/hooks";
+import { StatusBadge, selectableStatuses } from "../components/panel/hooks";
 
 /** 관리자 DB 상세/수정 패널 */
 export default function LeadDetail({ id, statuses, staff, onClose, onChanged, onOpen }) {
@@ -72,7 +72,7 @@ export default function LeadDetail({ id, statuses, staff, onClose, onChanged, on
                 <label className="field" style={{ margin: 0 }}>
                   <span className="field-label">상태</span>
                   <select className="select" value={l.status_id} onChange={(e) => patch({ statusId: Number(e.target.value) })}>
-                    {statuses.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                    {selectableStatuses(statuses, l.status_id).map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
                   </select>
                 </label>
                 <label className="field" style={{ margin: 0 }}>

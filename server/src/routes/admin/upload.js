@@ -6,7 +6,7 @@ import { z } from "zod";
 import { query, tx } from "../../db.js";
 import { ah, parse, HttpError, toInt } from "../../lib/http.js";
 import { logAccess } from "../../lib/accessLog.js";
-import { PRODUCTS, CARRIERS } from "../../lib/constants.js";
+import { getSetting } from "../../lib/settings.js";
 import { normalizeExcelPhone, isValidMobile, formatPhone } from "../../lib/phone.js";
 import { defaultStatusId } from "../../lib/leadQueries.js";
 
@@ -38,6 +38,7 @@ const cellText = (cell) => {
 router.get(
   "/template",
   ah(async (req, res) => {
+    const { products: PRODUCTS, carriers: CARRIERS } = await getSetting("form_options");
     const wb = new ExcelJS.Workbook();
     const ws = wb.addWorksheet("업로드양식");
     ws.columns = COLUMNS.map((h) => ({ header: h, key: h, width: h === "메모" ? 40 : 18 }));
@@ -67,6 +68,7 @@ router.post(
   "/preview",
   upload.single("file"),
   ah(async (req, res) => {
+    const { products: PRODUCTS, carriers: CARRIERS } = await getSetting("form_options");
     if (!req.file) throw new HttpError(400, ".xlsx 파일을 선택하세요.");
     const filename = Buffer.from(req.file.originalname, "latin1").toString("utf8");
     const wb = new ExcelJS.Workbook();
@@ -111,14 +113,16 @@ router.post(
 
       const products = [];
       for (const p of r.products.split(/[,/、]/).map((s) => s.trim()).filter(Boolean)) {
-        const std = PRODUCTS.includes(p) ? p : PRODUCT_ALIAS[p.toLowerCase().replace(/\s/g, "")];
+        const alias = PRODUCT_ALIAS[p.toLowerCase().replace(/\s/g, "")];
+        const std = PRODUCTS.includes(p) ? p : PRODUCTS.includes(alias) ? alias : null;
         if (std) {
           if (!products.includes(std)) products.push(std);
         } else errors.push(`관심상품 값 오류(${p})`);
       }
       let carrier = null;
       if (r.carrier) {
-        carrier = CARRIERS.includes(r.carrier) ? r.carrier : CARRIER_ALIAS[r.carrier.toLowerCase().replace(/\s/g, "")];
+        const alias = CARRIER_ALIAS[r.carrier.toLowerCase().replace(/\s/g, "")];
+        carrier = CARRIERS.includes(r.carrier) ? r.carrier : CARRIERS.includes(alias) ? alias : null;
         if (!carrier) errors.push(`희망통신사 값 오류(${r.carrier})`);
       }
       if (r.memo.length > 2000) errors.push("메모가 너무 김(2000자)");

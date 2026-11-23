@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { carriers, formatWon } from "./telecomPlans";
+import { formatWon } from "../../lib/format";
+import { useSiteData } from "../../lib/siteData";
 import "./plan-tables.css";
 
 export function PriceTable({ table }) {
   // 가장 저렴한 요금 강조
-  const min = Math.min(...table.rows.flatMap((r) => r.prices));
+  const nums = table.rows.flatMap((r) => r.prices).filter((v) => typeof v === "number");
+  const min = nums.length ? Math.min(...nums) : null;
   return (
     <section className="pt-section">
       <h3 className="pt-title">{table.title}</h3>
@@ -14,14 +16,14 @@ export function PriceTable({ table }) {
           <thead>
             <tr>
               <th>인터넷 \ TV</th>
-              {table.tvPlans.map((tv) => (
-                <th key={tv}>{tv}</th>
+              {table.tvPlans.map((tv, i) => (
+                <th key={i}>{tv}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {table.rows.map((row) => (
-              <tr key={row.internet}>
+            {table.rows.map((row, ri) => (
+              <tr key={ri}>
                 <td className="pt-rowhead">{row.internet}</td>
                 {row.prices.map((p, i) => (
                   <td key={i} className={p === min ? "pt-best" : ""}>
@@ -33,8 +35,8 @@ export function PriceTable({ table }) {
           </tbody>
         </table>
       </div>
-      {table.notes?.map((n) => (
-        <p key={n} className="pt-note">※ {n}</p>
+      {table.notes?.filter(Boolean).map((n, i) => (
+        <p key={i} className="pt-note">※ {n}</p>
       ))}
     </section>
   );
@@ -46,8 +48,8 @@ function InfoBox({ box }) {
       <h4>{box.title}</h4>
       {box.items && (
         <dl>
-          {box.items.map(([k, v]) => (
-            <div key={k} className="pt-box-row">
+          {box.items.map(([k, v], i) => (
+            <div key={i} className="pt-box-row">
               <dt>{k}</dt>
               <dd>{v}</dd>
             </div>
@@ -56,8 +58,8 @@ function InfoBox({ box }) {
       )}
       {box.bullets && (
         <ul>
-          {box.bullets.map((b) => (
-            <li key={b}>{b}</li>
+          {box.bullets.map((b, i) => (
+            <li key={i}>{b}</li>
           ))}
         </ul>
       )}
@@ -71,10 +73,10 @@ export function DiscountTable({ table }) {
     <section className="pt-section">
       <h3 className="pt-title">{table.title}</h3>
       {table.desc && <p className="pt-desc">{table.desc}</p>}
-      {table.boxesTop && (
+      {table.boxesTop?.length > 0 && (
         <div className="pt-boxes">
-          {table.boxesTop.map((b) => (
-            <InfoBox key={b.title} box={b} />
+          {table.boxesTop.map((b, i) => (
+            <InfoBox key={i} box={b} />
           ))}
         </div>
       )}
@@ -82,8 +84,8 @@ export function DiscountTable({ table }) {
         <table className="pt-table">
           <thead>
             <tr>
-              {table.columns.map((c) => (
-                <th key={c}>{c}</th>
+              {table.columns.map((c, i) => (
+                <th key={i}>{c}</th>
               ))}
             </tr>
           </thead>
@@ -100,13 +102,13 @@ export function DiscountTable({ table }) {
           </tbody>
         </table>
       </div>
-      {table.notes?.map((n) => (
-        <p key={n} className="pt-note">※ {n}</p>
+      {table.notes?.filter(Boolean).map((n, i) => (
+        <p key={i} className="pt-note">※ {n}</p>
       ))}
-      {table.boxes && (
+      {table.boxes?.length > 0 && (
         <div className="pt-boxes">
-          {table.boxes.map((b) => (
-            <InfoBox key={b.title} box={b} />
+          {table.boxes.map((b, i) => (
+            <InfoBox key={i} box={b} />
           ))}
         </div>
       )}
@@ -115,8 +117,10 @@ export function DiscountTable({ table }) {
 }
 
 export default function PlanTables() {
-  const [active, setActive] = useState(carriers[0].id);
-  const carrier = carriers.find((c) => c.id === active);
+  const { carriers } = useSiteData();
+  const [active, setActive] = useState(null);
+  const carrier = carriers.find((c) => c.id === active) || carriers[0];
+  if (!carrier) return <p className="hint">요금표를 불러오는 중…</p>;
 
   return (
     <div className="pt-wrap">
@@ -125,8 +129,8 @@ export default function PlanTables() {
           <button
             key={c.id}
             role="tab"
-            aria-selected={c.id === active}
-            className={c.id === active ? "pt-tab active" : "pt-tab"}
+            aria-selected={c.id === carrier.id}
+            className={c.id === carrier.id ? "pt-tab active" : "pt-tab"}
             onClick={() => setActive(c.id)}
           >
             {c.name}
@@ -134,8 +138,8 @@ export default function PlanTables() {
         ))}
       </div>
       <PriceTable table={carrier.priceTable} />
-      {carrier.discountTables.map((t) => (
-        <DiscountTable key={t.title} table={t} />
+      {carrier.discountTables.map((t, i) => (
+        <DiscountTable key={i} table={t} />
       ))}
     </div>
   );

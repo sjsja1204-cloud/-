@@ -30,6 +30,35 @@ try {
     }
   }
   console.log("migrations complete");
+
+  // 콘텐츠·설정 최초 시드: 비어 있는 항목만 채움 (관리자가 고친 값은 절대 덮어쓰지 않음)
+  const seed = await import("../seed/defaults.js");
+  for (const [key, data] of Object.entries(seed.content)) {
+    const r = await client.query(
+      "INSERT INTO site_content (key, draft, published) VALUES ($1, $2, $2) ON CONFLICT (key) DO NOTHING",
+      [key, data]
+    );
+    if (r.rowCount) {
+      await client.query("INSERT INTO content_versions (content_key, data, note) VALUES ($1, $2, '최초 시드')", [key, data]);
+      console.log(`seed  content:${key}`);
+    }
+  }
+  for (const [key, value] of Object.entries(seed.settings)) {
+    const r = await client.query("INSERT INTO site_settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO NOTHING", [key, value]);
+    if (r.rowCount) console.log(`seed  settings:${key}`);
+  }
+  // 팝업은 최초 1회만 (관리자가 전부 지워도 다시 생기지 않도록 표시를 남김)
+  const marked = await client.query("INSERT INTO site_settings (key, value) VALUES ('_seeded_popups', 'true') ON CONFLICT (key) DO NOTHING");
+  if (marked.rowCount) {
+    for (const [i, p] of seed.popups.entries()) {
+      await client.query(
+        `INSERT INTO popups (image_url, alt, link, title, body, button_text, start_at, end_at, is_active, sort_order)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+        [p.image_url, p.alt, p.link, p.title, p.body, p.button_text, p.start_at, p.end_at, p.is_active, i + 1]
+      );
+    }
+    console.log(`seed  popups (${seed.popups.length})`);
+  }
 } finally {
   client.release();
   await pool.end();

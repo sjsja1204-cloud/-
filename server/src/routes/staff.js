@@ -4,6 +4,7 @@ import { z } from "zod";
 import { query } from "../db.js";
 import { ah, parse, HttpError, toInt } from "../lib/http.js";
 import { LEAD_SELECT, leadBaseSchema, defaultStatusId } from "../lib/leadQueries.js";
+import { assertFormOptions } from "../lib/settings.js";
 import { changeLeadStatus, addLeadNote, getLeadNotes, getLeadStatusHistory } from "../lib/leadActions.js";
 import { logAccess } from "../lib/accessLog.js";
 import { maskPhone, formatPhone } from "../lib/phone.js";
@@ -71,6 +72,7 @@ router.post(
   "/leads",
   ah(async (req, res) => {
     const d = parse(staffCreateSchema, req.body);
+    await assertFormOptions(d);
     const statusId = await defaultStatusId();
     const { rows } = await query(
       `INSERT INTO leads (name, phone, products, carrier, call_time, message, source, status_id,

@@ -1,4 +1,5 @@
-import { PRODUCTS, CARRIERS, CALL_TIMES, hyphenPhone, isValidMobile } from "../../lib/format";
+import { CALL_TIMES, hyphenPhone, isValidMobile } from "../../lib/format";
+import { useSiteData } from "../../lib/siteData";
 
 export const emptyLead = { name: "", phone: "", products: [], carrier: "", callTime: "", message: "" };
 
@@ -14,6 +15,9 @@ export function validateLead(v) {
 
 /** 고객 접수 폼 · 직원 직접 접수 폼 공용 입력 필드 */
 export default function LeadFields({ value, onChange, errors = {}, idPrefix = "lead" }) {
+  const { formOptions } = useSiteData();
+  const PRODUCTS = formOptions.products;
+  const CARRIERS = formOptions.carriers;
   const set = (k, v) => onChange({ ...value, [k]: v });
   const toggleProduct = (p) =>
     set("products", value.products.includes(p) ? value.products.filter((x) => x !== p) : [...value.products, p]);

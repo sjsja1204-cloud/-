@@ -1,11 +1,11 @@
 import SiteLayout from "../components/site/SiteLayout";
-import { business } from "../config/business";
+import { useSiteData } from "../lib/siteData";
 
 const T = ({ children }) => <span className="todo">[확인필요{children ? `: ${children}` : ""}]</span>;
 
 /** 이용약관 초안 */
 export default function Terms() {
-  const b = business;
+  const { business: b } = useSiteData();
   return (
     <SiteLayout title="이용약관">
       <article className="site-inner doc">
@@ -41,7 +41,7 @@ export default function Terms() {
 
         <h2>부칙</h2>
         <p>이 약관은 <T>시행일</T>부터 시행합니다.</p>
-        <p>문의: {b.email}{b.phone ? ` / ${b.phone}` : ""}</p>
+        {(b.email || b.phone) && <p>문의: {[b.email, b.phone].filter(Boolean).join(" / ")}</p>}
       </article>
     </SiteLayout>
   );

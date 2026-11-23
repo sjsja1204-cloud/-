@@ -386,3 +386,19 @@
 @media (prefers-reduced-motion: reduce) {
   .hs-track, .hs-bubble, .ticker-dot { transition: none; animation: none; }
 }
+
+/* ───────── 관리자 콘텐츠 연동 ───────── */
+/* 배너 배경 이미지 (관리자 > 메인 화면): 글자 쪽은 테마색으로 덮어 가독성 유지 */
+.hs-slide.has-bg { --ov: rgba(255,241,232,.95); background-image: linear-gradient(90deg, var(--ov) 0%, var(--ov) 38%, transparent 78%), var(--bg-img); background-size: cover; background-position: center right; }
+.hs-slide.has-bg.theme-navy { --ov: rgba(30,42,74,.94); }
+.hs-slide.has-bg.theme-mint { --ov: rgba(233,248,243,.95); }
+@media (max-width: 760px) { .hs-slide.has-bg { background-image: linear-gradient(var(--ov), var(--ov)), var(--bg-img); } }
+
+/* 팝업 여러 개: 겹쳐서 순서대로 */
+.popup-stack { position: relative; width: min(360px, 100%); }
+.popup-stack .popup { width: 100%; }
+.popup-stack .popup + .popup { position: absolute; top: 0; left: 0; transform: translate(calc(var(--k) * 14px), calc(var(--k) * 14px)); pointer-events: none; filter: brightness(.96); }
+
+/* 미리보기 표시 */
+.preview-bar { position: relative; z-index: 50; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 12px; padding: 9px 16px; background: #1d4ed8; color: #fff; font-size: 14px; text-align: center; }
+.preview-bar button { border: 1px solid rgba(255,255,255,.7); background: transparent; color: #fff; border-radius: 999px; padding: 3px 12px; cursor: pointer; font-weight: 700; }

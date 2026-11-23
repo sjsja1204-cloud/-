@@ -1,6 +1,5 @@
-// 고객 폼 / 직원 접수 공통 선택지 (서버 lib/constants.js 와 동일하게 유지)
-export const PRODUCTS = ["휴대폰", "인터넷", "인터넷+TV", "결합상품"];
-export const CARRIERS = ["KT", "LG U+", "SK", "KT스카이라이프", "상관없음"];
+// 관심 상품·희망 통신사 선택지는 관리자 > 사이트 설정에서 관리 (useSiteData().formOptions)
+export const formatWon = (n) => (typeof n === "number" ? n.toLocaleString("ko-KR") + "원" : "-");
 export const CALL_TIMES = ["언제든 가능", "오전 (9~12시)", "오후 (12~18시)", "저녁 (18시 이후)"];
 export const SOURCE_LABEL = { web: "홈페이지", staff: "직원접수", upload: "엑셀업로드" };
 

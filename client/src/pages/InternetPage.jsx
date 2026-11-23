@@ -3,11 +3,16 @@ import PageHero from "../components/site/PageHero";
 import CarrierCards from "../components/site/CarrierCards";
 import ApplySection from "../components/site/ApplySection";
 import PlanTables from "../components/plans/PlanTables";
-import { menu } from "../config/site";
+import { useSiteData } from "../lib/siteData";
 
-export const internetTabs = menu[0].children.map((c) => ({ label: c.label === "통신사 한눈에 비교" ? "전체 비교" : c.label, to: c.to }));
+/** 인터넷·TV 하위 탭: 전체 비교 + 공개된 통신사 */
+export function useInternetTabs() {
+  const { carriers } = useSiteData();
+  return [{ label: "전체 비교", to: "/internet" }, ...carriers.map((c) => ({ label: c.name, to: `/internet/${c.id}` }))];
+}
 
 export default function InternetPage() {
+  const internetTabs = useInternetTabs();
   return (
     <SiteLayout title="인터넷·TV 요금 비교">
       <PageHero title="인터넷 · TV" desc="통신사 4곳의 인터넷 + TV 요금과 결합할인을 한눈에 비교하세요."

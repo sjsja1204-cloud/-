@@ -27,6 +27,10 @@ const StaffLayout = lazy(() => import("./staff/StaffLayout"));
 const MyLeadsPage = lazy(() => import("./staff/MyLeadsPage"));
 const StaffCreatePage = lazy(() => import("./staff/StaffCreatePage"));
 const PostsPage = lazy(() => import("./admin/PostsPage"));
+const PlansPage = lazy(() => import("./admin/PlansPage"));
+const PopupsPage = lazy(() => import("./admin/PopupsPage"));
+const SitePage = lazy(() => import("./admin/SitePage"));
+const SettingsPage = lazy(() => import("./admin/SettingsPage"));
 const AccountPage = lazy(() => import("./pages/AccountPage"));
 
 export default function App() {
@@ -56,6 +60,10 @@ export default function App() {
           <Route path="users" element={<UsersPage />} />
           <Route path="stats" element={<StatsPage />} />
           <Route path="posts" element={<PostsPage />} />
+          <Route path="plans" element={<PlansPage />} />
+          <Route path="popups" element={<PopupsPage />} />
+          <Route path="site" element={<SitePage />} />
+          <Route path="settings" element={<SettingsPage />} />
           <Route path="account" element={<AccountPage />} />
         </Route>
 

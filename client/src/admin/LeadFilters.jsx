@@ -30,7 +30,7 @@ export default function LeadFilters({ value, onChange, onSearch, statuses, staff
         <label>상태
           <select className="select" value={value.status} onChange={(e) => set("status", e.target.value)}>
             <option value="">전체</option>
-            {statuses.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+            {statuses.map((s) => <option key={s.id} value={s.id}>{s.name}{s.is_hidden ? " (숨김)" : ""}</option>)}
           </select>
         </label>
         <label>담당자

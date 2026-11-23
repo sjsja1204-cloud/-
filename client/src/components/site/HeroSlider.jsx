@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { banners } from "../../config/site";
+import { useSiteData } from "../../lib/siteData";
 import Icon from "./Icon";
 
 /** 메인 슬라이드 배너 (5초 자동 전환, 스와이프, 좌우 버튼) */
 export default function HeroSlider() {
+  const { hero, status } = useSiteData();
+  const banners = hero.banners;
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
   const touch = useRef(null);
@@ -16,6 +18,11 @@ export default function HeroSlider() {
     const t = setTimeout(() => go(i + 1), 5000);
     return () => clearTimeout(t);
   }, [i, paused, n]);
+  useEffect(() => {
+    if (i >= n) setI(0);
+  }, [i, n]);
+
+  if (!n) return <section className="hs"><div className="hs-slide theme-orange" aria-busy={status === "loading"} /></section>;
 
   return (
     <section className="hs" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}
@@ -29,17 +36,18 @@ export default function HeroSlider() {
       aria-roledescription="carousel" aria-label="이벤트 배너">
       <div className="hs-track" style={{ transform: `translateX(-${i * 100}%)` }}>
         {banners.map((b, k) => (
-          <div key={k} className={`hs-slide theme-${b.theme}`} aria-hidden={k !== i}>
+          <div key={k} className={`hs-slide theme-${b.theme} ${b.image ? "has-bg" : ""}`} aria-hidden={k !== i}
+            style={b.image ? { "--bg-img": `url(${JSON.stringify(b.image)})` } : undefined}>
             <div className="site-inner hs-inner">
               <div className="hs-copy">
-                <p className="hs-kicker">{b.kicker}</p>
+                {b.kicker && <p className="hs-kicker">{b.kicker}</p>}
                 <h2>{b.title.split("\n").map((l, j) => <span key={j}>{l}<br /></span>)}</h2>
-                <p className="hs-desc">{b.desc}</p>
+                {b.desc && <p className="hs-desc">{b.desc}</p>}
                 <Link to={b.cta.to} className="btn btn-lg hs-cta" tabIndex={k === i ? 0 : -1}>
                   {b.cta.label} <Icon name="chevronRight" size={18} />
                 </Link>
               </div>
-              {b.image ? <img className="hs-img" src={b.image} alt="" /> : <HeroArt theme={b.theme} />}
+              {!b.image && <HeroArt theme={b.theme} />}
             </div>
           </div>
         ))}

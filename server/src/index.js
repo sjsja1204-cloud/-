@@ -15,6 +15,12 @@ import adminUploadRoutes from "./routes/admin/upload.js";
 import adminStatsRoutes from "./routes/admin/stats.js";
 import adminPostRoutes from "./routes/admin/posts.js";
 import contentRoutes from "./routes/content.js";
+import siteRoutes from "./routes/site.js";
+import adminContentRoutes from "./routes/admin/content.js";
+import adminSettingsRoutes from "./routes/admin/settings.js";
+import adminPopupRoutes from "./routes/admin/popups.js";
+import adminMediaRoutes from "./routes/admin/media.js";
+import { LOCAL_DIR } from "./lib/storage.js";
 
 const app = express();
 
@@ -44,13 +50,16 @@ app.get("/api/health", ah(async (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/public", publicRoutes);
 app.use("/api/public", contentRoutes);
+app.use("/api", siteRoutes); // /api/plans, /api/site, /api/popups, /api/settings/public
+// R2 미설정 시 업로드 이미지 (로컬 개발용)
+app.use("/api/uploads", express.static(LOCAL_DIR, { maxAge: "30d", immutable: true, fallthrough: false }));
 
 // 상태값 (로그인 사용자 공통)
 app.get(
   "/api/meta/statuses",
   requireAuth(),
   ah(async (req, res) => {
-    const { rows } = await query("SELECT id, name, sort_order, is_final, is_default FROM lead_statuses ORDER BY sort_order, id");
+    const { rows } = await query("SELECT id, name, sort_order, is_final, is_default, is_hidden FROM lead_statuses ORDER BY sort_order, id");
     res.json({ statuses: rows });
   })
 );
@@ -62,6 +71,10 @@ app.use("/api/admin/users", requireAuth("admin"), adminUserRoutes);
 app.use("/api/admin/upload", requireAuth("admin"), adminUploadRoutes);
 app.use("/api/admin/stats", requireAuth("admin"), adminStatsRoutes);
 app.use("/api/admin/posts", requireAuth("admin"), adminPostRoutes);
+app.use("/api/admin/content", requireAuth("admin"), adminContentRoutes);
+app.use("/api/admin/settings", requireAuth("admin"), adminSettingsRoutes);
+app.use("/api/admin/popups", requireAuth("admin"), adminPopupRoutes);
+app.use("/api/admin/media", requireAuth("admin"), adminMediaRoutes);
 
 app.use("/api", (req, res) => res.status(404).json({ error: "존재하지 않는 API 입니다." }));
 

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { query } from "../db.js";
-import { PRODUCTS, CARRIERS, SOURCES } from "./constants.js";
+import { SOURCES } from "./constants.js";
 import { digitsOnly, isValidMobile } from "./phone.js";
 
 /** 목록/상세 공통 SELECT (상태명, 담당자명, 중복 여부, 최근 메모 포함) */
@@ -41,9 +41,11 @@ export const phoneField = z
 export const leadBaseSchema = z.object({
   name: z.string({ required_error: "이름을 입력하세요." }).trim().min(1, "이름을 입력하세요.").max(50, "이름이 너무 깁니다."),
   phone: phoneField,
-  products: z.array(z.enum(PRODUCTS)).min(1, "관심 상품을 1개 이상 선택하세요.").max(PRODUCTS.length)
+  // 선택지는 관리자 설정에서 바뀌므로 여기선 형태만 보고, 값은 assertFormOptions() 로 확인
+  products: z.array(z.string().trim().max(30), { required_error: "관심 상품을 1개 이상 선택하세요." })
+    .min(1, "관심 상품을 1개 이상 선택하세요.").max(20)
     .transform((a) => [...new Set(a)]),
-  carrier: z.enum(CARRIERS, { errorMap: () => ({ message: "희망 통신사를 선택하세요." }) }),
+  carrier: z.string({ required_error: "희망 통신사를 선택하세요." }).trim().min(1, "희망 통신사를 선택하세요.").max(30),
   callTime: z.string().trim().max(50).optional().default(""),
   message: z.string().trim().max(1000, "문의 내용은 1000자 이내로 입력하세요.").optional().default(""),
 });

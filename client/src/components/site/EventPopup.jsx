@@ -1,79 +1,90 @@
 import { useEffect, useState } from "react";
-import { popup } from "../../config/popup";
+import { api } from "../../lib/api";
 
 const KST_OFFSET = 9 * 60 * 60 * 1000;
 const DAY = 24 * 60 * 60 * 1000;
-const storageKey = () => `dg_popup_hide_until_${popup.id}`;
+const storageKey = (id) => `dg_popup_hide_until_${id}`;
 
 /** 한국시간 기준 다음 자정 (epoch ms) */
 export function nextKstMidnight(now = Date.now()) {
   return Math.floor((now + KST_OFFSET) / DAY) * DAY + DAY - KST_OFFSET;
 }
-const kstToday = () => new Date(Date.now() + KST_OFFSET).toISOString().slice(0, 10);
 
-function shouldShow() {
-  if (!popup.enabled) return false;
-  const today = kstToday();
-  if (popup.startDate && today < popup.startDate) return false;
-  if (popup.endDate && today > popup.endDate) return false;
+function hiddenToday(id) {
   try {
-    const until = Number(localStorage.getItem(storageKey()) || 0);
-    if (until && Date.now() < until) return false;
+    const until = Number(localStorage.getItem(storageKey(id)) || 0);
+    return until && Date.now() < until;
   } catch {
-    /* 저장소 차단 시 매번 표시 */
+    return false; // 저장소 차단 시 매번 표시
   }
-  return true;
 }
 
+/**
+ * 이벤트 팝업 (관리자 > 팝업 관리). 노출 기간·켜짐 여부는 서버가 판단.
+ * 여러 개면 겹쳐서 순서대로 보여주고, 각각 '오늘 하루 보지 않기' 가능.
+ */
 export default function EventPopup() {
-  const [open, setOpen] = useState(false);
-  useEffect(() => setOpen(shouldShow()), []);
+  const [list, setList] = useState([]);
 
   useEffect(() => {
-    if (!open) return;
-    const onKey = (e) => e.key === "Escape" && setOpen(false);
+    api("/popups")
+      .then((d) => setList(d.items.filter((p) => !hiddenToday(p.id))))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!list.length) return;
+    const onKey = (e) => e.key === "Escape" && setList((l) => l.slice(1));
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
+  }, [list.length]);
 
-  if (!open) return null;
+  if (!list.length) return null;
 
-  const hideToday = () => {
+  const close = (id) => setList((l) => l.filter((p) => p.id !== id));
+  const hideToday = (id) => {
     try {
-      localStorage.setItem(storageKey(), String(nextKstMidnight()));
+      localStorage.setItem(storageKey(id), String(nextKstMidnight()));
     } catch {
       /* noop */
     }
-    setOpen(false);
+    close(id);
   };
-  const go = () => {
-    setOpen(false);
-    if (popup.link?.startsWith("#")) {
-      document.getElementById(popup.link.slice(1))?.scrollIntoView({ behavior: "smooth" });
-    } else if (popup.link) {
-      window.open(popup.link, "_blank", "noopener");
+  const go = (p) => {
+    close(p.id);
+    if (p.link?.startsWith("#")) {
+      document.getElementById(p.link.slice(1))?.scrollIntoView({ behavior: "smooth" });
+    } else if (p.link?.startsWith("/")) {
+      window.location.href = p.link;
+    } else if (p.link) {
+      window.open(p.link, "_blank", "noopener");
     }
   };
 
   return (
-    <div className="popup-dim" role="dialog" aria-modal="true" aria-label={popup.title || "이벤트"} onClick={() => setOpen(false)}>
-      <div className="popup" onClick={(e) => e.stopPropagation()}>
-        {popup.image ? (
-          <button className="popup-img" onClick={go}>
-            <img src={popup.image} alt={popup.imageAlt} />
-          </button>
-        ) : (
-          <div className="popup-body">
-            <span className="badge badge-accent">EVENT</span>
-            <h3>{popup.title}</h3>
-            {popup.lines?.map((l) => <p key={l}>{l}</p>)}
-            <button className="btn btn-primary btn-block" onClick={go}>{popup.buttonText || "자세히 보기"}</button>
+    <div className="popup-dim" role="dialog" aria-modal="true" aria-label="이벤트 안내" onClick={() => setList([])}>
+      <div className="popup-stack" style={{ "--n": list.length }}>
+        {list.map((p, k) => (
+          <div key={p.id} className="popup" style={{ "--k": k, zIndex: list.length - k }} aria-hidden={k > 0}
+            onClick={(e) => e.stopPropagation()}>
+            {p.image_url ? (
+              <button className="popup-img" onClick={() => go(p)} tabIndex={k ? -1 : 0}>
+                <img src={p.image_url} alt={p.alt || p.title || "이벤트"} />
+              </button>
+            ) : (
+              <div className="popup-body">
+                <span className="badge badge-accent">EVENT</span>
+                <h3>{p.title}</h3>
+                {p.body.split("\n").filter(Boolean).map((l, i) => <p key={i}>{l}</p>)}
+                {p.link && <button className="btn btn-primary btn-block" onClick={() => go(p)} tabIndex={k ? -1 : 0}>{p.button_text || "자세히 보기"}</button>}
+              </div>
+            )}
+            <div className="popup-foot">
+              <button onClick={() => hideToday(p.id)} tabIndex={k ? -1 : 0}>오늘 하루 보지 않기</button>
+              <button onClick={() => close(p.id)} tabIndex={k ? -1 : 0}>닫기{list.length > 1 && k === 0 ? ` (${list.length - 1}개 더)` : ""}</button>
+            </div>
           </div>
-        )}
-        <div className="popup-foot">
-          <button onClick={hideToday}>오늘 하루 보지 않기</button>
-          <button onClick={() => setOpen(false)}>닫기</button>
-        </div>
+        ))}
       </div>
     </div>
   );

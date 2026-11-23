@@ -3,15 +3,15 @@ import SiteLayout from "../components/site/SiteLayout";
 import PageHero from "../components/site/PageHero";
 import ApplySection from "../components/site/ApplySection";
 import { DiscountTable } from "../components/plans/PlanTables";
-import { carriers } from "../components/plans/telecomPlans";
 import "../components/plans/plan-tables.css";
-import { carrierPages } from "../config/site";
+import { useSiteData } from "../lib/siteData";
 
-/** 결합할인: 통신사별 결합 할인표 (telecomPlans.js 의 discountTables) */
+/** 결합할인: 통신사별 결합 할인표 (관리자 > 요금표 관리 > 결합할인표) */
 export default function BundlePage() {
+  const { carriers } = useSiteData();
   const withDiscount = carriers.filter((c) => c.discountTables.length);
-  const [active, setActive] = useState(withDiscount[0]?.id);
-  const c = withDiscount.find((x) => x.id === active);
+  const [active, setActive] = useState(null);
+  const c = withDiscount.find((x) => x.id === active) || withDiscount[0];
 
   return (
     <SiteLayout title="결합할인">
@@ -26,12 +26,12 @@ export default function BundlePage() {
           <div className="pt-wrap pt-standalone">
             <div className="pt-tabs" role="tablist">
               {withDiscount.map((x) => (
-                <button key={x.id} role="tab" aria-selected={x.id === active} className={x.id === active ? "pt-tab active" : "pt-tab"} onClick={() => setActive(x.id)}>
-                  {carrierPages[x.id]?.name || x.name}
+                <button key={x.id} role="tab" aria-selected={x.id === c?.id} className={x.id === c?.id ? "pt-tab active" : "pt-tab"} onClick={() => setActive(x.id)}>
+                  {x.name}
                 </button>
               ))}
             </div>
-            {c?.discountTables.map((t) => <DiscountTable key={t.title} table={t} />)}
+            {c?.discountTables.map((t, i) => <DiscountTable key={i} table={t} />)}
           </div>
           <p className="hint">※ 결합 조건과 할인액은 통신사 정책에 따라 바뀔 수 있으며, 상담 시 고객님 가족 구성에 맞춰 정확히 계산해 드립니다.</p>
         </div>

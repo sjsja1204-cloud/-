@@ -1,11 +1,11 @@
 import SiteLayout from "../components/site/SiteLayout";
-import { business } from "../config/business";
+import { useSiteData } from "../lib/siteData";
 
 const T = ({ children }) => <span className="todo">[확인필요{children ? `: ${children}` : ""}]</span>;
 
 /** 개인정보처리방침 초안 — 상호·연락처는 business.js 에서, 미확정 항목은 [확인필요] 표시 */
 export default function Privacy() {
-  const b = business;
+  const { business: b } = useSiteData();
   return (
     <SiteLayout title="개인정보처리방침">
       <article className="site-inner doc">
@@ -67,8 +67,8 @@ export default function Privacy() {
         <h2>제9조 (개인정보 보호책임자)</h2>
         <table>
           <tbody>
-            <tr><th>성명</th><td>{b.privacyOfficer.name}</td></tr>
-            <tr><th>이메일</th><td>{b.privacyOfficer.email}</td></tr>
+            {b.privacyOfficerName && <tr><th>성명</th><td>{b.privacyOfficerName}</td></tr>}
+            {b.privacyOfficerEmail && <tr><th>이메일</th><td>{b.privacyOfficerEmail}</td></tr>}
             {b.phone && <tr><th>전화</th><td>{b.phone}</td></tr>}
           </tbody>
         </table>

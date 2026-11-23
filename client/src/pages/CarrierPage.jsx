@@ -4,19 +4,23 @@ import PageHero from "../components/site/PageHero";
 import ApplySection from "../components/site/ApplySection";
 import Icon from "../components/site/Icon";
 import { PriceTable, DiscountTable } from "../components/plans/PlanTables";
-import { carriers, formatWon } from "../components/plans/telecomPlans";
+import { formatWon } from "../lib/format";
 import "../components/plans/plan-tables.css";
-import { carrierPages } from "../config/site";
-import { internetTabs } from "./InternetPage";
+import { useSiteData, minPrice } from "../lib/siteData";
+import { useInternetTabs } from "./InternetPage";
 import NotFound from "./NotFound";
 
 /** 통신사별 상세: 요금표 + 결합할인 + 설치 안내 + 상담 폼 */
 export default function CarrierPage() {
   const { carrierId } = useParams();
+  const { carriers, status, formOptions } = useSiteData();
+  const internetTabs = useInternetTabs();
   const c = carriers.find((x) => x.id === carrierId);
-  const page = carrierPages[carrierId];
-  if (!c || !page) return <NotFound />;
-  const min = Math.min(...c.priceTable.rows.flatMap((r) => r.prices));
+  if (status === "loading") return <SiteLayout><div className="center-msg">불러오는 중…</div></SiteLayout>;
+  if (!c) return <NotFound />;
+  const page = c;
+  const min = minPrice(c);
+  const formCarrier = formOptions.carriers.includes(c.formCarrier) ? c.formCarrier : undefined;
 
   return (
     <SiteLayout title={`${page.name} 인터넷·TV`}>
@@ -27,14 +31,14 @@ export default function CarrierPage() {
           <div className="brand-band" style={{ "--brand": page.color }}>
             <div>
               <span className="brand-name">{page.name}</span>
-              <p>인터넷 + TV 월 <b>{formatWon(min)}</b>부터</p>
+              {min != null && <p>인터넷 + TV 월 <b>{formatWon(min)}</b>부터</p>}
             </div>
             <a href="#apply" className="btn btn-lg brand-cta">{page.name} 상담 신청 <Icon name="chevronRight" size={18} /></a>
           </div>
 
           <div className="pt-wrap pt-standalone">
             <PriceTable table={c.priceTable} />
-            {c.discountTables.map((t) => <DiscountTable key={t.title} table={t} />)}
+            {c.discountTables.map((t, i) => <DiscountTable key={i} table={t} />)}
           </div>
 
           <div className="info-grid">
@@ -58,7 +62,7 @@ export default function CarrierPage() {
         </div>
       </section>
 
-      <ApplySection title={`${page.name} 가입 상담`} initial={{ carrier: page.formCarrier, products: ["인터넷+TV"] }} />
+      <ApplySection title={`${page.name} 가입 상담`} initial={{ ...(formCarrier ? { carrier: formCarrier } : {}), products: formOptions.products.includes("인터넷+TV") ? ["인터넷+TV"] : [] }} />
     </SiteLayout>
   );
 }

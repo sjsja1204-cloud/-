@@ -1,5 +1,6 @@
 import { config } from "../config.js";
 import { maskPhone } from "./phone.js";
+import { getSetting } from "./settings.js";
 
 const escapeHtml = (s) => String(s ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
 
@@ -20,7 +21,9 @@ export async function notifyNewLead(lead) {
   ].filter(Boolean);
   const text = lines.join("\n");
 
-  if (!config.telegram.token || !config.telegram.chatId) {
+  // Chat ID: 관리자 > 사이트 설정 값 우선, 비어 있으면 .env 값
+  const chatId = (await getSetting("telegram").catch(() => ({}))).chatId || config.telegram.chatId;
+  if (!config.telegram.token || !chatId) {
     console.log("[telegram] 토큰 미설정 — 알림 생략\n" + text);
     return { skipped: true };
   }
@@ -28,7 +31,7 @@ export async function notifyNewLead(lead) {
     const res = await fetch(`https://api.telegram.org/bot${config.telegram.token}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: config.telegram.chatId, text, parse_mode: "HTML" }),
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
       signal: AbortSignal.timeout(5000),
     });
     if (!res.ok) console.error("[telegram] 전송 실패", res.status, await res.text());
