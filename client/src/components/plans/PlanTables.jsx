@@ -7,6 +7,9 @@ export function PriceTable({ table }) {
   // 가장 저렴한 요금 강조
   const nums = table.rows.flatMap((r) => r.prices).filter((v) => typeof v === "number");
   const min = nums.length ? Math.min(...nums) : null;
+  // 인터넷 단독 요금이 하나라도 있으면 '인터넷만' 열을 맨 앞에
+  const showOnly = table.rows.some((r) => typeof r.internetOnly === "number" && r.internetOnly > 0);
+  const won = (v) => (typeof v === "number" && v > 0 ? formatWon(v) : <span className="pt-ask">상담 문의</span>);
   return (
     <section className="pt-section">
       <h3 className="pt-title">{table.title}</h3>
@@ -16,6 +19,7 @@ export function PriceTable({ table }) {
           <thead>
             <tr>
               <th>인터넷 \ TV</th>
+              {showOnly && <th className="pt-only">인터넷만</th>}
               {table.tvPlans.map((tv, i) => (
                 <th key={i}>{tv}</th>
               ))}
@@ -25,11 +29,15 @@ export function PriceTable({ table }) {
             {table.rows.map((row, ri) => (
               <tr key={ri}>
                 <td className="pt-rowhead">{row.internet}</td>
-                {row.prices.map((p, i) => (
-                  <td key={i} className={p === min ? "pt-best" : ""}>
-                    {formatWon(p)}
-                  </td>
-                ))}
+                {showOnly && <td className="pt-only">{won(row.internetOnly)}</td>}
+                {table.tvPlans.map((_, i) => {
+                  const p = row.prices[i];
+                  return (
+                    <td key={i} className={p === min ? "pt-best" : ""}>
+                      {won(p)}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>

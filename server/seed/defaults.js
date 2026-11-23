@@ -25,7 +25,8 @@ export const content = {
             {
               "internet": "슬림 100M",
               "speed": "100M",
-              "internetOnly": null,
+              "internetOnly": 23100,
+              "bundleDiscount": 3300,
               "prices": [
                 42900,
                 46200,
@@ -35,7 +36,8 @@ export const content = {
             {
               "internet": "베이직 500M",
               "speed": "500M",
-              "internetOnly": null,
+              "internetOnly": 34100,
+              "bundleDiscount": 5500,
               "prices": [
                 48400,
                 51700,
@@ -45,7 +47,8 @@ export const content = {
             {
               "internet": "1G",
               "speed": "1G",
-              "internetOnly": null,
+              "internetOnly": 38500,
+              "bundleDiscount": 5500,
               "prices": [
                 52800,
                 56100,
@@ -162,7 +165,8 @@ export const content = {
             {
               "internet": "광랜 100M",
               "speed": "100M",
-              "internetOnly": null,
+              "internetOnly": 22000,
+              "bundleDiscount": 5500,
               "prices": [
                 39600,
                 42900
@@ -171,7 +175,8 @@ export const content = {
             {
               "internet": "슬림 500M",
               "speed": "500M",
-              "internetOnly": null,
+              "internetOnly": 33000,
+              "bundleDiscount": 9900,
               "prices": [
                 45100,
                 48400
@@ -180,7 +185,8 @@ export const content = {
             {
               "internet": "기가 1G",
               "speed": "1G",
-              "internetOnly": null,
+              "internetOnly": 38500,
+              "bundleDiscount": 13200,
               "prices": [
                 50600,
                 53900
@@ -273,7 +279,8 @@ export const content = {
             {
               "internet": "광랜 100M",
               "speed": "100M",
-              "internetOnly": null,
+              "internetOnly": 23100,
+              "bundleDiscount": null,
               "prices": [
                 36300,
                 39600,
@@ -283,7 +290,8 @@ export const content = {
             {
               "internet": "기가 500M",
               "speed": "500M",
-              "internetOnly": null,
+              "internetOnly": 34100,
+              "bundleDiscount": 11000,
               "prices": [
                 42900,
                 46200,
@@ -293,7 +301,8 @@ export const content = {
             {
               "internet": "기가 1G",
               "speed": "1G",
-              "internetOnly": null,
+              "internetOnly": 39600,
+              "bundleDiscount": 13200,
               "prices": [
                 48400,
                 51700,
@@ -405,6 +414,7 @@ export const content = {
               "internet": "스카이안심 200M",
               "speed": "200M",
               "internetOnly": null,
+              "bundleDiscount": null,
               "prices": [
                 36300,
                 37400
@@ -414,6 +424,7 @@ export const content = {
               "internet": "스카이안심 500M",
               "speed": "500M",
               "internetOnly": null,
+              "bundleDiscount": null,
               "prices": [
                 41800,
                 42900
@@ -434,11 +445,11 @@ export const content = {
         "hidden": false,
         "logo": "",
         "tagline": "합리적인 요금의 알뜰 인터넷·TV",
-        "intro": "속도별 월 요금과 휴대폰 결합 시 요금을 한 번에 정리했어요.\n가입 조건과 사은품은 상담 시 자세히 안내해 드립니다.",
+        "intro": "속도별 인터넷·TV 월 요금을 한 번에 정리했어요.\n휴대폰 결합 할인과 가입 조건·사은품은 상담 시 자세히 안내해 드립니다.",
         "highlights": [],
         "priceTable": {
           "title": "LG헬로비전 인터넷 + TV 요금",
-          "desc": "휴대폰 결합 없이 가입할 때의 월 요금입니다. 휴대폰 결합 요금은 아래 표를 확인하세요.",
+          "desc": "와이파이 포함 월 요금입니다. 휴대폰 결합 요금은 자주 바뀌어 상담 시 안내해 드립니다.",
           "tvPlans": [
             "TV 포함"
           ],
@@ -447,14 +458,25 @@ export const content = {
               "internet": "100메가",
               "speed": "100M",
               "internetOnly": 20790,
+              "bundleDiscount": null,
               "prices": [
                 24030
+              ]
+            },
+            {
+              "internet": "160메가",
+              "speed": null,
+              "internetOnly": 27610,
+              "bundleDiscount": null,
+              "prices": [
+                null
               ]
             },
             {
               "internet": "500메가",
               "speed": "500M",
               "internetOnly": 31460,
+              "bundleDiscount": null,
               "prices": [
                 32890
               ]
@@ -463,6 +485,7 @@ export const content = {
               "internet": "기가 1G",
               "speed": "1G",
               "internetOnly": 33000,
+              "bundleDiscount": null,
               "prices": [
                 34100
               ]
@@ -533,6 +556,7 @@ export const content = {
           }
         ],
         "formCarrier": "LG헬로비전",
+        "priceNote": "결합할인 문의",
         "bundle": false
       }
     ]
@@ -646,7 +670,7 @@ export const content = {
     },
     "mobileNo": "선택 안 함",
     "mobileYes": "휴대폰 결합",
-    "mobileNote": "결합 할인은 휴대폰 요금제·회선 수에 따라 추가로 적용됩니다.",
+    "mobileNote": "인터넷 결합 할인을 반영한 금액이에요. 휴대폰 요금 할인은 요금제·회선 수에 따라 추가로 적용됩니다.",
     "resultNote": "요금표 기준 예상 금액이며, 실제 요금은 약정·할인 조건에 따라 달라질 수 있어요.",
     "ctaLabel": "이 조건으로 상담 신청"
   },

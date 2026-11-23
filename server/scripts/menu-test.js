@@ -48,7 +48,8 @@ try {
   let plans = (await pub("/plans")).data;
   const ids = () => plans.carriers.map((c) => c.id);
   const hv0 = plans.carriers.find((c) => c.id === "hellovision");
-  ok(hv0 && hv0.priceTable.rows.length === 3 && hv0.priceTable.rows.every((x) => x.speed && x.internetOnly), "LG헬로비전 공개 + 속도별 요금 3행 (간편 견적 가능)", ids());
+  const hvRows = hv0?.priceTable.rows || [];
+  ok(hvRows.length === 4 && hvRows.filter((x) => x.speed).length === 3 && hvRows.every((x) => x.internetOnly), "LG헬로비전 공개 + 속도별 요금 3행(간편 견적) + 160메가(인터넷 단독)", ids());
   const adminPlans = (await admin("/admin/content/plans")).data.published;
   const ph = clone(adminPlans);
   ph.carriers.find((c) => c.id === "hellovision").hidden = true;

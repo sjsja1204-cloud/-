@@ -4,7 +4,7 @@ import { useSiteData, bundleOn } from "../../lib/siteData";
 import { api } from "../../lib/api";
 import { getAttribution } from "../../lib/utm";
 import { hyphenPhone, isValidMobile, formatWon } from "../../lib/format";
-import { SERVICE_KEYS, estimate, planPrice } from "../../lib/quote";
+import { SERVICE_KEYS, estimate, planQuote, priceTags } from "../../lib/quote";
 import PrivacyConsentText from "./PrivacyConsentText";
 import CarrierChip from "./CarrierChip";
 import Icon from "./Icon";
@@ -127,11 +127,13 @@ function ModalBody({ m, onClose }) {
     if (!carrier || !sel.service) return undefined;
     const ip = sel.internetPlan && sel.internetPlan !== REC ? sel.internetPlan : null;
     const tp = sel.tvPlan && sel.tvPlan !== REC ? sel.tvPlan : null;
-    if (ip && (!withTv || tp)) return { value: planPrice(carrier, sel.service, ip, tp), from: false };
-    if (sel.speed) { const e = estimate(carrier, sel.service, sel.speed); return { value: e?.price ?? null, from: !!e?.from }; }
+    const mob = bundle && sel.mobile === true; // 휴대폰 결합이면 인터넷 결합 할인액을 뺀 금액
+    if (ip && (!withTv || tp)) { const q = planQuote(carrier, sel.service, ip, tp, mob); return { value: q?.price ?? null, from: false, q }; }
+    if (sel.speed) { const e = estimate(carrier, sel.service, sel.speed, mob); return { value: e?.price ?? null, from: !!e?.from, q: e }; }
     return undefined; // 아직 다 안 고름
   })();
   const priceText = price === undefined ? "" : price.value ? `월 ${formatWon(price.value)}${price.from ? "부터" : ""} · 와이파이 포함` : "상담 시 안내";
+  const tags = price?.value ? priceTags(carrier, price.q) : [];
 
   const summary = [
     unknown ? "통신사 추천받기" : carrier?.name,
@@ -258,6 +260,7 @@ function ModalBody({ m, onClose }) {
                   <div className="cm-price" aria-live="polite">
                     <span>예상 월 요금</span>
                     <b>{priceText}</b>
+                    {tags.length > 0 && <p className="price-tags">{tags.map((x) => <span key={x}>{x}</span>)}</p>}
                   </div>
                 )}
 
@@ -268,7 +271,7 @@ function ModalBody({ m, onClose }) {
                 <div className="cm-quote">
                   <span className="cm-quote-label">선택한 상품</span>
                   <b>{summary.join(" · ")}</b>
-                  {priceText && <span>{price?.value ? `예상 ${priceText}` : "요금은 상담 시 안내"}</span>}
+                  {priceText && <span>{price?.value ? `예상 ${priceText}${tags.length ? ` · ${tags.join(" · ")}` : ""}` : "요금은 상담 시 안내"}</span>}
                   <button type="button" className="cm-back" onClick={() => setStep(1)}><Icon name="chevronLeft" size={16} />이전 (수정하기)</button>
                 </div>
 

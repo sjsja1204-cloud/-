@@ -96,7 +96,7 @@ try {
   ok(r.status === 201, "인터넷 단독 견적 접수 201", r.data);
   r = await lead(2, { inquiryType: "quote", quote: { carrier: "sk", service: "internet_tv", speed: "500M", mobileBundle: true } });
   ok(r.status === 201, "인터넷+TV 견적 접수 201", r.data);
-  r = await lead(3, { inquiryType: "quote", quote: { carrier: "lg", service: "internet", speed: "1G", mobileBundle: false } });
+  r = await lead(3, { inquiryType: "quote", quote: { carrier: "skylife", service: "internet", speed: "500M", mobileBundle: null } });
   ok(r.status === 201, "단독 요금 없는 조합도 접수 (상담 시 안내)", r.data);
   r = await lead(4, { inquiryType: "quote", quote: { carrier: "skylife", service: "internet_tv", speed: "1G", mobileBundle: false } });
   ok(r.status === 400, "그 통신사에 없는 속도(스카이라이프 1G) 거부", r.data);
@@ -107,9 +107,10 @@ try {
        FROM leads WHERE phone LIKE '0105550%'`)).rows.map((x) => [x.phone, x]));
   const a = rows[PHONE(1)], b = rows[PHONE(2)], c = rows[PHONE(3)];
   ok(a?.inquiry_type === "quote" && a.quote_estimated_price === 33000 && a.quote_service === "인터넷", "KT 인터넷 500M → 단독 요금 33,000원 저장", a);
-  const skMin = Math.min(...plans.carriers.find((x) => x.id === "sk").priceTable.rows.filter((x) => x.speed === "500M").flatMap((x) => x.prices));
+  // 휴대폰 결합 → 행마다 결합 할인액(bundleDiscount)을 뺀 최저 요금
+  const skMin = Math.min(...plans.carriers.find((x) => x.id === "sk").priceTable.rows.filter((x) => x.speed === "500M").flatMap((x) => x.prices.map((v) => v - (x.bundleDiscount || 0))));
   ok(b?.quote_carrier === "SK브로드밴드" && b.quote_speed === "500M" && b.quote_mobile_bundle === true && b.quote_estimated_price === skMin,
-    `SK 인터넷+TV 500M → TV 상품 중 최저 ${skMin}원, 휴대폰 결합 저장`, b);
+    `SK 인터넷+TV 500M + 휴대폰 결합 → 결합 할인 뺀 최저 ${skMin}원 저장`, b);
   ok(b?.carrier === "SK", "견적 통신사가 '희망 통신사'에도 들어감 (필터용)", b?.carrier);
   ok(c && c.quote_estimated_price === null, "요금 데이터 없으면 예상 요금 비움 (상담 시 안내)", c);
 

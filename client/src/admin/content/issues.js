@@ -28,9 +28,10 @@ export function findIssues(key, d) {
       pt.rows.forEach((r, ri) => {
         const rn = r.internet || `${ri + 1}번째 행`;
         if (blank(r.internet)) add(`${cn} › 요금표`, `${ri + 1}번째 인터넷 상품 이름이 비어 있습니다.`);
-        pt.tvPlans.forEach((t, ti) => {
+        // 인터넷 단독 요금이 있는 행은 TV 칸을 비워 둘 수 있음 (고객 화면 '상담 문의') — 서버 publishIssues 와 같은 규칙
+        if (!(Number.isFinite(r.internetOnly) && r.internetOnly > 0)) pt.tvPlans.forEach((t, ti) => {
           const v = r.prices[ti];
-          if (v == null || !Number.isFinite(v)) add(`${cn} › 요금표`, `'${rn}' × '${t || ti + 1 + "번째 열"}' 요금 칸이 비어 있습니다.`);
+          if (v == null || !Number.isFinite(v)) add(`${cn} › 요금표`, `'${rn}' × '${t || ti + 1 + "번째 열"}' 요금 칸이 비어 있습니다. (인터넷 단독 요금이 있으면 비워 둘 수 있어요)`);
         });
       });
       }

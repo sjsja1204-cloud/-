@@ -24,7 +24,7 @@ export default function PriceGrid({ table, onChange }) {
   };
   const moveCol = (ci, d) => set({ tvPlans: moveItem(tvPlans, ci, d), rows: rows.map((r) => ({ ...r, prices: moveItem(r.prices, ci, d) })) });
 
-  const addRow = () => set({ rows: [...rows, { internet: "", speed: null, internetOnly: null, prices: tvPlans.map(() => null) }] });
+  const addRow = () => set({ rows: [...rows, { internet: "", speed: null, internetOnly: null, bundleDiscount: null, prices: tvPlans.map(() => null) }] });
   const delRow = (ri) => {
     if (!confirm(`'${rows[ri].internet || ri + 1 + "번째"}' 행(인터넷 상품)과 그 요금을 지울까요?\n\n삭제해도 '이전 버전'에서 되돌릴 수 있어요.`)) return;
     set({ rows: removeAt(rows, ri) });
@@ -70,6 +70,12 @@ export default function PriceGrid({ table, onChange }) {
                       onChange={(e) => set({ rows: setAt(rows, ri, { ...r, internetOnly: toNum(e.target.value) }) })} />
                     <i>원</i>
                   </span>
+                  <span className="won" title="휴대폰 결합 시 인터넷 월 할인액 — 상담 창·간편 견적에서 '휴대폰 결합'을 고르면 예상 요금에서 뺍니다. 비우면 '결합할인 문의'로 나와요.">
+                    <input className="cell num sub" inputMode="numeric" value={fmt(r.bundleDiscount ?? null)} placeholder="결합 할인"
+                      aria-label={`${r.internet || ri + 1 + "행"} 휴대폰 결합 시 인터넷 월 할인액`}
+                      onChange={(e) => set({ rows: setAt(rows, ri, { ...r, bundleDiscount: toNum(e.target.value) }) })} />
+                    <i>원</i>
+                  </span>
                 </span>
                 <span className="cell-tools">
                   <button type="button" disabled={ri === 0} onClick={() => moveRow(ri, -1)} aria-label="위로">▲</button>
@@ -79,10 +85,11 @@ export default function PriceGrid({ table, onChange }) {
               </th>
               {tvPlans.map((_, ci) => {
                 const v = r.prices[ci] ?? null;
+                const onlyRow = r.internetOnly > 0; // 단독 요금이 있는 행은 TV 칸을 비워도 됨 ('상담 문의')
                 return (
                   <td key={ci}>
                     <span className="won">
-                      <input className={`cell num ${v == null ? "bad" : ""}`} inputMode="numeric" value={fmt(v)} placeholder="빈칸"
+                      <input className={`cell num ${v == null && !onlyRow ? "bad" : ""}`} inputMode="numeric" value={fmt(v)} placeholder={onlyRow ? "상담 문의" : "빈칸"}
                         aria-label={`${r.internet || ri + 1 + "행"} ${tvPlans[ci] || ci + 1 + "열"} 요금`}
                         onChange={(e) => setCell(ri, ci, toNum(e.target.value))} />
                       <i>원</i>

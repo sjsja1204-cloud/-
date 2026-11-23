@@ -76,6 +76,10 @@ try {
   withNew.carriers.push(nc);
   r = await admin("/admin/content/plans/publish", { method: "POST", body: { data: withNew } });
   ok(r.status === 400 && r.data.issues?.length === 3, "빈칸 3개 있으면 게시 거부 + 위치 안내", r.data);
+  nc.priceTable.rows[1].internetOnly = 20000; // 인터넷 단독 요금이 있는 행은 TV 칸을 비워도 됨
+  r = await admin("/admin/content/plans/publish", { method: "POST", body: { data: withNew } });
+  ok(r.status === 400 && r.data.issues?.length === 1, "단독 요금 있는 행의 빈 TV 칸은 허용 (남은 빈칸 1개만 거부)", r.data);
+  nc.priceTable.rows[1].internetOnly = null;
   nc.priceTable.rows[0].prices[1] = 12000;
   nc.priceTable.rows[1].prices = [15000, 17000];
   r = await admin("/admin/content/plans/publish", { method: "POST", body: { data: withNew } });

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSiteData, bundleOn } from "../../lib/siteData";
-import { SERVICE_KEYS, speedsOf, estimate, isOpenNow } from "../../lib/quote";
+import { SERVICE_KEYS, speedsOf, estimate, isOpenNow, priceTags } from "../../lib/quote";
 import { formatWon } from "../../lib/format";
 import CarrierChip from "./CarrierChip";
 import Icon from "./Icon";
@@ -41,7 +41,8 @@ export default function QuoteWidget({ initialCarrier = null, inline = false }) {
   if (!t.enabled || !list.length) return null;
 
   const ready = carrier && service && speed && (!bundle || mobile !== null);
-  const est = ready ? estimate(carrier, service, speed) : null;
+  const est = ready ? estimate(carrier, service, speed, bundle && mobile === true) : null;
+  const tags = est ? priceTags(carrier, est) : [];
 
   // 공통 접수 창으로 넘김 (고른 값이 1단계에 채워져 있고, 필수값이 다 있으면 2단계부터)
   const apply = () => openConsult("quote", { carrier: carrier.id, service, speed, mobileBundle: bundle ? mobile : null });
@@ -132,6 +133,7 @@ export default function QuoteWidget({ initialCarrier = null, inline = false }) {
                   ) : (
                     <p className="qw-price ask"><b>상담 시 안내</b></p>
                   )}
+                  {tags.length > 0 && <p className="price-tags">{tags.map((x) => <span key={x}>{x}</span>)}</p>}
                   {bundle && mobile && t.mobileNote && <p className="qw-note strong">{t.mobileNote}</p>}
                   {service === "internet_tv_usim" && <p className="qw-note">유심 통신요금은 별도입니다.</p>}
                   {t.resultNote && <p className="qw-note">{t.resultNote}</p>}

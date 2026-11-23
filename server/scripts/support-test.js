@@ -56,17 +56,38 @@ try {
   ok(r.status === 201 && l?.quote_internet_plan === hvRow.internet && l.quote_tv_plan === hv.priceTable.tvPlans[0] && l.quote_estimated_price === hvRow.prices[0] && l.quote_mobile_bundle === null,
     `LG헬로비전 ${hvRow.internet} + ${hv.priceTable.tvPlans[0]} → ${hvRow.prices[0]}원 저장, 결합 비움`, l);
 
+  const hv160 = hv.priceTable.rows.find((x) => x.internet.startsWith("160"));
+  ok(hv.priceNote === "결합할인 문의" && hv160?.internetOnly === 27610 && hv160.speed === null, "LG헬로비전: 예상 요금 옆 '결합할인 문의', 160메가 인터넷 단독 27,610원", { note: hv.priceNote, hv160 });
+  r = await lead(41, { inquiryType: "consult", quote: { carrier: "hellovision", service: "internet", internetPlan: hv160.internet } });
+  l = await row(41);
+  ok(r.status === 201 && l?.quote_estimated_price === 27610, "LG헬로비전 160메가 인터넷만 → 27,610원 저장", l);
+  const only = { kt: [23100, 34100, 38500], lg: [22000, 33000, 38500], sk: [23100, 34100, 39600] };
+  ok(Object.entries(only).every(([id, v]) => ["100M", "500M", "1G"].every((sp, i) => by(id).priceTable.rows.find((x) => x.speed === sp)?.internetOnly === v[i])),
+    "KT·LG·SK 인터넷 단독 요금 (100M/500M/1G)");
+
   console.log("3) 접수 창 — 요금제 선택 저장 · 서버 재계산");
   const kt = by("kt");
   const ktRow = kt.priceTable.rows[1], ktTv = kt.priceTable.tvPlans[2];
   r = await lead(34, { inquiryType: "consult", quote: { carrier: "kt", service: "internet_tv", internetPlan: ktRow.internet, tvPlan: ktTv, mobileBundle: true } });
   l = await row(34);
-  ok(r.status === 201 && l?.quote_estimated_price === ktRow.prices[2] && l.quote_speed === ktRow.speed && l.quote_mobile_bundle === true,
-    `KT ${ktRow.internet} + ${ktTv} → 요금표 칸 ${ktRow.prices[2]}원, 속도·결합 저장`, l);
+  const ktWant = ktRow.prices[2] - (ktRow.bundleDiscount || 0);
+  ok(ktRow.bundleDiscount > 0 && r.status === 201 && l?.quote_estimated_price === ktWant && l.quote_speed === ktRow.speed && l.quote_mobile_bundle === true,
+    `KT ${ktRow.internet} + ${ktTv} + 휴대폰 결합 → ${ktRow.prices[2]} - 결합 할인 ${ktRow.bundleDiscount} = ${ktWant}원, 속도·결합 저장`, l);
   ok(l?.carrier === "KT" && l.inquiry_type === "consult", "희망 통신사·접수 유형 함께 저장", l?.carrier);
   r = await lead(35, { inquiryType: "consult", quote: { carrier: "kt", service: "internet", internetPlan: ktRow.internet } });
   l = await row(35);
   ok(r.status === 201 && l?.quote_estimated_price === (ktRow.internetOnly ?? null) && l.quote_tv_plan === null, "인터넷만 → 인터넷 단독 요금, TV 요금제 비움", l);
+  r = await lead(38, { inquiryType: "consult", quote: { carrier: "kt", service: "internet", internetPlan: ktRow.internet, mobileBundle: true } });
+  l = await row(38);
+  ok(r.status === 201 && l?.quote_estimated_price === ktRow.internetOnly - ktRow.bundleDiscount, "인터넷만 + 휴대폰 결합 → 단독 요금 - 결합 할인", l);
+  const sk = by("sk"), sk100 = sk.priceTable.rows.find((x) => x.speed === "100M");
+  r = await lead(39, { inquiryType: "consult", quote: { carrier: "sk", service: "internet", internetPlan: sk100.internet, mobileBundle: true } });
+  l = await row(39);
+  ok(sk100.bundleDiscount == null && r.status === 201 && l?.quote_estimated_price === sk100.internetOnly, "결합 할인액이 없는 상품(SK 100M) → 할인 없이 단독 요금 (화면은 '결합할인 문의')", l);
+  r = await lead(40, { inquiryType: "quote", quote: { carrier: "lg", service: "internet_tv", speed: "1G", mobileBundle: true } });
+  l = await row(40);
+  const lg1 = by("lg").priceTable.rows.find((x) => x.speed === "1G");
+  ok(r.status === 201 && l?.quote_estimated_price === Math.min(...lg1.prices) - lg1.bundleDiscount, "간편 견적(속도) + 휴대폰 결합 → 최저 요금 - 결합 할인", l);
   r = await lead(36, { inquiryType: "consult", quote: { carrier: "kt", service: "internet_tv" } });
   l = await row(36);
   ok(r.status === 201 && l?.quote_internet_plan === null && l.quote_estimated_price === null, "요금제 '추천받기'(미선택) → 요금 비움 (상담 시 안내)", l);

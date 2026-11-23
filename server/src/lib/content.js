@@ -45,6 +45,8 @@ const carrier = z.object({
   formCarrier: str(50),
   // 결합할인 사용: 끄면 결합할인표·휴대폰 결합·인터넷+TV+유심 선택을 숨김 (알뜰상품 등)
   bundle: z.boolean().optional().default(true),
+  // 예상 요금 옆 짧은 안내 (예: LG헬로비전 '결합할인 문의' — 결합 요금이 자주 바뀌는 통신사)
+  priceNote: str(30).optional().default(""),
   priceTable: z.object({
     title: str(200),
     desc: str(1000),
@@ -53,6 +55,7 @@ const carrier = z.object({
       internet: str(50),
       speed: z.enum(SPEEDS).nullable().default(null), // 간편 견적용 속도 분류
       internetOnly: z.number().int().min(0).max(10_000_000).nullable().default(null), // 인터넷 단독 월요금 (비우면 '상담 시 안내')
+      bundleDiscount: z.number().int().min(0).max(1_000_000).nullable().default(null), // 휴대폰 결합 시 인터넷 월 할인액 (예상 요금에서 뺌, 비우면 '결합할인 문의')
       prices: z.array(z.number().int().min(0).max(10_000_000).nullable()).max(10),
     })).max(20),
     notes: z.array(str(500)).max(30).default([]),
@@ -129,9 +132,11 @@ export function publishIssues(key, d) {
       pt.rows.forEach((r, ri) => {
         const rn = r.internet || `${ri + 1}번째 행`;
         if (blank(r.internet)) add(`${cn} › 요금표`, `${ri + 1}번째 인터넷 상품 이름이 비어 있습니다.`);
-        pt.tvPlans.forEach((t, ti) => {
+        // 인터넷 단독 요금이 있는 행은 TV 칸을 비워 둘 수 있음 (고객 화면 '상담 문의')
+        const internetOnlyRow = Number.isFinite(r.internetOnly) && r.internetOnly > 0;
+        if (!internetOnlyRow) pt.tvPlans.forEach((t, ti) => {
           const v = r.prices[ti];
-          if (v == null || !Number.isFinite(v)) add(`${cn} › 요금표`, `'${rn}' × '${t || ti + 1 + "번째 열"}' 요금 칸이 비어 있습니다.`);
+          if (v == null || !Number.isFinite(v)) add(`${cn} › 요금표`, `'${rn}' × '${t || ti + 1 + "번째 열"}' 요금 칸이 비어 있습니다. (인터넷 단독 요금이 있으면 비워 둘 수 있어요)`);
         });
       });
       }

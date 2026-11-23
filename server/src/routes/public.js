@@ -79,10 +79,11 @@ async function resolveQuote(q) {
   if (row && q.speed && row.speed !== q.speed) bad("선택한 속도와 인터넷 요금제가 맞지 않습니다.");
   const withTv = q.service !== "internet";
   if (q.tvPlan && (!withTv || !c.priceTable.tvPlans.includes(q.tvPlan))) bad("선택한 TV 요금제를 다시 확인해 주세요.");
-  // 요금: 요금제를 골랐으면 그 칸, 속도만 골랐으면(간편 견적) 그 속도의 최저 요금
+  // 요금: 요금제를 골랐으면 그 칸, 속도만 골랐으면(간편 견적) 그 속도의 최저 요금. 휴대폰 결합이면 결합 할인액을 뺀 금액
+  const mobile = bundle && q.mobileBundle === true;
   let price = null;
-  if (row && (!withTv || q.tvPlan)) price = planPrice(c, q.service, row.internet, q.tvPlan);
-  else if (q.speed) price = estimate(c, q.service, q.speed)?.price ?? null;
+  if (row && (!withTv || q.tvPlan)) price = planPrice(c, q.service, row.internet, q.tvPlan, mobile);
+  else if (q.speed) price = estimate(c, q.service, q.speed, mobile)?.price ?? null;
   return {
     quote_carrier: c.name,
     quote_service: serviceLabel,
