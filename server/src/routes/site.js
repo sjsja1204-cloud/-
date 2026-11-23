@@ -16,9 +16,9 @@ router.get("/plans", ah(async (req, res) => {
 }));
 
 router.get("/site", ah(async (req, res) => {
-  const [hero, benefits, quote] = await Promise.all([getPublished("hero"), getPublished("benefits"), getPublished("quote")]);
+  const [hero, benefits, quote, menu] = await Promise.all(["hero", "benefits", "quote", "menu"].map((k) => getPublished(k)));
   noCache(res);
-  res.json({ hero, benefits, quote });
+  res.json({ hero, benefits, quote, menu });
 }));
 
 router.get("/popups", ah(async (req, res) => {

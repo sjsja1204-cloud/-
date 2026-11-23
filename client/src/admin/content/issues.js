@@ -18,6 +18,9 @@ export function findIssues(key, d) {
       if (ids.has(c.id)) add(cn, "주소용 영문 이름이 다른 통신사와 같습니다.");
       ids.add(c.id);
       const pt = c.priceTable;
+      // 요금 데이터가 아예 없는 통신사는 허용 (고객 화면에 "요금 정보 준비중")
+      const noData = !pt.rows.length && !pt.tvPlans.length;
+      if (!noData) {
       if (blank(pt.title)) add(`${cn} › 요금표`, "요금표 제목이 비어 있습니다.");
       if (!pt.tvPlans.length) add(`${cn} › 요금표`, "TV 상품(열)이 1개 이상 있어야 합니다.");
       if (!pt.rows.length) add(`${cn} › 요금표`, "인터넷 상품(행)이 1개 이상 있어야 합니다.");
@@ -30,6 +33,7 @@ export function findIssues(key, d) {
           if (v == null || !Number.isFinite(v)) add(`${cn} › 요금표`, `'${rn}' × '${t || ti + 1 + "번째 열"}' 요금 칸이 비어 있습니다.`);
         });
       });
+      }
       c.discountTables.forEach((t, ti) => {
         const tn = `${cn} › 결합할인 '${t.title || ti + 1 + "번째 표"}'`;
         if (blank(t.title)) add(tn, "표 제목이 비어 있습니다.");
@@ -50,6 +54,21 @@ export function findIssues(key, d) {
       if (blank(b.cta.label)) add(w, "버튼 문구가 비어 있습니다.");
       if (!isLink(b.cta.to)) add(w, "버튼 링크는 / 또는 # 또는 https:// 로 시작해야 합니다.");
       if (!isImage(b.image)) add(w, "배경 이미지 주소가 올바르지 않습니다.");
+    });
+  }
+  if (key === "menu") {
+    if (!d.items.some((m) => m.enabled)) add("상단 메뉴", "켜진 메뉴가 1개 이상 있어야 합니다.");
+    d.items.forEach((m, i) => {
+      const w = `상단 메뉴 '${m.label || i + 1 + "번째"}'`;
+      if (blank(m.label)) add(w, "메뉴 이름이 비어 있습니다.");
+      if (m.children.length) {
+        if (!blank(m.to) && !isLink(m.to)) add(w, "링크는 / 또는 https:// 로 시작해야 합니다.");
+      } else if (!isLink(m.to)) add(w, "링크가 비어 있거나 올바르지 않습니다. (하위 메뉴가 없으면 링크가 필요해요)");
+      m.children.forEach((c, ci) => {
+        const cw = `${w} › '${c.label || ci + 1 + "번째 하위"}'`;
+        if (blank(c.label)) add(cw, "하위 메뉴 이름이 비어 있습니다.");
+        if (!isLink(c.to)) add(cw, "링크가 비어 있거나 올바르지 않습니다.");
+      });
     });
   }
   if (key === "quote") {
@@ -75,6 +94,7 @@ export function tidy(key, d) {
   return {
     carriers: d.carriers.map((c) => ({
       ...c,
+      highlights: lines(c.highlights),
       priceTable: { ...c.priceTable, notes: lines(c.priceTable.notes) },
       discountTables: c.discountTables.map((t) => ({
         ...t,

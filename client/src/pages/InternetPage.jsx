@@ -26,7 +26,7 @@ export default function InternetPage() {
       <section className="sec sec-soft">
         <div className="site-inner">
           <h2 className="sec-title">상세 요금표</h2>
-          <p className="section-sub">가장 저렴한 요금은 주황색으로 표시돼요. 정확한 금액은 상담 시 결합 조건에 맞춰 안내해 드립니다.</p>
+          <p className="section-sub">가장 저렴한 요금은 강조 색으로 표시돼요. 정확한 금액은 상담 시 결합 조건에 맞춰 안내해 드립니다.</p>
           <div className="pt-card"><PlanTables /></div>
         </div>
       </section>

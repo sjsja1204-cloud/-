@@ -152,3 +152,11 @@ select.cell.sub { width: auto; padding: 0 4px; }
 .days label { display: inline-flex; align-items: center; gap: 2px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; cursor: pointer; }
 .days label:has(input:checked) { border-color: var(--brand); background: var(--brand-soft); color: var(--brand-strong); font-weight: 700; }
 .days input { position: absolute; opacity: 0; pointer-events: none; }
+
+/* 상단 메뉴 편집 */
+.menu-card.off .ecard-head b, .menu-child.off input { opacity: .55; }
+.menu-card .ecard-head { display: flex; align-items: center; gap: 8px; }
+.menu-card .ecard-head .spacer { flex: 1; }
+.menu-child { display: grid; grid-template-columns: 1fr 1.4fr auto auto; gap: 8px; align-items: center; margin-bottom: 8px; }
+@media (max-width: 640px) { .menu-child { grid-template-columns: 1fr 1fr; padding-bottom: 8px; border-bottom: 1px solid var(--line); } }
+.menu-card .ecard-body > .btn { justify-self: start; width: auto; }

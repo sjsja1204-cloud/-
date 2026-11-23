@@ -15,6 +15,7 @@ const EMPTY = {
   business: { name: "담아가넷" },
   formOptions: { products: [], carriers: [] },
   quote: { enabled: false, services: {}, speeds: {} },
+  menu: { items: [] },
   brand: { color: "" },
   consult: { menu: [], modals: {}, submitLabel: "상담 신청하기", doneTitle: "신청이 접수되었습니다", doneDesc: "" },
 };
@@ -41,11 +42,11 @@ export function SiteDataProvider({ children }) {
   const load = useCallback(async () => {
     try {
       const [plans, site, settings] = await Promise.all([api("/plans"), api("/site"), api("/settings/public")]);
-      let next = { carriers: plans.carriers, hero: site.hero, benefits: site.benefits, quote: site.quote, ...settings };
+      let next = { carriers: plans.carriers, hero: site.hero, benefits: site.benefits, quote: site.quote, menu: site.menu || EMPTY.menu, ...settings };
       if (preview) {
         try {
           const d = await api("/admin/content/preview");
-          next = { ...next, carriers: d.plans.carriers.filter((c) => !c.hidden), hero: d.hero, benefits: d.benefits, quote: d.quote || next.quote };
+          next = { ...next, carriers: d.plans.carriers.filter((c) => !c.hidden), hero: d.hero, benefits: d.benefits, quote: d.quote || next.quote, menu: d.menu || next.menu };
         } catch {
           // 관리자 로그인이 아니면 미리보기 해제
           sessionStorage.removeItem(PREVIEW_KEY);
@@ -102,11 +103,25 @@ export const minPrice = (c) => {
   return all.length ? Math.min(...all) : null;
 };
 
-/** 상단 메뉴: 인터넷·TV 하위 메뉴는 공개된 통신사로 구성 */
-export function buildMenu(menu, carriers) {
-  return menu.map((m) =>
-    m.to === "/internet"
-      ? { ...m, children: [{ label: "통신사 한눈에 비교", to: "/internet" }, ...carriers.map((c) => ({ label: c.name, to: `/internet/${c.id}` }))] }
-      : m
-  );
+/** 요금 데이터가 있는 통신사인지 (없으면 "요금 정보 준비중") */
+export const hasPlanData = (c) => !!(c?.priceTable?.rows?.length && c.priceTable.tvPlans?.length);
+
+/**
+ * 상단 메뉴 (관리자 > 메인 화면 > 상단 메뉴). 꺼진 항목과
+ * 숨김·없는 통신사로 가는 링크(/internet/:id)는 빼고, 하위가 다 빠진 드롭다운도 뺀다.
+ */
+export function useMenu() {
+  const { menu, carriers, status } = useSiteData();
+  return useMemo(() => {
+    const ids = new Set(carriers.map((c) => c.id));
+    const visible = (m) => {
+      if (!m.enabled) return false;
+      const cm = /^\/internet\/([\w-]+)\/?$/.exec(m.to || "");
+      return !(cm && status === "ready" && !ids.has(cm[1]));
+    };
+    return (menu?.items || [])
+      .filter(visible)
+      .map((m) => ({ ...m, children: (m.children || []).filter(visible) }))
+      .filter((m) => m.to || m.children.length);
+  }, [menu, carriers, status]);
 }

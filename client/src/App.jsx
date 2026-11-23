@@ -16,6 +16,7 @@ import PostDetail from "./pages/support/PostDetail";
 import ReviewsPage from "./pages/support/ReviewsPage";
 import FaqPage from "./pages/support/FaqPage";
 import ApplyPage from "./pages/support/ApplyPage";
+import ComingSoonPage from "./pages/ComingSoonPage";
 
 // 관리자/직원 화면은 고객 페이지 번들에 포함되지 않도록 분리
 const AdminLayout = lazy(() => import("./admin/AdminLayout"));
@@ -53,6 +54,12 @@ export default function App() {
         <Route path="/support/reviews" element={<ReviewsPage />} />
         <Route path="/support/faq" element={<FaqPage />} />
         <Route path="/apply" element={<ApplyPage />} />
+        {/* 꿀팁게시판·커뮤니티: 게시판은 2차 범위, 지금은 준비중 안내 */}
+        <Route path="/tips" element={<ComingSoonPage title="꿀팁게시판" />} />
+        <Route path="/community" element={<ComingSoonPage title="커뮤니티" />} />
+        <Route path="/community/faq" element={<ComingSoonPage title="자주 묻는 질문" crumbs={[["커뮤니티"], ["자주 묻는 질문"]]} />} />
+        <Route path="/community/reviews" element={<ComingSoonPage title="이용 후기" crumbs={[["커뮤니티"], ["이용 후기"]]} />} />
+        <Route path="/community/events" element={<ComingSoonPage title="이벤트" crumbs={[["커뮤니티"], ["이벤트"]]} />} />
 
         <Route path="/admin" element={<RequireRole role="admin"><AdminLayout /></RequireRole>}>
           <Route index element={<LeadsPage />} />

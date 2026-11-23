@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
-import { menu as baseMenu } from "../../config/site";
-import { useSiteData, buildMenu } from "../../lib/siteData";
+import { useSiteData, useMenu } from "../../lib/siteData";
 
 /** 푸터: 메뉴 + 사업자 정보(관리자 > 사이트 설정) 중 비어 있지 않은 것만 표시 */
 export default function Footer() {
-  const { business, carriers } = useSiteData();
-  const menu = buildMenu(baseMenu, carriers);
+  const { business } = useSiteData();
+  const menu = useMenu();
+  // 하위 메뉴 없는 항목은 "바로가기" 한 칸으로 모음
+  const singles = menu.filter((m) => !m.children.length);
+  const cols = [...(singles.length ? [{ label: "바로가기", children: singles }] : []), ...menu.filter((m) => m.children.length)];
   const items = [
     ["상호", business.name],
     ["대표자", business.ceo],
@@ -26,10 +28,12 @@ export default function Footer() {
             <p>휴대폰 · 인터넷 · TV 가입을 비교하고<br />최대 혜택으로 상담해 드립니다.</p>
             <Link to="/apply" className="btn btn-primary btn-sm">무료 상담 신청</Link>
           </div>
-          {menu.map((m) => (
-            <div key={m.label} className="footer-col">
+          {cols.map((m, i) => (
+            <div key={i} className="footer-col">
               <b>{m.label}</b>
-              {(m.children || [m]).map((c) => <Link key={c.to + c.label} to={c.to}>{c.label}</Link>)}
+              {m.children.map((c) => (/^https?:/.test(c.to)
+                ? <a key={c.to + c.label} href={c.to} target="_blank" rel="noopener noreferrer">{c.label}</a>
+                : <Link key={c.to + c.label} to={c.to}>{c.label}</Link>))}
             </div>
           ))}
         </div>

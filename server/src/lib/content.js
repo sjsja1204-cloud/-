@@ -40,6 +40,8 @@ const carrier = z.object({
   // 통신사 고유색은 쓰지 않음. 로고는 사용 권한이 있을 때만 (선택)
   logo: str(500).optional().default(""),
   tagline: str(200),
+  intro: str(1000).optional().default(""), // 통신사 페이지 상단 소개
+  highlights: z.array(str(100)).max(6).optional().default([]), // 대표 혜택 문구
   formCarrier: str(50),
   priceTable: z.object({
     title: str(200),
@@ -55,6 +57,8 @@ const carrier = z.object({
   }),
   discountTables: z.array(discountTable).max(10).default([]),
 });
+
+const menuLink = z.object({ label: str(30), to: str(300), enabled: z.boolean().default(true) });
 
 export const contentSchemas = {
   plans: z.object({ carriers: z.array(carrier).max(20) }),
@@ -73,6 +77,10 @@ export const contentSchemas = {
     title: str(200),
     items: z.array(z.object({ icon: z.enum(ICONS), title: str(50), desc: str(200) })).max(4),
     promos: z.array(z.object({ tag: str(10), text: str(100) })).max(10),
+  }),
+  // 상단 메뉴 (드롭다운은 children)
+  menu: z.object({
+    items: z.array(menuLink.extend({ children: z.array(menuLink).max(12).default([]) })).max(10),
   }),
   // 간편 견적 블록 (메인 화면 배너 바로 아래)
   quote: z.object({
@@ -109,6 +117,9 @@ export function publishIssues(key, d) {
       ids.add(c.id);
       if (!isImage(c.logo)) add(cn, "로고 이미지 주소가 올바르지 않습니다.");
       const pt = c.priceTable;
+      // 요금 데이터가 아예 없는 통신사는 허용 (고객 화면에 '요금 정보 준비중')
+      const noData = !pt.rows.length && !pt.tvPlans.length;
+      if (!noData) {
       if (blank(pt.title)) add(`${cn} › 요금표`, "요금표 제목이 비어 있습니다.");
       if (!pt.tvPlans.length) add(`${cn} › 요금표`, "TV 상품(열)이 1개 이상 있어야 합니다.");
       if (!pt.rows.length) add(`${cn} › 요금표`, "인터넷 상품(행)이 1개 이상 있어야 합니다.");
@@ -121,6 +132,8 @@ export function publishIssues(key, d) {
           if (v == null || !Number.isFinite(v)) add(`${cn} › 요금표`, `'${rn}' × '${t || ti + 1 + "번째 열"}' 요금 칸이 비어 있습니다.`);
         });
       });
+      }
+      (c.highlights || []).forEach((h, hi) => blank(h) && add(cn, `${hi + 1}번째 대표 혜택 문구가 비어 있습니다.`));
       c.discountTables.forEach((t, ti) => {
         const tn = `${cn} › 결합할인 '${t.title || ti + 1 + "번째 표"}'`;
         if (blank(t.title)) add(tn, "표 제목이 비어 있습니다.");
@@ -141,6 +154,21 @@ export function publishIssues(key, d) {
       if (blank(b.cta.label)) add(w, "버튼 문구가 비어 있습니다.");
       if (!isLink(b.cta.to)) add(w, "버튼 링크는 / 또는 # 또는 https:// 로 시작해야 합니다.");
       if (!isImage(b.image)) add(w, "배경 이미지 주소가 올바르지 않습니다.");
+    });
+  }
+  if (key === "menu") {
+    if (!d.items.some((m) => m.enabled)) add("상단 메뉴", "켜진 메뉴가 1개 이상 있어야 합니다.");
+    d.items.forEach((m, i) => {
+      const w = `상단 메뉴 '${m.label || i + 1 + "번째"}'`;
+      if (blank(m.label)) add(w, "메뉴 이름이 비어 있습니다.");
+      if (m.children.length) {
+        if (!blank(m.to) && !isLink(m.to)) add(w, "링크는 / 또는 https:// 로 시작해야 합니다.");
+      } else if (!isLink(m.to)) add(w, "링크가 비어 있거나 올바르지 않습니다. (하위 메뉴가 없으면 링크가 필요해요)");
+      m.children.forEach((c, ci) => {
+        const cw = `${w} › '${c.label || ci + 1 + "번째 하위"}'`;
+        if (blank(c.label)) add(cw, "하위 메뉴 이름이 비어 있습니다.");
+        if (!isLink(c.to)) add(cw, "링크가 비어 있거나 올바르지 않습니다.");
+      });
     });
   }
   if (key === "quote") {

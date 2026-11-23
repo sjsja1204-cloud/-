@@ -3,6 +3,7 @@ import { useContentEditor, moveItem, removeAt, setAt } from "./content/useConten
 import PublishBar from "./content/PublishBar";
 import { Field, ItemTools, ImageUpload } from "./content/bits";
 import Icon from "../components/site/Icon";
+import { useSiteData } from "../lib/siteData";
 import "./content/editor.css";
 
 const THEMES = [["teal", "청록 (밝은 배경)"], ["navy", "남색 (어두운 배경)"], ["sand", "옅은 노랑 (밝은 배경)"]];
@@ -20,11 +21,12 @@ export default function SitePage() {
       <h2 className="page-title">메인 화면 관리</h2>
       <p className="page-desc">첫 화면의 문구를 바꿀 수 있어요. 고친 뒤 <b>미리보기</b>로 확인하고 <b>사이트에 반영하기</b>를 누르세요.</p>
       <div className="etabs">
+        <button type="button" className={tab === "menu" ? "on" : ""} onClick={() => setTab("menu")}>상단 메뉴</button>
         <button type="button" className={tab === "hero" ? "on" : ""} onClick={() => setTab("hero")}>맨 위 배너</button>
         <button type="button" className={tab === "quote" ? "on" : ""} onClick={() => setTab("quote")}>간편 견적</button>
         <button type="button" className={tab === "benefits" ? "on" : ""} onClick={() => setTab("benefits")}>혜택 강조 · 안내 문구</button>
       </div>
-      {tab === "hero" ? <HeroEditor /> : tab === "quote" ? <QuoteEditor /> : <BenefitsEditor />}
+      {tab === "menu" ? <MenuEditor /> : tab === "hero" ? <HeroEditor /> : tab === "quote" ? <QuoteEditor /> : <BenefitsEditor />}
     </div>
   );
 }
@@ -202,6 +204,73 @@ function QuoteEditor() {
           <p className="hint">금액·보상률 같은 광고 문구는 확정된 내용만 입력하세요.</p>
         </div>
       </section>
+    </>
+  );
+}
+
+/** 상단 메뉴: 이름·링크·순서·켜기/끄기, 드롭다운 하위 항목 추가·삭제 */
+function MenuEditor() {
+  const ed = useContentEditor("menu");
+  const { carriers } = useSiteData();
+  if (!ed.data) return <div className="center-msg">{ed.msg?.text || "불러오는 중…"}</div>;
+  const items = ed.data.items;
+  const setItems = (v) => ed.update({ items: v });
+  const setItem = (i, patch) => setItems(setAt(items, i, { ...items[i], ...patch }));
+  const suggestions = [
+    ...carriers.map((c) => [`/internet/${c.id}`, `${c.name} 통신사 페이지`]),
+    ["/internet", "인터넷·TV 전체 비교"], ["/tips", "꿀팁게시판 (준비중)"], ["/community/faq", "자주 묻는 질문 (준비중)"],
+    ["/community/reviews", "이용 후기 (준비중)"], ["/community/events", "이벤트 (준비중)"], ["/apply", "상담 신청"],
+    ["/mobile", "휴대폰"], ["/bundle", "결합할인"],
+  ];
+  const linkInput = (value, onChange, opt) => (
+    <input className="input" value={value} maxLength={300} list="menu-links" placeholder={opt ? "(드롭다운만 쓰면 비워 두세요)" : "/internet/kt"}
+      onChange={(e) => onChange(e.target.value.trim())} />
+  );
+  return (
+    <>
+      <PublishBar ed={ed} contentKey="menu" previewPath="/" label="상단 메뉴" />
+      <p className="hint" style={{ margin: "0 0 12px" }}>
+        숨김 처리된 통신사로 가는 메뉴(/internet/…)는 자동으로 빠집니다. 하위 메뉴가 있으면 PC 에서는 드롭다운, 휴대폰에서는 펼침 메뉴가 돼요.
+      </p>
+      <datalist id="menu-links">{suggestions.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</datalist>
+      {items.map((m, i) => (
+        <section key={i} className={`ecard open menu-card ${m.enabled ? "" : "off"}`}>
+          <header className="ecard-head">
+            <b>{m.label || "(이름 없음)"}</b>
+            {!m.enabled && <span className="badge">꺼짐</span>}
+            {m.children.length > 0 && <span className="badge">드롭다운 {m.children.length}개</span>}
+            <span className="spacer" />
+            <ItemTools i={i} n={items.length} onMove={(k, d) => setItems(moveItem(items, k, d))}
+              onRemove={(k) => setItems(removeAt(items, k))} confirmText={`'${m.label}' 메뉴를 삭제할까요?`} />
+          </header>
+          <div className="ecard-body">
+            <div className="efields">
+              <Field label="메뉴 이름"><input className="input" value={m.label} maxLength={30} onChange={(e) => setItem(i, { label: e.target.value })} /></Field>
+              <Field label="링크" hint={m.children.length ? "(선택)" : ""}>{linkInput(m.to, (v) => setItem(i, { to: v }), m.children.length > 0)}</Field>
+            </div>
+            <label className="switch-row">
+              <input type="checkbox" checked={m.enabled} onChange={(e) => setItem(i, { enabled: e.target.checked })} />
+              <span><b>켜기</b> — 끄면 상단 메뉴와 푸터에서 빠집니다.</span>
+            </label>
+            <p className="efield-label">하위 메뉴 (드롭다운)</p>
+            {m.children.map((c, k) => (
+              <div key={k} className={`menu-child ${c.enabled ? "" : "off"}`}>
+                <input className="input" value={c.label} maxLength={30} placeholder="이름" aria-label="하위 메뉴 이름"
+                  onChange={(e) => setItem(i, { children: setAt(m.children, k, { ...c, label: e.target.value }) })} />
+                {linkInput(c.to, (v) => setItem(i, { children: setAt(m.children, k, { ...c, to: v }) }))}
+                <label className="toggle"><input type="checkbox" checked={c.enabled}
+                  onChange={(e) => setItem(i, { children: setAt(m.children, k, { ...c, enabled: e.target.checked }) })} /><span>{c.enabled ? "켜짐" : "꺼짐"}</span></label>
+                <ItemTools i={k} n={m.children.length} onMove={(x, d) => setItem(i, { children: moveItem(m.children, x, d) })}
+                  onRemove={(x) => setItem(i, { children: removeAt(m.children, x) })} confirmText={`'${c.label}' 하위 메뉴를 삭제할까요?`} />
+              </div>
+            ))}
+            <button type="button" className="btn btn-sm" disabled={m.children.length >= 12}
+              onClick={() => setItem(i, { children: [...m.children, { label: "", to: "", enabled: true }] })}>+ 하위 메뉴</button>
+          </div>
+        </section>
+      ))}
+      <button type="button" className="btn" disabled={items.length >= 10}
+        onClick={() => setItems([...items, { label: "", to: "", enabled: true, children: [] }])}>+ 메뉴 추가</button>
     </>
   );
 }

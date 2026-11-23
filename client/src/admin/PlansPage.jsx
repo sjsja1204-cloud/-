@@ -13,6 +13,8 @@ const newCarrier = (n) => ({
   hidden: true, // 다 채우기 전엔 숨김
   logo: "",
   tagline: "",
+  intro: "",
+  highlights: [],
   formCarrier: "",
   priceTable: { title: "", desc: "와이파이 공유기(AP) 포함 월 요금입니다.", tvPlans: [""], rows: [{ internet: "", speed: null, internetOnly: null, prices: [null] }], notes: [] },
   discountTables: [],
@@ -112,7 +114,13 @@ function CarrierInfo({ c, onChange }) {
     <div className="ecard-body">
       <div className="efields">
         <Field label="통신사 이름"><input className="input" value={c.name} maxLength={50} onChange={(e) => onChange({ name: e.target.value })} placeholder="예: KT" /></Field>
-        <Field label="한 줄 소개" wide><input className="input" value={c.tagline} maxLength={200} onChange={(e) => onChange({ tagline: e.target.value })} placeholder="예: 기가인터넷 대표 사업자, 안정적인 속도" /></Field>
+        <Field label="한 줄 소개" hint="(통신사 페이지 제목 아래 · 요금 카드)" wide><input className="input" value={c.tagline} maxLength={200} onChange={(e) => onChange({ tagline: e.target.value })} placeholder="예: 기가인터넷 대표 사업자, 안정적인 속도" /></Field>
+        <Field label="통신사 소개 문구" hint="(통신사 페이지 상단 소개 상자, 줄바꿈 그대로 표시)" wide>
+          <textarea className="textarea" rows={3} value={c.intro || ""} maxLength={1000} onChange={(e) => onChange({ intro: e.target.value })} />
+        </Field>
+        <Field label="대표 혜택 문구" hint="(한 줄에 하나, 최대 6개 · 소개 상자에 체크 표시로 나와요)" wide>
+          <LinesInput value={c.highlights || []} rows={3} onChange={(v) => onChange({ highlights: v.slice(0, 6) })} placeholder={"확정된 혜택만 입력하세요"} />
+        </Field>
         <Field label="주소용 영문 이름" hint={`(홈페이지 주소 /internet/${c.id} 에 쓰여요. 영어 소문자·숫자·-)`}>
           <input className="input" value={c.id} maxLength={30} onChange={(e) => onChange({ id: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "") })} />
         </Field>

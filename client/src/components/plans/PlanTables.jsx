@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { formatWon } from "../../lib/format";
-import { useSiteData } from "../../lib/siteData";
+import { useSiteData, hasPlanData } from "../../lib/siteData";
 import "./plan-tables.css";
 
 export function PriceTable({ table }) {
@@ -117,7 +117,8 @@ export function DiscountTable({ table }) {
 }
 
 export default function PlanTables() {
-  const { carriers } = useSiteData();
+  const { carriers: all } = useSiteData();
+  const carriers = all.filter(hasPlanData); // 요금 준비중인 통신사는 비교표에서 제외
   const [active, setActive] = useState(null);
   const carrier = carriers.find((c) => c.id === active) || carriers[0];
   if (!carrier) return <p className="hint">요금표를 불러오는 중…</p>;

@@ -9,7 +9,10 @@ export const content = {
         "id": "kt",
         "name": "KT",
         "hidden": false,
+        "logo": "",
         "tagline": "기가인터넷 대표 사업자, 안정적인 속도",
+        "intro": "",
+        "highlights": [],
         "formCarrier": "KT",
         "priceTable": {
           "title": "KT 인터넷 + TV 요금",
@@ -137,14 +140,16 @@ export const content = {
               }
             ]
           }
-        ],
-        "logo": ""
+        ]
       },
       {
         "id": "lg",
         "name": "LG U+",
         "hidden": false,
+        "logo": "",
         "tagline": "U+tv 콘텐츠와 휴대폰 결합 혜택",
+        "intro": "",
+        "highlights": [],
         "formCarrier": "LG U+",
         "priceTable": {
           "title": "LG U+ 인터넷 + TV 요금",
@@ -244,14 +249,16 @@ export const content = {
               "가족 데이터 제공: 결합 모바일 1명당 1,000MB 제공"
             ]
           }
-        ],
-        "logo": ""
+        ]
       },
       {
         "id": "sk",
         "name": "SK브로드밴드",
         "hidden": false,
+        "logo": "",
         "tagline": "B tv와 SKT 가족결합 할인",
+        "intro": "",
+        "highlights": [],
         "formCarrier": "SK",
         "priceTable": {
           "title": "SK 인터넷 + TV 요금",
@@ -373,14 +380,16 @@ export const content = {
               }
             ]
           }
-        ],
-        "logo": ""
+        ]
       },
       {
         "id": "skylife",
         "name": "KT스카이라이프",
         "hidden": false,
+        "logo": "",
         "tagline": "합리적인 요금의 인터넷+TV",
+        "intro": "",
+        "highlights": [],
         "formCarrier": "KT스카이라이프",
         "priceTable": {
           "title": "KT스카이라이프 인터넷 + TV 요금",
@@ -413,8 +422,113 @@ export const content = {
             "요금할인형 홈번들 30%는 별도 문의 바랍니다."
           ]
         },
-        "discountTables": [],
-        "logo": ""
+        "discountTables": []
+      },
+      {
+        "id": "hellovision",
+        "name": "LG헬로비전",
+        "hidden": false,
+        "logo": "",
+        "tagline": "합리적인 요금의 알뜰 인터넷·TV",
+        "intro": "속도별 월 요금과 휴대폰 결합 시 요금을 한 번에 정리했어요.\n가입 조건과 사은품은 상담 시 자세히 안내해 드립니다.",
+        "highlights": [],
+        "formCarrier": "LG헬로비전",
+        "priceTable": {
+          "title": "LG헬로비전 인터넷 + TV 요금",
+          "desc": "휴대폰 결합 없이 가입할 때의 월 요금입니다. 휴대폰 결합 요금은 아래 표를 확인하세요.",
+          "tvPlans": [
+            "TV 포함"
+          ],
+          "rows": [
+            {
+              "internet": "100메가",
+              "speed": "100M",
+              "internetOnly": 20790,
+              "prices": [
+                24030
+              ]
+            },
+            {
+              "internet": "500메가",
+              "speed": "500M",
+              "internetOnly": 31460,
+              "prices": [
+                32890
+              ]
+            },
+            {
+              "internet": "기가 1G",
+              "speed": "1G",
+              "internetOnly": 33000,
+              "prices": [
+                34100
+              ]
+            }
+          ],
+          "notes": [
+            "요금은 약정·프로모션 조건에 따라 달라질 수 있으며, 상담 시 정확히 안내해 드립니다."
+          ]
+        },
+        "discountTables": [
+          {
+            "title": "휴대폰 결합 시 월 요금",
+            "desc": "휴대폰과 결합하면 500메가·기가 상품의 월 요금이 내려갑니다.",
+            "columns": [
+              "구성",
+              "속도",
+              "결합 안 함",
+              "휴대폰 결합",
+              "할인"
+            ],
+            "rows": [
+              [
+                "인터넷",
+                "100메가",
+                "20,790원",
+                "20,790원",
+                "-"
+              ],
+              [
+                "인터넷",
+                "500메가",
+                "31,460원",
+                "25,388원",
+                "6,072원"
+              ],
+              [
+                "인터넷",
+                "기가 1G",
+                "33,000원",
+                "26,620원",
+                "6,380원"
+              ],
+              [
+                "인터넷+TV",
+                "100메가",
+                "24,030원",
+                "24,030원",
+                "-"
+              ],
+              [
+                "인터넷+TV",
+                "500메가",
+                "32,890원",
+                "26,818원",
+                "6,072원"
+              ],
+              [
+                "인터넷+TV",
+                "기가 1G",
+                "34,100원",
+                "27,720원",
+                "6,380원"
+              ]
+            ],
+            "notes": [
+              "결합 가능 여부와 할인 금액은 휴대폰 요금제·결합 조건에 따라 달라질 수 있습니다."
+            ]
+          }
+        ]
       }
     ]
   },
@@ -530,6 +644,73 @@ export const content = {
     "mobileNote": "결합 할인은 휴대폰 요금제·회선 수에 따라 추가로 적용됩니다.",
     "resultNote": "요금표 기준 예상 금액이며, 실제 요금은 약정·할인 조건에 따라 달라질 수 있어요.",
     "ctaLabel": "이 조건으로 상담 신청"
+  },
+  "menu": {
+    "items": [
+      {
+        "label": "SK인터넷",
+        "to": "/internet/sk",
+        "enabled": true,
+        "children": []
+      },
+      {
+        "label": "KT인터넷",
+        "to": "/internet/kt",
+        "enabled": true,
+        "children": []
+      },
+      {
+        "label": "LG인터넷",
+        "to": "/internet/lg",
+        "enabled": true,
+        "children": []
+      },
+      {
+        "label": "알뜰상품",
+        "to": "",
+        "enabled": true,
+        "children": [
+          {
+            "label": "스카이라이프",
+            "to": "/internet/skylife",
+            "enabled": true
+          },
+          {
+            "label": "LG헬로비전",
+            "to": "/internet/hellovision",
+            "enabled": true
+          }
+        ]
+      },
+      {
+        "label": "꿀팁게시판",
+        "to": "/tips",
+        "enabled": false,
+        "children": []
+      },
+      {
+        "label": "커뮤니티",
+        "to": "",
+        "enabled": false,
+        "children": [
+          {
+            "label": "자주 묻는 질문",
+            "to": "/community/faq",
+            "enabled": true
+          },
+          {
+            "label": "이용 후기",
+            "to": "/community/reviews",
+            "enabled": true
+          },
+          {
+            "label": "이벤트",
+            "to": "/community/events",
+            "enabled": true
+          }
+        ]
+      }
+    ]
   }
 };
 
@@ -558,6 +739,7 @@ export const settings = {
       "LG U+",
       "SK",
       "KT스카이라이프",
+      "LG헬로비전",
       "상관없음"
     ]
   },

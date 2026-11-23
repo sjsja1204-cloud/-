@@ -9,9 +9,9 @@ import Icon from "./Icon";
  * 간편 견적 (메인 배너 바로 아래). 통신사 → 가입 서비스 → 속도 → 휴대폰 결합 → 예상 월요금.
  * 요금: 관리자 > 요금표 (행별 속도 분류·인터넷 단독 요금), 문구: 관리자 > 메인 화면 > 간편 견적
  */
-export default function QuoteWidget() {
+export default function QuoteWidget({ initialCarrier = null, inline = false }) {
   const { quote: t, carriers, business, openConsult } = useSiteData();
-  const [carrierId, setCarrierId] = useState(null);
+  const [carrierId, setCarrierId] = useState(initialCarrier);
   const [service, setService] = useState(null);
   const [speed, setSpeed] = useState(null);
   const [mobile, setMobile] = useState(null); // true | false | null
@@ -46,7 +46,7 @@ export default function QuoteWidget() {
     });
 
   return (
-    <section className="qw-sec" id="quote" aria-labelledby="qw-title">
+    <section className={`qw-sec ${inline ? "inline" : ""}`} id="quote" aria-labelledby="qw-title">
       <div className="site-inner">
         <div className="qw">
           <header className="qw-head">

@@ -3,7 +3,8 @@
 | 경로 | 화면 |
 |---|---|
 | `/` | 메인: 슬라이드 배너 · 빠른 메뉴 · 실시간 상담 현황(롤링) · 통신사 요금 카드 · 진행 단계 · 후기 · 공지/FAQ · 상담 폼 · 이벤트 팝업 |
-| `/internet`, `/internet/:id` | 인터넷·TV 전체 비교 / 통신사별(kt·lg·sk·skylife) 요금·결합할인 |
+| `/internet`, `/internet/:id` | 인터넷·TV 전체 비교 / 통신사 페이지(sk·kt·lg·skylife·hellovision): 소개·대표 혜택 → 요금표 → 결합할인표 → 간편 견적(그 통신사 선택) → 상담 신청. 요금 데이터가 없으면 "요금 정보 준비중" |
+| `/tips`, `/community/faq`·`/reviews`·`/events` | 꿀팁게시판·커뮤니티: 지금은 "준비중" 안내 + 상담 신청 (게시판은 2차) |
 | `/mobile`, `/bundle` | 휴대폰 가입 안내 / 통신사별 결합할인 |
 | `/event`, `/event/:id` | 이벤트 (관리자 게시판에서 작성) |
 | `/support/notice` · `/support/reviews` · `/support/faq` · `/apply` | 고객센터: 공지사항 · 상담후기 · FAQ · 상담 신청(`?product=인터넷&carrier=KT` 미리 선택) |
@@ -15,7 +16,7 @@
 ```
 client/   React + Vite (Cloudflare Pages)
   functions/api/[[path]].js   Pages Functions: /api → Render 프록시
-  src/config/site.js          상단 메뉴 구조 (인터넷 하위 메뉴는 요금표 데이터로 자동 생성)
+  src/components/site/SiteHeader.jsx  상단 메뉴 (관리자 > 메인 화면 > 상단 메뉴 데이터, PC 드롭다운·모바일 전체 메뉴)
   src/lib/siteData.jsx        요금표·배너·사업자 정보 등 관리자 콘텐츠를 API 에서 받아 공급
   src/admin/content/          관리자 콘텐츠 편집기 (임시저장·미리보기·반영·이전 버전)
 server/   Node + Express API (Render)
@@ -26,6 +27,7 @@ server/   Node + Express API (Render)
   scripts/api-test.js         완료 기준 자동 점검 (테스트 데이터 생성 — 운영 DB 금지)
   scripts/content-test.js     관리자 콘텐츠 관리 기능 점검 (43개, 끝나면 원래대로 되돌림)
   scripts/quote-test.js       브랜드 컬러·간편 견적·빠른 상담 메뉴 점검 (39개)
+  scripts/menu-test.js        상단 메뉴·통신사 페이지 점검 (25개)
   uploads/                    R2 미설정 시 이미지 저장 위치 (로컬 개발용, git 제외)
 docs/관리자_매뉴얼.md           운영자용 사용 설명서
 docs/납품_체크리스트.md          계정 소유권·환경변수·백업 확인
@@ -68,6 +70,7 @@ API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> 
 
 ```bash
 API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> node --env-file=.env scripts/quote-test.js
+API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> node --env-file=.env scripts/menu-test.js
 ```
 브랜드 컬러(소스 전체에서 빨강·주황·마젠타 계열 색 검사), 속도 분류·단독 요금, 간편 견적 접수·요금 재계산, 접수 유형 저장·필터·엑셀, 빠른 메뉴·창 문구·브랜드 색 변경, 권한 39개 항목. 테스트 접수(010-5550-xxxx)는 끝나면 지웁니다.
 
@@ -78,6 +81,8 @@ API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> 
 | 내용 | 관리자 메뉴 | 반영 |
 |---|---|---|
 | 통신사·요금표·결합할인표·혜택 박스 | 요금표 | 임시저장 → 미리보기 → 사이트에 반영하기 (버전 30개 보관, 되돌리기 가능) |
+| **상단 메뉴** (이름·링크·순서·켜기/끄기, 드롭다운 하위 메뉴) | 메인 화면 → 상단 메뉴 | 위와 동일 |
+| 통신사 페이지 소개 문구·대표 혜택 | 요금표 → 통신사 → 기본 정보 | 위와 동일 |
 | 메인 배너, **간편 견적** 문구·켜기/끄기, 혜택 강조, 안내 문구 | 메인 화면 | 위와 동일 |
 | 간편 견적 요금 (행별 속도 분류 100M/200M/500M/1G · 인터넷 단독 요금) | 요금표 | 위와 동일 |
 | 빠른 상담 메뉴 (문구·순서·켜기/끄기), 상담 신청 창 제목·안내 | 사이트 설정 → 빠른 상담 메뉴 | 저장 즉시 |
@@ -94,6 +99,7 @@ API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> 
 - **실시간 상담 현황**: 최근 30일 홈페이지 접수(동의 완료) 중 이름 첫 글자·관심상품·상태만 표시. 5건 미만이면 '혜택 안내 문구'로 대체 — 가짜 접수는 만들지 않음.
 - **브랜드 컬러**: 통신사 고유색(빨강·주황·마젠타)은 사이트 어디에도 쓰지 않음. 색은 `client/src/styles/global.css` 의 `--brand`·`--ink`·`--accent` 등 CSS 변수로만 지정. 통신사는 글자 칩(`CarrierChip`)으로 표시하고, 로고는 권한 있을 때만 관리자에서 등록.
 - **간편 견적 · 접수 유형**: 메인 배너 아래 `QuoteWidget`. 접수 시 서버가 게시된 요금표로 예상 요금을 다시 계산해 `leads.quote_*` 에 글자 그대로 저장. 빠른 메뉴·견적은 공통 창(`ConsultModal`)을 쓰고 `leads.inquiry_type`(form/subsidy/consult/recommend/quote)으로 구분. 관리자 DB 목록 '접수 유형' 필터, 엑셀 '접수유형·견적조건' 열, 텔레그램 알림에 포함.
+- **상단 메뉴**: `site_content` 키 `menu`. 숨김 통신사(`/api/plans` 에 없는 통신사)로 가는 `/internet/:id` 링크는 화면에서 자동으로 빠지고, 하위가 모두 빠진 드롭다운도 사라집니다. 같은 데이터로 푸터 링크도 만듭니다. PC 는 hover·클릭으로 드롭다운(ESC·↓ 키 지원), 모바일은 오른쪽 전체 메뉴 + 아코디언.
 - **유입경로**: 광고 링크에 `?utm_source=naver&utm_medium=cpc&utm_campaign=11월` 처럼 붙이면 접수 시 저장됩니다.
 
 ## 동작 규칙 요약

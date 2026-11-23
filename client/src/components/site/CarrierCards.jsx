@@ -16,7 +16,7 @@ export default function CarrierCards() {
           <Link key={c.id} to={`/internet/${c.id}`} className="cc">
             <span className="cc-name">{c.logo ? <img src={c.logo} alt="" className="cc-logo" /> : null}{c.name}</span>
             <span className="cc-tag">{c.tagline}</span>
-            {min != null && <span className="cc-price"><small>인터넷+TV 월</small> <b>{formatWon(min)}</b><small>~</small></span>}
+            {min != null ? <span className="cc-price"><small>인터넷+TV 월</small> <b>{formatWon(min)}</b><small>~</small></span> : <span className="cc-price soon">요금 정보 준비중</span>}
             <span className="cc-speeds">{speeds}</span>
             <span className="cc-more">요금표 보기 <Icon name="chevronRight" size={16} /></span>
           </Link>
