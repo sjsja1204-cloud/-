@@ -105,6 +105,8 @@ export const minPrice = (c) => {
 
 /** 결합할인 사용 (끄면 결합할인표·휴대폰 결합·인터넷+TV+유심 숨김) */
 export const bundleOn = (c) => c?.bundle !== false;
+/** 휴대폰 결합 선택 받기: 따로 정하지 않았으면 결합할인 사용을 따름 (LG헬로비전은 결합할인표 없이 선택만 받음) */
+export const mobileOn = (c) => (typeof c?.mobileSelect === "boolean" ? c.mobileSelect : bundleOn(c));
 export const discountsOf = (c) => (bundleOn(c) ? c?.discountTables || [] : []);
 
 /** 요금 데이터가 있는 통신사인지 (없으면 "요금 정보 준비중") */

@@ -557,6 +557,7 @@ export const content = {
         ],
         "formCarrier": "LG헬로비전",
         "priceNote": "결합할인 문의",
+        "mobileSelect": true,
         "bundle": false
       }
     ]

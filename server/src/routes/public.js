@@ -72,7 +72,8 @@ async function resolveQuote(q) {
   if (!c) bad("선택한 통신사를 찾을 수 없습니다. 새로고침 후 다시 선택해 주세요.");
   const bundle = c.bundle !== false;
   if (!bundle && q.service === "internet_tv_usim") bad("이 통신사는 인터넷+TV+유심 가입을 받지 않습니다.");
-  if (!bundle && q.mobileBundle) bad("이 통신사는 휴대폰 결합을 받지 않습니다.");
+  const mobileOk = typeof c.mobileSelect === "boolean" ? c.mobileSelect : bundle; // 휴대폰 결합 선택 받기
+  if (!mobileOk && q.mobileBundle) bad("이 통신사는 휴대폰 결합을 받지 않습니다.");
   if (q.speed && !speedsOf(c).includes(q.speed)) bad("선택한 속도를 다시 확인해 주세요.");
   const row = q.internetPlan ? c.priceTable.rows.find((r) => r.internet === q.internetPlan) : null;
   if (q.internetPlan && !row) bad("선택한 인터넷 요금제를 찾을 수 없습니다. 새로고침 후 다시 선택해 주세요.");
@@ -80,7 +81,7 @@ async function resolveQuote(q) {
   const withTv = q.service !== "internet";
   if (q.tvPlan && (!withTv || !c.priceTable.tvPlans.includes(q.tvPlan))) bad("선택한 TV 요금제를 다시 확인해 주세요.");
   // 요금: 요금제를 골랐으면 그 칸, 속도만 골랐으면(간편 견적) 그 속도의 최저 요금. 휴대폰 결합이면 결합 할인액을 뺀 금액
-  const mobile = bundle && q.mobileBundle === true;
+  const mobile = mobileOk && q.mobileBundle === true;
   let price = null;
   if (row && (!withTv || q.tvPlan)) price = planPrice(c, q.service, row.internet, q.tvPlan, mobile);
   else if (q.speed) price = estimate(c, q.service, q.speed, mobile)?.price ?? null;
@@ -90,7 +91,7 @@ async function resolveQuote(q) {
     quote_speed: q.speed || row?.speed || null,
     quote_internet_plan: row?.internet ?? null,
     quote_tv_plan: withTv ? q.tvPlan ?? null : null,
-    quote_mobile_bundle: bundle ? q.mobileBundle ?? null : null,
+    quote_mobile_bundle: mobileOk ? q.mobileBundle ?? null : null,
     quote_estimated_price: price,
     formCarrier: opt.carriers.includes(c.formCarrier) ? c.formCarrier : "",
   };

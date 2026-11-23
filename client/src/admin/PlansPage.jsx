@@ -87,7 +87,8 @@ export default function PlansPage() {
 
             {cur.bundle === false && (
               <p className="notice-box" role="note" style={{ margin: "0 0 12px" }}>
-                <b>결합할인 사용이 꺼져 있습니다.</b> 이 통신사는 결합할인표가 홈페이지에 나오지 않고, 간편 견적·상담 창에서 휴대폰 결합과 인터넷+TV+유심 선택이 빠집니다.
+                <b>결합할인 사용이 꺼져 있습니다.</b> 이 통신사는 결합할인표가 홈페이지에 나오지 않고, 간편 견적·상담 창에서 인터넷+TV+유심 선택이 빠집니다.
+                {cur.mobileSelect === true ? " 휴대폰 결합 선택은 받지만 결합 할인은 계산하지 않아요." : " 휴대폰 결합 선택도 빠집니다."}
                 {tab !== "info" && <> 바꾸려면 <b>기본 정보</b> 탭에서 켜세요.</>}
               </p>
             )}
@@ -155,7 +156,12 @@ function CarrierInfo({ c, onChange }) {
       </div>
       <label className="switch-row">
         <input type="checkbox" checked={c.bundle !== false} onChange={(e) => onChange({ bundle: e.target.checked })} />
-        <span><b>결합할인 사용</b> — 끄면 결합할인표·혜택 박스가 홈페이지에 나오지 않고, 간편 견적·상담 창에서 휴대폰 결합과 인터넷+TV+유심이 빠집니다 (스카이라이프·LG헬로비전 등 알뜰상품). 결합할인표 내용은 그대로 남아요.</span>
+        <span><b>결합할인 사용</b> — 끄면 결합할인표·혜택 박스가 홈페이지에 나오지 않고, 결합 할인을 예상 요금에서 빼지 않으며, 간편 견적·상담 창에서 인터넷+TV+유심이 빠집니다 (스카이라이프·LG헬로비전 등 알뜰상품). 결합할인표 내용은 그대로 남아요.</span>
+      </label>
+      <label className="switch-row">
+        <input type="checkbox" checked={typeof c.mobileSelect === "boolean" ? c.mobileSelect : c.bundle !== false}
+          onChange={(e) => onChange({ mobileSelect: e.target.checked })} />
+        <span><b>휴대폰 결합 선택 받기</b> — 간편 견적·상담 창에 '휴대폰 결합' 선택이 나옵니다. 결합할인 사용을 꺼도 켤 수 있어요 (예: LG헬로비전 — 할인 계산 없이 '예상 요금 옆 안내' 문구를 함께 보여 줌).</span>
       </label>
       <label className="switch-row">
         <input type="checkbox" checked={!c.hidden} onChange={(e) => onChange({ hidden: !e.target.checked })} />

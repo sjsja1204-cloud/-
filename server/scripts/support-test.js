@@ -58,6 +58,10 @@ try {
 
   const hv160 = hv.priceTable.rows.find((x) => x.internet.startsWith("160"));
   ok(hv.priceNote === "결합할인 문의" && hv160?.internetOnly === 27610 && hv160.speed === null, "LG헬로비전: 예상 요금 옆 '결합할인 문의', 160메가 인터넷 단독 27,610원", { note: hv.priceNote, hv160 });
+  ok(hv.mobileSelect === true && by("skylife").mobileSelect === undefined, "LG헬로비전만 결합할인 꺼진 채 휴대폰 결합 선택 받음");
+  r = await lead(42, { inquiryType: "consult", quote: { carrier: "hellovision", service: "internet_tv", internetPlan: hvRow.internet, tvPlan: hv.priceTable.tvPlans[0], mobileBundle: true } });
+  l = await row(42);
+  ok(r.status === 201 && l?.quote_mobile_bundle === true && l.quote_estimated_price === hvRow.prices[0], "LG헬로비전 휴대폰 결합 선택 저장, 요금은 할인 없이 기본 요금 (결합할인 문의)", l);
   r = await lead(41, { inquiryType: "consult", quote: { carrier: "hellovision", service: "internet", internetPlan: hv160.internet } });
   l = await row(41);
   ok(r.status === 201 && l?.quote_estimated_price === 27610, "LG헬로비전 160메가 인터넷만 → 27,610원 저장", l);

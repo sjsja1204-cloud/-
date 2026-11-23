@@ -34,7 +34,7 @@ export function estimate(carrier, service, speed, mobile = false) {
     price: best.price,
     from: service !== "internet" || cands.length > 1,
     discount: best.discount,
-    discountUnknown: !!mobile && carrier.bundle !== false && !best.discount,
+    discountUnknown: !!mobile && !best.discount,
   };
 }
 
@@ -53,7 +53,7 @@ export function planQuote(carrier, service, internetPlan, tvPlan, mobile = false
   }
   if (!pos(v)) return null;
   const dc = rowDiscount(carrier, row, mobile);
-  return { price: Math.max(0, v - dc), discount: dc, discountUnknown: !!mobile && carrier.bundle !== false && !dc };
+  return { price: Math.max(0, v - dc), discount: dc, discountUnknown: !!mobile && !dc };
 }
 
 /** planQuote 의 금액만 (예전 호출부 호환) */

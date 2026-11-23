@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { useSiteData, bundleOn } from "../../lib/siteData";
+import { useSiteData, bundleOn, mobileOn } from "../../lib/siteData";
 import { api } from "../../lib/api";
 import { getAttribution } from "../../lib/utm";
 import { hyphenPhone, isValidMobile, formatWon } from "../../lib/format";
@@ -35,7 +35,7 @@ function initialSelection(pre, carriers) {
   if (!c) return sel;
   const bundle = bundleOn(c);
   if (pre.service && SERVICE_KEYS.includes(pre.service) && (bundle || pre.service !== "internet_tv_usim")) sel.service = pre.service;
-  if (bundle && typeof pre.mobileBundle === "boolean") sel.mobile = pre.mobileBundle;
+  if (mobileOn(c) && typeof pre.mobileBundle === "boolean") sel.mobile = pre.mobileBundle;
   if (pre.speed) {
     // 속도는 기억해서 TV 요금제를 고르기 전까지 그 속도의 '~부터' 요금을 보여 줌.
     // 그 속도의 인터넷 상품이 하나뿐이면 요금제까지 채움
@@ -66,6 +66,7 @@ function ModalBody({ m, onClose }) {
   const carrier = carriers.find((c) => c.id === sel.carrier) || null;
   const unknown = sel.carrier === UNKNOWN;
   const bundle = !carrier || bundleOn(carrier);
+  const mobileOk = !carrier || mobileOn(carrier); // 휴대폰 결합 선택 받는 통신사
   const services = SERVICE_KEYS.filter((k) => bundle || k !== "internet_tv_usim");
   const withTv = sel.service && sel.service !== "internet";
   const rows = carrier?.priceTable.rows || [];
@@ -114,7 +115,7 @@ function ModalBody({ m, onClose }) {
     return {
       carrier: id, speed: null, internetPlan: null, tvPlan: null,
       service: !b && s.service === "internet_tv_usim" ? null : s.service,
-      mobile: b ? s.mobile : null,
+      mobile: !c || mobileOn(c) ? s.mobile : null,
     };
   });
   const pickService = (k) => setSel((s) => ({ ...s, service: k, tvPlan: k === "internet" ? null : s.tvPlan }));
@@ -127,7 +128,7 @@ function ModalBody({ m, onClose }) {
     if (!carrier || !sel.service) return undefined;
     const ip = sel.internetPlan && sel.internetPlan !== REC ? sel.internetPlan : null;
     const tp = sel.tvPlan && sel.tvPlan !== REC ? sel.tvPlan : null;
-    const mob = bundle && sel.mobile === true; // 휴대폰 결합이면 인터넷 결합 할인액을 뺀 금액
+    const mob = mobileOk && sel.mobile === true; // 휴대폰 결합이면 인터넷 결합 할인액을 뺀 금액
     if (ip && (!withTv || tp)) { const q = planQuote(carrier, sel.service, ip, tp, mob); return { value: q?.price ?? null, from: false, q }; }
     if (sel.speed) { const e = estimate(carrier, sel.service, sel.speed, mob); return { value: e?.price ?? null, from: !!e?.from, q: e }; }
     return undefined; // 아직 다 안 고름
@@ -140,7 +141,7 @@ function ModalBody({ m, onClose }) {
     sel.service && qt.services?.[sel.service],
     unknown ? null : sel.internetPlan === REC ? "인터넷 요금제 추천" : sel.internetPlan || (sel.speed && `${sel.speed} 속도`),
     unknown || !withTv ? null : sel.tvPlan === REC ? "TV 요금제 추천" : sel.tvPlan,
-    bundle && sel.mobile ? qt.mobileYes || "휴대폰 결합" : null,
+    mobileOk && sel.mobile ? qt.mobileYes || "휴대폰 결합" : null,
   ].filter(Boolean);
 
   const next = (e) => {
@@ -174,7 +175,7 @@ function ModalBody({ m, onClose }) {
             speed: unknown ? null : sel.speed,
             internetPlan: unknown ? null : plan(sel.internetPlan),
             tvPlan: unknown || !withTv ? null : plan(sel.tvPlan),
-            mobileBundle: bundle ? sel.mobile : null,
+            mobileBundle: mobileOk ? sel.mobile : null,
           },
           ...getAttribution(),
         },
@@ -245,7 +246,7 @@ function ModalBody({ m, onClose }) {
                   </fieldset>
                 )}
 
-                {bundle && (
+                {mobileOk && (
                   <fieldset className="cm-group">
                     <legend>휴대폰 결합 <span>선택</span></legend>
                     <div className="qw-opts">

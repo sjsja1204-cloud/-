@@ -45,6 +45,8 @@ const carrier = z.object({
   formCarrier: str(50),
   // 결합할인 사용: 끄면 결합할인표·휴대폰 결합·인터넷+TV+유심 선택을 숨김 (알뜰상품 등)
   bundle: z.boolean().optional().default(true),
+  // 휴대폰 결합 선택 받기 (없으면 bundle 을 따름). LG헬로비전: 결합할인표는 끄고 선택만 받음 → 예상 요금 옆 '결합할인 문의'
+  mobileSelect: z.boolean().optional(),
   // 예상 요금 옆 짧은 안내 (예: LG헬로비전 '결합할인 문의' — 결합 요금이 자주 바뀌는 통신사)
   priceNote: str(30).optional().default(""),
   priceTable: z.object({
