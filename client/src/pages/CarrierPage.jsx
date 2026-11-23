@@ -56,7 +56,7 @@ export default function CarrierPage() {
           {ready ? (
             <>
               <div className="pt-wrap pt-standalone">
-                <PriceTable table={c.priceTable} />
+                <PriceTable table={c.priceTable} name={c.name} />
                 {discountsOf(c).map((t, i) => <DiscountTable key={i} table={t} />)}
               </div>
 

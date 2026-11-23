@@ -101,7 +101,7 @@ export default function PlansPage() {
                 </div>
                 <p className="efield-label">월 요금 <span className="hint">(칸을 눌러 숫자만 입력 · 빨간 칸은 비어 있어요)</span></p>
                 <p className="hint" style={{ margin: "0 0 8px" }}>
-                  인터넷 상품 칸 아래: <b>속도 분류</b>(간편 견적 버튼) · <b>단독 요금</b>(인터넷만 가입 시 월 요금, 홈페이지 표에 '인터넷만' 열로 나옴) · <b>결합 할인</b>(휴대폰 결합 시 인터넷 월 할인액, 예상 요금에서 뺌 · 비우면 '결합할인 문의').
+                  인터넷 상품 칸 아래: <b>속도 분류</b>(간편 견적 버튼) · <b>단독 요금</b>(인터넷만 가입 시 월 요금, 홈페이지에 '인터넷 요금' 표로 따로 나옴) · <b>결합 할인</b>(휴대폰 결합 시 인터넷 월 할인액, 예상 요금에서 뺌 · 비우면 '결합할인 문의').
                   단독 요금이 있는 상품은 TV 칸을 비워 둘 수 있어요 (홈페이지에 '상담 문의').
                 </p>
                 <PriceGrid table={cur.priceTable} onChange={(v) => setCur({ priceTable: v })} />
