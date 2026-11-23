@@ -23,6 +23,7 @@ export const settingSchemas = {
     privacyOfficerName: text(30),
     privacyOfficerEmail: z.string().trim().max(100).refine((v) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), "보호책임자 이메일 형식이 올바르지 않습니다.").default(""),
     hours: text(100),
+    kakaoUrl: z.string().trim().max(300).refine((v) => !v || /^https:\/\/\S+$/.test(v), "카카오톡 채널 주소는 https:// 로 시작해야 합니다.").default(""),
     // '실시간 상담중' 표시용 (한국시간). 비우면 표시 안 함
     openTime: z.string().regex(/^$|^([01]\d|2[0-3]):[0-5]\d$/, "시간은 09:00 형식으로 입력하세요.").default(""),
     closeTime: z.string().regex(/^$|^([01]\d|2[0-3]):[0-5]\d$/, "시간은 18:00 형식으로 입력하세요.").default(""),
@@ -41,6 +42,7 @@ export const settingSchemas = {
     modals: z.object(Object.fromEntries(["subsidy", "consult", "recommend", "quote"].map((k) => [k, z.object({
       title: z.string().trim().min(1, "창 제목을 입력하세요.").max(60),
       desc: text(200),
+      submitLabel: text(20), // 비우면 공통 신청 버튼 문구
     })]))),
     submitLabel: z.string().trim().min(1, "신청 버튼 문구를 입력하세요.").max(20),
     doneTitle: z.string().trim().min(1, "완료 제목을 입력하세요.").max(40),

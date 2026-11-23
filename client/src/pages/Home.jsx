@@ -11,6 +11,7 @@ import QuoteWidget from "../components/site/QuoteWidget";
 import EventPopup from "../components/site/EventPopup";
 import Icon from "../components/site/Icon";
 import { usePosts, fmtDay } from "../lib/posts";
+import { useReviews, useFaqs } from "../lib/reviews";
 import { useSiteData } from "../lib/siteData";
 
 const QUICK = [
@@ -28,9 +29,9 @@ export default function Home() {
   useEffect(() => {
     if (state?.scrollTo && status === "ready") document.getElementById(state.scrollTo)?.scrollIntoView({ behavior: "smooth" });
   }, [state, status]);
-  const reviews = usePosts("review", { pageSize: 3 });
+  const reviews = useReviews({ pageSize: 6 }); // 관리자 > 후기 (최신 6개)
   const notices = usePosts("notice", { pageSize: 4 });
-  const faqs = usePosts("faq", { pageSize: 4 });
+  const faqs = useFaqs();
 
   return (
     <SiteLayout>
@@ -96,12 +97,12 @@ export default function Home() {
               <p className="sec-kicker">REVIEW</p>
               <h2 className="sec-title">상담 고객 후기</h2>
             </div>
-            <Link to="/support/reviews" className="more">후기 더보기 <Icon name="chevronRight" size={16} /></Link>
+            <Link to="/reviews" className="more">후기 더보기 <Icon name="chevronRight" size={16} /></Link>
           </div>
           {reviews.items.length ? (
-            <div className="rv-grid">{reviews.items.map((p) => <ReviewCard key={p.id} post={p} />)}</div>
+            <div className="rv-grid">{reviews.items.map((r) => <ReviewCard key={r.id} review={r} />)}</div>
           ) : (
-            <div className="empty-box">{reviews.loading ? "불러오는 중…" : "곧 고객님들의 후기가 올라옵니다."}</div>
+            <div className="empty-box">{reviews.loading ? "불러오는 중…" : "후기를 준비 중입니다."}</div>
           )}
         </div>
       </section>
@@ -123,12 +124,13 @@ export default function Home() {
           <div className="board-box">
             <div className="sec-head sm">
               <h3>자주 묻는 질문</h3>
-              <Link to="/support/faq" className="more">더보기 <Icon name="chevronRight" size={14} /></Link>
+              <Link to="/support#faq" className="more">더보기 <Icon name="chevronRight" size={14} /></Link>
             </div>
             <ul className="board-list">
-              {faqs.items.map((f) => (
-                <li key={f.id}><Link to={`/support/faq#q${f.id}`}><b style={{ color: "var(--brand)" }}>Q.</b> {f.title}</Link></li>
+              {faqs.items.slice(0, 4).map((f) => (
+                <li key={f.id}><Link to={`/support#q${f.id}`}><b style={{ color: "var(--brand)" }}>Q.</b> {f.question}</Link></li>
               ))}
+              {!faqs.loading && !faqs.items.length && <li className="hint">자주 묻는 질문을 준비 중입니다.</li>}
             </ul>
           </div>
         </div>

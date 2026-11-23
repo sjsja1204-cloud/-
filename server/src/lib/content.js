@@ -43,6 +43,8 @@ const carrier = z.object({
   intro: str(1000).optional().default(""), // 통신사 페이지 상단 소개
   highlights: z.array(str(100)).max(6).optional().default([]), // 대표 혜택 문구
   formCarrier: str(50),
+  // 결합할인 사용: 끄면 결합할인표·휴대폰 결합·인터넷+TV+유심 선택을 숨김 (알뜰상품 등)
+  bundle: z.boolean().optional().default(true),
   priceTable: z.object({
     title: str(200),
     desc: str(1000),

@@ -6,7 +6,7 @@ import Icon from "../components/site/Icon";
 import { PriceTable, DiscountTable } from "../components/plans/PlanTables";
 import { formatWon } from "../lib/format";
 import "../components/plans/plan-tables.css";
-import { useSiteData, minPrice, hasPlanData } from "../lib/siteData";
+import { useSiteData, minPrice, hasPlanData, discountsOf } from "../lib/siteData";
 import { useInternetTabs } from "./InternetPage";
 import NotFound from "./NotFound";
 
@@ -26,7 +26,7 @@ export default function CarrierPage() {
   const ready = hasPlanData(c);
   const min = ready ? minPrice(c) : null;
   const highlights = (c.highlights || []).filter((h) => h && h.trim());
-  const consult = () => openConsult("consult");
+  const consult = () => openConsult("consult", { carrier: c.id }); // 이 통신사가 미리 선택된 상태로
 
   return (
     <SiteLayout title={`${c.name} 인터넷·TV`}>
@@ -57,7 +57,7 @@ export default function CarrierPage() {
             <>
               <div className="pt-wrap pt-standalone">
                 <PriceTable table={c.priceTable} />
-                {c.discountTables.map((t, i) => <DiscountTable key={i} table={t} />)}
+                {discountsOf(c).map((t, i) => <DiscountTable key={i} table={t} />)}
               </div>
 
               <div className="info-grid">

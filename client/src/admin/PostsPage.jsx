@@ -3,7 +3,8 @@ import { api } from "../lib/api";
 import { fmtDateTime } from "../lib/format";
 import { BOARD_LABEL } from "../lib/posts";
 
-const BOARDS = ["notice", "event", "review", "faq"];
+// 후기·자주 묻는 질문은 전용 메뉴(관리자 > 후기, 자주 묻는 질문)로 옮김
+const BOARDS = ["notice", "event"];
 const empty = (board) => ({
   board, title: "", content: "", imageUrl: "", linkUrl: "", isPinned: false, isPublished: true,
   startsOn: "", endsOn: "", reviewName: "", reviewRating: 5, reviewTag: "", sortOrder: 0,
@@ -14,7 +15,7 @@ const fromRow = (p) => ({
   reviewName: p.review_name || "", reviewRating: p.review_rating || 5, reviewTag: p.review_tag || "", sortOrder: p.sort_order,
 });
 
-/** 관리자: 공지사항 / 이벤트 / 상담후기 / FAQ 작성·수정 */
+/** 관리자: 공지사항 / 이벤트 작성·수정 */
 export default function PostsPage() {
   const [board, setBoard] = useState("notice");
   const [items, setItems] = useState([]);

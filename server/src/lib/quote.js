@@ -19,3 +19,16 @@ export function estimate(carrier, service, speed) {
   if (!nums.length) return null;
   return { price: Math.min(...nums), from: service !== "internet" || nums.length > 1 };
 }
+
+/**
+ * 접수 창에서 고른 요금제의 월요금. 인터넷만: 인터넷 단독 요금, TV 포함: 요금표 칸(행=인터넷, 열=TV).
+ * 고르지 않았거나 요금이 비어 있으면 null ('상담 시 안내')
+ */
+export function planPrice(carrier, service, internetPlan, tvPlan) {
+  const row = carrier.priceTable.rows.find((r) => r.internet === internetPlan);
+  if (!row) return null;
+  if (service === "internet") return Number.isFinite(row.internetOnly) && row.internetOnly > 0 ? row.internetOnly : null;
+  const j = carrier.priceTable.tvPlans.indexOf(tvPlan);
+  const v = j >= 0 ? row.prices[j] : null;
+  return Number.isFinite(v) && v > 0 ? v : null;
+}

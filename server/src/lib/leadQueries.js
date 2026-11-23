@@ -7,7 +7,7 @@ import { digitsOnly, isValidMobile } from "./phone.js";
 export const LEAD_SELECT = `
   SELECT l.id, l.name, l.phone, l.products, l.carrier, l.call_time, l.message, l.source,
          l.utm_source, l.utm_medium, l.utm_campaign, l.referrer,
-         l.inquiry_type, l.quote_carrier, l.quote_service, l.quote_speed, l.quote_mobile_bundle, l.quote_estimated_price,
+         l.inquiry_type, l.quote_carrier, l.quote_service, l.quote_speed, l.quote_mobile_bundle, l.quote_estimated_price, l.quote_internet_plan, l.quote_tv_plan,
          l.status_id, s.name AS status_name, s.is_final,
          l.assignee_id, a.name AS assignee_name, l.assigned_at,
          l.created_by, c.name AS created_by_name, l.upload_batch_id, l.consent_at,

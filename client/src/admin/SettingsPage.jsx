@@ -13,6 +13,7 @@ const BUSINESS_FIELDS = [
   ["phone", "대표번호 (있으면 전화 버튼이 생겨요)", "02-000-0000"],
   ["email", "이메일"],
   ["hours", "상담 운영시간", "예: 평일 09:00~18:00 (주말·공휴일 휴무)"],
+  ["kakaoUrl", "카카오톡 채널 주소 (있으면 고객센터에 표시)", "https://pf.kakao.com/..."],
   ["address", "주소", "", true],
   ["bizNumber", "사업자등록번호", "000-00-00000"],
   ["ecommerceNumber", "통신판매업 신고번호", "제0000-서울00-0000호"],
@@ -135,15 +136,16 @@ function ConsultForm({ value, hasPhone, onSave }) {
         </div>
       ))}
 
-      <p className="efield-label" style={{ marginTop: 22 }}>상담 신청 창 문구 <span className="hint">(어떤 버튼으로 열었는지에 따라 제목·안내만 달라져요)</span></p>
+      <p className="efield-label" style={{ marginTop: 22 }}>상담 신청 창 문구 <span className="hint">(어떤 버튼으로 열었는지에 따라 제목·안내·신청 버튼이 달라져요)</span></p>
       {MODAL_INFO.map(([k, l]) => (
         <div key={k} className="efields" style={{ marginBottom: 10 }}>
           <Field label={l + " — 제목"}><input className="input" value={f.modals[k]?.title || ""} maxLength={60} onChange={(e) => setModal(k, { title: e.target.value })} /></Field>
           <Field label="안내 문구"><input className="input" value={f.modals[k]?.desc || ""} maxLength={200} onChange={(e) => setModal(k, { desc: e.target.value })} /></Field>
+          <Field label="신청 버튼 문구" hint="(비우면 아래 기본 문구)"><input className="input" value={f.modals[k]?.submitLabel || ""} maxLength={20} placeholder={f.submitLabel} onChange={(e) => setModal(k, { submitLabel: e.target.value })} /></Field>
         </div>
       ))}
       <div className="efields">
-        <Field label="신청 버튼 문구"><input className="input" value={f.submitLabel} maxLength={20} onChange={(e) => setF({ ...f, submitLabel: e.target.value })} /></Field>
+        <Field label="기본 신청 버튼 문구"><input className="input" value={f.submitLabel} maxLength={20} onChange={(e) => setF({ ...f, submitLabel: e.target.value })} /></Field>
         <Field label="완료 제목"><input className="input" value={f.doneTitle} maxLength={40} onChange={(e) => setF({ ...f, doneTitle: e.target.value })} /></Field>
         <Field label="완료 안내 (3초 뒤 창이 닫혀요)" wide><input className="input" value={f.doneDesc} maxLength={120} onChange={(e) => setF({ ...f, doneDesc: e.target.value })} /></Field>
       </div>

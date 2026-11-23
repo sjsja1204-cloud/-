@@ -39,7 +39,9 @@ try {
   ok(["SK인터넷", "KT인터넷", "LG인터넷"].every((l, i) => items[i]?.label === l && items[i].to === `/internet/${["sk", "kt", "lg"][i]}`), "SK·KT·LG 인터넷 → /internet/sk|kt|lg", items.slice(0, 3));
   ok(by("알뜰상품")?.children.map((c) => c.to).join() === "/internet/skylife,/internet/hellovision", "알뜰상품 드롭다운: 스카이라이프·LG헬로비전");
   ok(by("꿀팁게시판")?.to === "/tips" && by("꿀팁게시판").enabled === false, "꿀팁게시판 /tips, 기본 꺼짐");
-  ok(by("커뮤니티")?.enabled === false && by("커뮤니티").children.map((c) => c.to).join() === "/community/faq,/community/reviews,/community/events", "커뮤니티 드롭다운 3개, 기본 꺼짐");
+  ok(items.map((m) => m.label).join("/") === "SK인터넷/KT인터넷/LG인터넷/알뜰상품/후기/고객센터/꿀팁게시판", "메뉴 순서: SK·KT·LG·알뜰상품·후기·고객센터 (+꿀팁 꺼짐)", items.map((m) => m.label));
+  ok(by("후기")?.to === "/reviews" && by("고객센터")?.to === "/support" && by("후기").enabled && by("고객센터").enabled, "후기 /reviews, 고객센터 /support");
+  ok(!by("커뮤니티"), "커뮤니티 드롭다운 삭제");
   ok(!items.some((m) => /렌탈/.test(m.label)), "렌탈 메뉴 없음");
 
   console.log("2) 숨김 통신사 — 공개 요금 데이터(메뉴·견적 위젯의 원천)에서 빠짐");
@@ -88,8 +90,8 @@ try {
   m1.items[0].label = "SK 테스트";
   [m1.items[1], m1.items[2]] = [m1.items[2], m1.items[1]];
   m1.items.find((m) => m.to === "/tips").enabled = true;
-  m1.items.find((m) => m.label === "커뮤니티").enabled = true;
-  m1.items.find((m) => m.label === "커뮤니티").children[2].enabled = false;
+  m1.items.find((m) => m.label === "후기").enabled = false;
+  m1.items.find((m) => m.label === "알뜰상품").children[0].enabled = false;
   r = await admin("/admin/content/menu/draft", { method: "PUT", body: { data: m1 } });
   ok(r.status === 200, "임시저장", r.status);
   ok((await pub("/site")).data.menu.items[0].label === "SK인터넷", "임시저장만으로는 공개 메뉴 그대로");
@@ -98,8 +100,8 @@ try {
   const live = (await pub("/site")).data.menu.items;
   ok(live[0].label === "SK 테스트", "이름 변경 반영");
   ok(live[1].to === "/internet/lg" && live[2].to === "/internet/kt", "순서 변경 반영");
-  ok(live.find((m) => m.to === "/tips").enabled && live.find((m) => m.label === "커뮤니티").enabled, "꿀팁·커뮤니티 켜기 반영");
-  ok(live.find((m) => m.label === "커뮤니티").children[2].enabled === false, "하위 메뉴 끄기 반영");
+  ok(live.find((m) => m.to === "/tips").enabled && !live.find((m) => m.label === "후기").enabled, "꿀팁 켜기 · 후기 끄기 반영");
+  ok(live.find((m) => m.label === "알뜰상품").children[0].enabled === false, "하위 메뉴 끄기 반영");
 
   console.log("5) 메뉴 검증");
   const bad = (f) => { const x = clone(m0); f(x); return admin("/admin/content/menu/publish", { method: "POST", body: { data: x } }); };

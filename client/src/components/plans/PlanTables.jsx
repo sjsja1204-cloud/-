@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { formatWon } from "../../lib/format";
-import { useSiteData, hasPlanData } from "../../lib/siteData";
+import { useSiteData, hasPlanData, discountsOf } from "../../lib/siteData";
 import "./plan-tables.css";
 
 export function PriceTable({ table }) {
@@ -139,7 +139,7 @@ export default function PlanTables() {
         ))}
       </div>
       <PriceTable table={carrier.priceTable} />
-      {carrier.discountTables.map((t, i) => (
+      {discountsOf(carrier).map((t, i) => (
         <DiscountTable key={i} table={t} />
       ))}
     </div>

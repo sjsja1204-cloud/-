@@ -218,8 +218,8 @@ function MenuEditor() {
   const setItem = (i, patch) => setItems(setAt(items, i, { ...items[i], ...patch }));
   const suggestions = [
     ...carriers.map((c) => [`/internet/${c.id}`, `${c.name} 통신사 페이지`]),
-    ["/internet", "인터넷·TV 전체 비교"], ["/tips", "꿀팁게시판 (준비중)"], ["/community/faq", "자주 묻는 질문 (준비중)"],
-    ["/community/reviews", "이용 후기 (준비중)"], ["/community/events", "이벤트 (준비중)"], ["/apply", "상담 신청"],
+    ["/internet", "인터넷·TV 전체 비교"], ["/tips", "꿀팁게시판 (준비중)"], ["/reviews", "후기"], ["/support", "고객센터 (자주 묻는 질문)"], ["/support/notice", "공지사항"],
+    ["/event", "이벤트"], ["/apply", "상담 신청"],
     ["/mobile", "휴대폰"], ["/bundle", "결합할인"],
   ];
   const linkInput = (value, onChange, opt) => (

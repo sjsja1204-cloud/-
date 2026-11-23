@@ -103,6 +103,10 @@ export const minPrice = (c) => {
   return all.length ? Math.min(...all) : null;
 };
 
+/** 결합할인 사용 (끄면 결합할인표·휴대폰 결합·인터넷+TV+유심 숨김) */
+export const bundleOn = (c) => c?.bundle !== false;
+export const discountsOf = (c) => (bundleOn(c) ? c?.discountTables || [] : []);
+
 /** 요금 데이터가 있는 통신사인지 (없으면 "요금 정보 준비중") */
 export const hasPlanData = (c) => !!(c?.priceTable?.rows?.length && c.priceTable.tvPlans?.length);
 

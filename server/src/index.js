@@ -20,6 +20,7 @@ import adminContentRoutes from "./routes/admin/content.js";
 import adminSettingsRoutes from "./routes/admin/settings.js";
 import adminPopupRoutes from "./routes/admin/popups.js";
 import adminMediaRoutes from "./routes/admin/media.js";
+import { publicRouter as reviewFaqPublic, adminReviewRouter, adminFaqRouter } from "./routes/reviewsFaq.js";
 import { LOCAL_DIR } from "./lib/storage.js";
 
 const app = express();
@@ -50,6 +51,7 @@ app.get("/api/health", ah(async (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/public", publicRoutes);
 app.use("/api/public", contentRoutes);
+app.use("/api/public", reviewFaqPublic); // /api/public/reviews, /api/public/faqs
 app.use("/api", siteRoutes); // /api/plans, /api/site, /api/popups, /api/settings/public
 // R2 미설정 시 업로드 이미지 (로컬 개발용)
 app.use("/api/uploads", express.static(LOCAL_DIR, { maxAge: "30d", immutable: true, fallthrough: false }));
@@ -71,6 +73,8 @@ app.use("/api/admin/users", requireAuth("admin"), adminUserRoutes);
 app.use("/api/admin/upload", requireAuth("admin"), adminUploadRoutes);
 app.use("/api/admin/stats", requireAuth("admin"), adminStatsRoutes);
 app.use("/api/admin/posts", requireAuth("admin"), adminPostRoutes);
+app.use("/api/admin/reviews", requireAuth("admin"), adminReviewRouter);
+app.use("/api/admin/faqs", requireAuth("admin"), adminFaqRouter);
 app.use("/api/admin/content", requireAuth("admin"), adminContentRoutes);
 app.use("/api/admin/settings", requireAuth("admin"), adminSettingsRoutes);
 app.use("/api/admin/popups", requireAuth("admin"), adminPopupRoutes);

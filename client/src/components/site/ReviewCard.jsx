@@ -1,20 +1,22 @@
 import Icon from "./Icon";
-import { fmtDay } from "../../lib/posts";
+import { fmtDate } from "../../lib/reviews";
 
-export default function ReviewCard({ post, clamp = true }) {
+/** 후기 카드 — 이름은 서버에서 가린 값(김*희)만 받는다 */
+export default function ReviewCard({ review: r, clamp = true }) {
+  const tag = [r.carrier, r.product].filter(Boolean).join(" ");
   return (
     <article className="rv">
       <div className="rv-top">
-        <span className="rv-stars" aria-label={`별점 ${post.review_rating || 5}점`}>
+        <span className="rv-stars" role="img" aria-label={`별점 5점 중 ${r.rating}점`}>
           {Array.from({ length: 5 }, (_, k) => (
-            <Icon key={k} name="star" size={15} style={{ color: k < (post.review_rating || 5) ? "var(--accent)" : "#e5e7eb" }} />
+            <Icon key={k} name="star" size={15} style={{ color: k < r.rating ? "var(--accent)" : "#e5e7eb" }} />
           ))}
         </span>
-        {post.review_tag && <span className="badge badge-accent">{post.review_tag}</span>}
+        {tag && <span className="badge badge-accent">{tag}</span>}
       </div>
-      <h3>{post.title}</h3>
-      <p className={clamp ? "rv-body clamp" : "rv-body"}>{post.content}</p>
-      <div className="rv-meta">{post.review_name || "고객"} 님 · {fmtDay(post.created_at)}</div>
+      {r.imageUrl && <img className="rv-img" src={r.imageUrl} alt="" loading="lazy" />}
+      <p className={clamp ? "rv-body clamp" : "rv-body"}>{r.content}</p>
+      <div className="rv-meta">{r.name} 님 · {fmtDate(r.date)}</div>
     </article>
   );
 }

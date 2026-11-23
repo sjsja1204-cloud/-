@@ -8,5 +8,6 @@ export const INQUIRY_LABELS = { form: "상담 폼", subsidy: "지원금 안내",
 /** 견적 조건 한 줄: "SK · 인터넷+TV · 500M · 휴대폰 결합" */
 export function quoteSummary(l) {
   if (!l.quote_carrier) return "";
-  return [l.quote_carrier, l.quote_service, l.quote_speed, l.quote_mobile_bundle ? "휴대폰 결합" : null].filter(Boolean).join(" · ");
+  return [l.quote_carrier, l.quote_service, l.quote_internet_plan || l.quote_speed, l.quote_tv_plan,
+    l.quote_mobile_bundle ? "휴대폰 결합" : null].filter(Boolean).join(" · ");
 }

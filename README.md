@@ -4,13 +4,15 @@
 |---|---|
 | `/` | 메인: 슬라이드 배너 · 빠른 메뉴 · 실시간 상담 현황(롤링) · 통신사 요금 카드 · 진행 단계 · 후기 · 공지/FAQ · 상담 폼 · 이벤트 팝업 |
 | `/internet`, `/internet/:id` | 인터넷·TV 전체 비교 / 통신사 페이지(sk·kt·lg·skylife·hellovision): 소개·대표 혜택 → 요금표 → 결합할인표 → 간편 견적(그 통신사 선택) → 상담 신청. 요금 데이터가 없으면 "요금 정보 준비중" |
-| `/tips`, `/community/faq`·`/reviews`·`/events` | 꿀팁게시판·커뮤니티: 지금은 "준비중" 안내 + 상담 신청 (게시판은 2차) |
+| `/reviews` | 후기: 관리자가 등록한 실제 고객 후기 카드 (이름 가림 김*희, 통신사 필터, 최신순 10개씩 더보기, 없으면 "후기를 준비 중입니다") |
+| `/support` | 고객센터: 대표번호·운영시간·카카오톡 채널(입력 시) · 상담 신청 · FAQ 아코디언(가입/설치/사은품/해지·변경/기타) · 이메일·약관 링크 |
+| `/tips` | 꿀팁게시판: 지금은 "준비중" 안내 + 상담 신청 (메뉴 기본 꺼짐, 게시판은 2차) |
 | `/mobile`, `/bundle` | 휴대폰 가입 안내 / 통신사별 결합할인 |
 | `/event`, `/event/:id` | 이벤트 (관리자 게시판에서 작성) |
-| `/support/notice` · `/support/reviews` · `/support/faq` · `/apply` | 고객센터: 공지사항 · 상담후기 · FAQ · 상담 신청(`?product=인터넷&carrier=KT` 미리 선택) |
+| `/support/notice` · `/apply` | 공지사항 · 상담 신청(`?product=인터넷&carrier=KT` 미리 선택). 옛 주소 `/support/reviews`·`/community/reviews` → `/reviews`, `/support/faq`·`/community/faq` → `/support#faq`, `/community` → `/support` 로 이동 |
 | `/login` | 관리자/직원 로그인 (역할에 따라 `/admin` 또는 `/staff` 로 이동) |
 | `/staff` | 직원: 오늘 내 DB, 전화걸기, 상태·메모, 직접 접수 (`/staff/new`) |
-| `/admin` | 관리자: DB 목록·상세·배정·분배·엑셀 다운로드, 업로드(`/admin/upload`), 직원 관리(`/admin/users`), 통계(`/admin/stats`), 게시판 관리(`/admin/posts`), **요금표(`/admin/plans`), 팝업(`/admin/popups`), 메인 화면(`/admin/site`), 사이트 설정(`/admin/settings`)** |
+| `/admin` | 관리자: DB 목록·상세·배정·분배·엑셀 다운로드, 업로드(`/admin/upload`), 직원 관리(`/admin/users`), 통계(`/admin/stats`), 게시판 관리(`/admin/posts`, 공지·이벤트), **후기(`/admin/reviews`), 자주 묻는 질문(`/admin/faq`)**, **요금표(`/admin/plans`), 팝업(`/admin/popups`), 메인 화면(`/admin/site`), 사이트 설정(`/admin/settings`)** |
 | `/privacy`, `/terms` | 개인정보처리방침, 이용약관 (초안, `[확인필요]` 표시 항목 보완 필요) |
 
 ```
@@ -26,8 +28,9 @@ server/   Node + Express API (Render)
   seed/defaults.js            요금표·배너·사업자 정보·팝업 초기값 (최초 migrate 때 DB 에 1회 입력)
   scripts/api-test.js         완료 기준 자동 점검 (테스트 데이터 생성 — 운영 DB 금지)
   scripts/content-test.js     관리자 콘텐츠 관리 기능 점검 (43개, 끝나면 원래대로 되돌림)
-  scripts/quote-test.js       브랜드 컬러·간편 견적·빠른 상담 메뉴 점검 (39개)
-  scripts/menu-test.js        상단 메뉴·통신사 페이지 점검 (25개)
+  scripts/quote-test.js       브랜드 컬러·간편 견적·빠른 상담 메뉴 점검 (40개)
+  scripts/menu-test.js        상단 메뉴·통신사 페이지 점검 (27개)
+  scripts/support-test.js     결합할인 스위치·2단계 상담 창(요금제 저장)·후기·FAQ·카카오 채널 점검 (42개, 끝나면 정리)
   uploads/                    R2 미설정 시 이미지 저장 위치 (로컬 개발용, git 제외)
 docs/관리자_매뉴얼.md           운영자용 사용 설명서
 docs/납품_체크리스트.md          계정 소유권·환경변수·백업 확인
@@ -71,6 +74,7 @@ API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> 
 ```bash
 API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> node --env-file=.env scripts/quote-test.js
 API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> node --env-file=.env scripts/menu-test.js
+API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> node --env-file=.env scripts/support-test.js
 ```
 브랜드 컬러(소스 전체에서 빨강·주황·마젠타 계열 색 검사), 속도 분류·단독 요금, 간편 견적 접수·요금 재계산, 접수 유형 저장·필터·엑셀, 빠른 메뉴·창 문구·브랜드 색 변경, 권한 39개 항목. 테스트 접수(010-5550-xxxx)는 끝나면 지웁니다.
 
@@ -92,14 +96,20 @@ API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> 
 | 상담 폼 관심상품·희망통신사 | 사이트 설정 → 상담 폼 선택지 | 저장 즉시, 기존 DB 값은 유지 |
 | 상담 상태값 (추가·이름·순서·숨기기) | 사이트 설정 → 상담 상태값 | 쓰인 상태는 삭제 불가, 숨기기만 |
 | 텔레그램 Chat ID | 사이트 설정 → 알림 | 봇 토큰은 서버 환경변수 |
-| 공지·이벤트·후기·FAQ | 게시판 관리 | 본문은 텍스트만, 후기는 실제 고객 후기만 |
+| 통신사별 **결합할인 사용** 켜기/끄기 (스카이라이프·LG헬로비전 기본 꺼짐) | 요금표 → 통신사 → 기본 정보 | 임시저장 → 반영 |
+| 공지·이벤트 | 게시판 관리 | 본문은 텍스트만 |
+| 후기 (추가·수정·삭제·숨김·순서, 사진 선택) | 후기 | 저장 즉시. **실제 고객 후기만** |
+| 자주 묻는 질문 (카테고리·순서·숨김) | 자주 묻는 질문 | 저장 즉시. 기본 질문 없음 — 직접 입력 |
+| 카카오톡 채널 주소, 상담 창 유형별 신청 버튼 문구 | 사이트 설정 → 사업자 정보 / 빠른 상담 메뉴 | 저장 즉시 |
 
 - 콘텐츠는 DB(`site_content` draft/published jsonb, zod 검증)에 저장되고, 반영할 때마다 `content_versions` 에 스냅샷이 남습니다. 반영·되돌리기·설정 변경은 `access_logs` 에 기록됩니다.
 - 공개 API(`/api/plans`, `/api/site`, `/api/popups`, `/api/settings/public`)는 서버 메모리 캐시 + `Cache-Control: no-cache`(ETag). 반영 즉시 캐시가 비워집니다.
 - **실시간 상담 현황**: 최근 30일 홈페이지 접수(동의 완료) 중 이름 첫 글자·관심상품·상태만 표시. 5건 미만이면 '혜택 안내 문구'로 대체 — 가짜 접수는 만들지 않음.
 - **브랜드 컬러**: 통신사 고유색(빨강·주황·마젠타)은 사이트 어디에도 쓰지 않음. 색은 `client/src/styles/global.css` 의 `--brand`·`--ink`·`--accent` 등 CSS 변수로만 지정. 통신사는 글자 칩(`CarrierChip`)으로 표시하고, 로고는 권한 있을 때만 관리자에서 등록.
-- **간편 견적 · 접수 유형**: 메인 배너 아래 `QuoteWidget`. 접수 시 서버가 게시된 요금표로 예상 요금을 다시 계산해 `leads.quote_*` 에 글자 그대로 저장. 빠른 메뉴·견적은 공통 창(`ConsultModal`)을 쓰고 `leads.inquiry_type`(form/subsidy/consult/recommend/quote)으로 구분. 관리자 DB 목록 '접수 유형' 필터, 엑셀 '접수유형·견적조건' 열, 텔레그램 알림에 포함.
-- **상단 메뉴**: `site_content` 키 `menu`. 숨김 통신사(`/api/plans` 에 없는 통신사)로 가는 `/internet/:id` 링크는 화면에서 자동으로 빠지고, 하위가 모두 빠진 드롭다운도 사라집니다. 같은 데이터로 푸터 링크도 만듭니다. PC 는 hover·클릭으로 드롭다운(ESC·↓ 키 지원), 모바일은 오른쪽 전체 메뉴 + 아코디언.
+- **간편 견적 · 접수 유형**: 메인 배너 아래 `QuoteWidget`. 접수 시 서버가 게시된 요금표로 예상 요금을 다시 계산해 `leads.quote_*`(통신사·서비스·속도·`quote_internet_plan`·`quote_tv_plan`·휴대폰 결합·예상요금) 에 글자 그대로 저장. 빠른 메뉴·견적·통신사 페이지는 공통 2단계 창(`ConsultModal`: 1단계 통신사·서비스·요금제 선택 + 월 요금, 2단계 이름·연락처·동의, 휴대폰은 하단 시트)을 쓰고 `leads.inquiry_type`(form/subsidy/consult/recommend/quote)으로 구분. 관리자 DB 목록 '접수 유형' 필터, 엑셀 '접수유형·견적조건' 열, 텔레그램 알림에 포함.
+- **결합할인 사용**(`plans.carriers[].bundle`): 끄면 그 통신사의 결합할인표·혜택 박스가 숨겨지고, 견적·상담 창에서 휴대폰 결합과 인터넷+TV+유심 선택이 빠집니다(서버도 거부).
+- **후기·FAQ**: `reviews`·`faqs` 테이블(migration 006). 공개 API `/api/public/reviews`(이름은 서버에서 가려서 내보냄)·`/api/public/faqs`.
+- **상단 메뉴**: `site_content` 키 `menu`. 기본: SK인터넷 / KT인터넷 / LG인터넷 / 알뜰상품(스카이라이프·LG헬로비전) / 후기 / 고객센터 (+꿀팁게시판 꺼짐). 숨김 통신사(`/api/plans` 에 없는 통신사)로 가는 `/internet/:id` 링크는 화면에서 자동으로 빠지고, 하위가 모두 빠진 드롭다운도 사라집니다. 같은 데이터로 푸터 링크도 만듭니다. PC 는 hover·클릭으로 드롭다운(ESC·↓ 키 지원), 모바일은 오른쪽 전체 메뉴 + 아코디언.
 - **유입경로**: 광고 링크에 `?utm_source=naver&utm_medium=cpc&utm_campaign=11월` 처럼 붙이면 접수 시 저장됩니다.
 
 ## 동작 규칙 요약

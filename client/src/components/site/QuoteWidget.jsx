@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useSiteData } from "../../lib/siteData";
+import { useSiteData, bundleOn } from "../../lib/siteData";
 import { SERVICE_KEYS, speedsOf, estimate, isOpenNow } from "../../lib/quote";
 import { formatWon } from "../../lib/format";
 import CarrierChip from "./CarrierChip";
@@ -7,6 +7,7 @@ import Icon from "./Icon";
 
 /**
  * 간편 견적 (메인 배너 바로 아래). 통신사 → 가입 서비스 → 속도 → 휴대폰 결합 → 예상 월요금.
+ * 결합할인 꺼진 통신사(알뜰상품)는 휴대폰 결합·인터넷+TV+유심을 숨긴다.
  * 요금: 관리자 > 요금표 (행별 속도 분류·인터넷 단독 요금), 문구: 관리자 > 메인 화면 > 간편 견적
  */
 export default function QuoteWidget({ initialCarrier = null, inline = false }) {
@@ -28,22 +29,22 @@ export default function QuoteWidget({ initialCarrier = null, inline = false }) {
   const list = carriers.filter((c) => speedsOf(c).length);
   const carrier = list.find((c) => c.id === carrierId) || null;
   const speeds = carrier ? speedsOf(carrier) : [];
+  const bundle = !carrier || bundleOn(carrier);
+  const services = SERVICE_KEYS.filter((k) => bundle || k !== "internet_tv_usim");
 
-  // 통신사를 바꿨는데 그 통신사에 없는 속도면 선택 해제
+  // 통신사를 바꿨는데 그 통신사에 없는 속도·서비스면 선택 해제
   useEffect(() => {
     if (speed && !speeds.includes(speed)) setSpeed(null);
+    if (!bundle && service === "internet_tv_usim") setService(null);
   }, [carrierId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!t.enabled || !list.length) return null;
 
-  const ready = carrier && service && speed && mobile !== null;
+  const ready = carrier && service && speed && (!bundle || mobile !== null);
   const est = ready ? estimate(carrier, service, speed) : null;
 
-  const apply = () =>
-    openConsult("quote", {
-      carrier: carrier.id, carrierName: carrier.name, service, serviceLabel: t.services[service], speed,
-      mobileBundle: mobile, mobileLabel: t.mobileYes, price: est?.price ?? null, from: est?.from,
-    });
+  // 공통 접수 창으로 넘김 (고른 값이 1단계에 채워져 있고, 필수값이 다 있으면 2단계부터)
+  const apply = () => openConsult("quote", { carrier: carrier.id, service, speed, mobileBundle: bundle ? mobile : null });
 
   return (
     <section className={`qw-sec ${inline ? "inline" : ""}`} id="quote" aria-labelledby="qw-title">
@@ -68,7 +69,7 @@ export default function QuoteWidget({ initialCarrier = null, inline = false }) {
 
               <Step n={2} title="가입 서비스">
                 <div className="qw-opts">
-                  {SERVICE_KEYS.map((k) => (
+                  {services.map((k) => (
                     <button key={k} type="button" className={`qw-opt ${service === k ? "on" : ""}`} aria-pressed={service === k} onClick={() => setService(k)}>
                       {t.services[k]}
                     </button>
@@ -108,28 +109,30 @@ export default function QuoteWidget({ initialCarrier = null, inline = false }) {
                 )}
               </Step>
 
-              <Step n={4} title="휴대폰 결합">
-                <div className="qw-opts">
-                  {[[false, t.mobileNo], [true, t.mobileYes]].map(([v, l]) => (
-                    <button key={String(v)} type="button" className={`qw-opt ${mobile === v ? "on" : ""}`} aria-pressed={mobile === v} onClick={() => setMobile(v)}>
-                      {l}
-                    </button>
-                  ))}
-                </div>
-              </Step>
+              {bundle && (
+                <Step n={4} title="휴대폰 결합">
+                  <div className="qw-opts">
+                    {[[false, t.mobileNo], [true, t.mobileYes]].map(([v, l]) => (
+                      <button key={String(v)} type="button" className={`qw-opt ${mobile === v ? "on" : ""}`} aria-pressed={mobile === v} onClick={() => setMobile(v)}>
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </Step>
+              )}
             </div>
 
             <div className={`qw-result ${ready ? "ready" : ""}`} aria-live="polite">
               {ready ? (
                 <>
-                  <p className="qw-sum">{[carrier.name, t.services[service], speed, mobile ? t.mobileYes : null].filter(Boolean).join(" · ")}</p>
+                  <p className="qw-sum">{[carrier.name, t.services[service], speed, bundle && mobile ? t.mobileYes : null].filter(Boolean).join(" · ")}</p>
                   <p className="qw-price-label">예상 월 요금</p>
                   {est ? (
                     <p className="qw-price"><b>{formatWon(est.price)}</b>{est.from && <span>부터</span>}</p>
                   ) : (
                     <p className="qw-price ask"><b>상담 시 안내</b></p>
                   )}
-                  {mobile && t.mobileNote && <p className="qw-note strong">{t.mobileNote}</p>}
+                  {bundle && mobile && t.mobileNote && <p className="qw-note strong">{t.mobileNote}</p>}
                   {service === "internet_tv_usim" && <p className="qw-note">유심 통신요금은 별도입니다.</p>}
                   {t.resultNote && <p className="qw-note">{t.resultNote}</p>}
                   <button type="button" className="btn btn-primary btn-lg btn-block" onClick={apply}>{t.ctaLabel}</button>
@@ -137,9 +140,9 @@ export default function QuoteWidget({ initialCarrier = null, inline = false }) {
               ) : (
                 <div className="qw-empty">
                   <Icon name="calc" size={30} />
-                  <p>왼쪽 4가지를 고르면<br />예상 월 요금이 바로 나와요.</p>
+                  <p>왼쪽 {bundle ? 4 : 3}가지를 고르면<br />예상 월 요금이 바로 나와요.</p>
                   <ol className="qw-progress" aria-label="선택 진행">
-                    {[carrier, service, speed, mobile !== null].map((v, i) => <li key={i} className={v ? "done" : ""} />)}
+                    {[carrier, service, speed, ...(bundle ? [mobile !== null] : [])].map((v, i) => <li key={i} className={v ? "done" : ""} />)}
                   </ol>
                 </div>
               )}

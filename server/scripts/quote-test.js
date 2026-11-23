@@ -114,18 +114,21 @@ try {
   ok(c && c.quote_estimated_price === null, "요금 데이터 없으면 예상 요금 비움 (상담 시 안내)", c);
 
   console.log("4) 빠른 메뉴 접수 유형 · 폼 접수");
+  // 추가 지시서 3: 빠른 메뉴 접수 창도 1단계 상품 선택(통신사·가입 서비스 필수)을 거친다
   for (const [n, t] of [[11, "subsidy"], [12, "consult"], [13, "recommend"]]) {
-    r = await lead(n, { inquiryType: t });
-    ok(r.status === 201, `${t} — 이름·연락처만으로 접수`, r.data);
+    r = await lead(n, { inquiryType: t, quote: { carrier: "unknown", service: "internet_tv" } });
+    ok(r.status === 201, `${t} — 상품 선택(통신사 추천받기) + 이름·연락처로 접수`, r.data);
   }
+  r = await lead(18, { inquiryType: "consult" });
+  ok(r.status === 400, "접수 창에서 통신사·가입 서비스 없이 오면 거부", r.status);
   r = await lead(14, { products: ["인터넷"], carrier: "KT" });
   ok(r.status === 201, "기존 상담 폼 접수 (유형 미지정 → form)", r.data);
   r = await lead(15, { inquiryType: "form" });
   ok(r.status === 400, "상담 폼은 관심상품·통신사 필수 유지", r.data);
   r = await lead(16, { inquiryType: "consult", website: "http://spam" });
   ok(r.status === 201 && !(await pool.query("SELECT 1 FROM leads WHERE phone = $1", [PHONE(16)])).rows.length, "모달 접수에도 honeypot 적용 (저장 안 함)");
-  r = await lead(17, { inquiryType: "subsidy", quote: { carrier: "kt", service: "internet", speed: "500M", mobileBundle: false } });
-  ok(r.status === 400, "견적 유형이 아닌데 견적 조건이 오면 거부", r.status);
+  r = await lead(17, { inquiryType: "form", products: ["인터넷"], carrier: "KT", quote: { carrier: "kt", service: "internet", speed: "500M", mobileBundle: false } });
+  ok(r.status === 400, "상담 폼(form)에 견적 조건이 오면 거부", r.status);
   const types = Object.fromEntries((await pool.query("SELECT phone, inquiry_type FROM leads WHERE phone LIKE '0105550%'")).rows.map((x) => [x.phone, x.inquiry_type]));
   ok(types[PHONE(11)] === "subsidy" && types[PHONE(12)] === "consult" && types[PHONE(13)] === "recommend" && types[PHONE(14)] === "form", "접수 유형이 DB 에 구분 저장", types);
 

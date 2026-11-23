@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { RequireRole } from "./auth/AuthContext";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -14,7 +14,7 @@ import EventPage from "./pages/EventPage";
 import NoticeList from "./pages/support/NoticeList";
 import PostDetail from "./pages/support/PostDetail";
 import ReviewsPage from "./pages/support/ReviewsPage";
-import FaqPage from "./pages/support/FaqPage";
+import SupportPage from "./pages/support/SupportPage";
 import ApplyPage from "./pages/support/ApplyPage";
 import ComingSoonPage from "./pages/ComingSoonPage";
 
@@ -32,6 +32,8 @@ const PlansPage = lazy(() => import("./admin/PlansPage"));
 const PopupsPage = lazy(() => import("./admin/PopupsPage"));
 const SitePage = lazy(() => import("./admin/SitePage"));
 const SettingsPage = lazy(() => import("./admin/SettingsPage"));
+const ReviewsAdminPage = lazy(() => import("./admin/ReviewsAdminPage"));
+const FaqAdminPage = lazy(() => import("./admin/FaqAdminPage"));
 const AccountPage = lazy(() => import("./pages/AccountPage"));
 
 export default function App() {
@@ -48,18 +50,20 @@ export default function App() {
         <Route path="/bundle" element={<BundlePage />} />
         <Route path="/event" element={<EventPage />} />
         <Route path="/event/:id" element={<PostDetail board="event" />} />
-        <Route path="/support" element={<NoticeList />} />
+        <Route path="/support" element={<SupportPage />} />
         <Route path="/support/notice" element={<NoticeList />} />
         <Route path="/support/notice/:id" element={<PostDetail board="notice" />} />
-        <Route path="/support/reviews" element={<ReviewsPage />} />
-        <Route path="/support/faq" element={<FaqPage />} />
+        <Route path="/reviews" element={<ReviewsPage />} />
+        {/* 예전 주소 → 새 주소 */}
+        <Route path="/support/reviews" element={<Navigate to="/reviews" replace />} />
+        <Route path="/support/faq" element={<Navigate to="/support#faq" replace />} />
         <Route path="/apply" element={<ApplyPage />} />
         {/* 꿀팁게시판·커뮤니티: 게시판은 2차 범위, 지금은 준비중 안내 */}
         <Route path="/tips" element={<ComingSoonPage title="꿀팁게시판" />} />
-        <Route path="/community" element={<ComingSoonPage title="커뮤니티" />} />
-        <Route path="/community/faq" element={<ComingSoonPage title="자주 묻는 질문" crumbs={[["커뮤니티"], ["자주 묻는 질문"]]} />} />
-        <Route path="/community/reviews" element={<ComingSoonPage title="이용 후기" crumbs={[["커뮤니티"], ["이용 후기"]]} />} />
-        <Route path="/community/events" element={<ComingSoonPage title="이벤트" crumbs={[["커뮤니티"], ["이벤트"]]} />} />
+        <Route path="/community" element={<Navigate to="/support" replace />} />
+        <Route path="/community/faq" element={<Navigate to="/support#faq" replace />} />
+        <Route path="/community/reviews" element={<Navigate to="/reviews" replace />} />
+        <Route path="/community/events" element={<Navigate to="/event" replace />} />
 
         <Route path="/admin" element={<RequireRole role="admin"><AdminLayout /></RequireRole>}>
           <Route index element={<LeadsPage />} />
@@ -71,6 +75,8 @@ export default function App() {
           <Route path="popups" element={<PopupsPage />} />
           <Route path="site" element={<SitePage />} />
           <Route path="settings" element={<SettingsPage />} />
+          <Route path="reviews" element={<ReviewsAdminPage />} />
+          <Route path="faq" element={<FaqAdminPage />} />
           <Route path="account" element={<AccountPage />} />
         </Route>
 

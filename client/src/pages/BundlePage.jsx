@@ -4,12 +4,12 @@ import PageHero from "../components/site/PageHero";
 import ApplySection from "../components/site/ApplySection";
 import { DiscountTable } from "../components/plans/PlanTables";
 import "../components/plans/plan-tables.css";
-import { useSiteData } from "../lib/siteData";
+import { useSiteData, discountsOf } from "../lib/siteData";
 
 /** 결합할인: 통신사별 결합 할인표 (관리자 > 요금표 관리 > 결합할인표) */
 export default function BundlePage() {
   const { carriers } = useSiteData();
-  const withDiscount = carriers.filter((c) => c.discountTables.length);
+  const withDiscount = carriers.filter((c) => discountsOf(c).length);
   const [active, setActive] = useState(null);
   const c = withDiscount.find((x) => x.id === active) || withDiscount[0];
 

@@ -572,3 +572,49 @@
 .cp-cta b { font-size: 18px; color: var(--ink); }
 .cp-cta p { margin: 4px 0 0; color: var(--ink-sub); font-size: 14.5px; }
 @media (max-width: 640px) { .cp-cta { flex-direction: column; align-items: stretch; } }
+
+/* ───────── 후기 · 고객센터 ───────── */
+.chip-filter { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+.chip-filter .chip { cursor: pointer; }
+.rv-img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; background: var(--bg-soft, #f4f6f8); }
+.more-wrap { display: flex; justify-content: center; margin-top: 22px; }
+.cs-top { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 12px; }
+.cs-card { display: flex; align-items: center; gap: 14px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 16px; background: #fff; color: var(--ink); text-decoration: none; min-width: 0; }
+a.cs-card:hover { border-color: var(--brand); }
+.cs-card > span:last-child { display: grid; gap: 2px; min-width: 0; }
+.cs-card small { color: var(--ink-sub); font-size: 13px; }
+.cs-card b { font-size: 18px; overflow-wrap: anywhere; }
+.cs-card b.cs-hours { font-size: 15px; white-space: pre-line; }
+.cs-ic { flex: none; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--brand-soft); color: var(--brand); }
+.cs-cta { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-top: 12px; padding: 18px 20px; border-radius: 16px; background: var(--brand-soft); }
+.cs-cta p { margin: 0; color: var(--ink); font-weight: 600; }
+@media (max-width: 640px) { .cs-cta { flex-direction: column; align-items: stretch; text-align: center; } }
+.cs-h2 { margin: 44px 0 14px; font-size: 22px; color: var(--ink); }
+.cs-foot { margin-top: 36px; padding-top: 18px; border-top: 1px solid var(--line); display: grid; gap: 8px; color: var(--ink-sub); font-size: 14.5px; }
+.cs-foot p { margin: 0; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.cs-links { gap: 16px !important; }
+.cs-links a { color: var(--ink-sub); }
+
+/* ───────── 접수 창 2단계 ───────── */
+.cm.cm-steps { width: min(560px, 100%); }
+.cm-step { margin: 0 0 6px; font-size: 13px; font-weight: 700; color: var(--ink-sub); }
+.cm-step b { color: var(--brand); font-size: 15px; }
+.cm-title:focus, .cm-done h3:focus { outline: none; }
+.cm-group { border: 0; margin: 0 0 18px; padding: 0; min-width: 0; }
+.cm-group legend { padding: 0; margin: 0 0 8px; font-size: 15px; font-weight: 800; color: var(--ink); }
+.cm-group legend em { font-style: normal; font-size: 12px; font-weight: 700; color: var(--brand); margin-left: 4px; }
+.cm-group legend span { font-size: 12px; font-weight: 500; color: var(--ink-sub); margin-left: 4px; }
+.cm-group .err { display: block; margin-top: 6px; }
+.cm-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.cm-chips .cchip { flex: 0 0 auto; }
+.cm-hint { margin: -6px 0 16px; font-size: 14px; color: var(--ink-sub); }
+.cm-price { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; margin: 0 0 16px; padding: 14px 16px; border-radius: 12px; background: var(--brand-soft); }
+.cm-price span { font-size: 13px; font-weight: 700; color: var(--brand-strong); }
+.cm-price b { font-size: 18px; color: var(--ink); }
+.cm-back { justify-self: start; display: inline-flex; align-items: center; gap: 2px; margin-top: 6px; padding: 4px 0; border: 0; background: none; color: var(--brand-strong); font-size: 13.5px; font-weight: 700; cursor: pointer; }
+.cm-actions { display: grid; grid-template-columns: auto 1fr; gap: 8px; }
+@media (max-width: 640px) {
+  .cm.cm-steps { padding: 24px 18px 20px; }
+  .cm-group .qw-opt { flex: 1 1 auto; }
+}
+.faq-a[hidden] { display: none; }

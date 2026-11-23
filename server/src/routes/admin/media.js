@@ -1,4 +1,4 @@
-// 관리자: 이미지 업로드 (팝업·배너). 2MB, jpg/png/webp, 자동 리사이즈
+// 관리자: 이미지 업로드 (팝업·배너·로고·후기 사진). 2MB, jpg/png/webp, 자동 리사이즈
 import { Router } from "express";
 import multer from "multer";
 import { ah, HttpError } from "../../lib/http.js";
@@ -7,7 +7,7 @@ import { saveImage, MAX_UPLOAD_BYTES } from "../../lib/storage.js";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_UPLOAD_BYTES, files: 1 } }).single("file");
-const SIZES = { popup: { maxWidth: 800, maxHeight: 1600 }, banner: { maxWidth: 1200, maxHeight: 900 }, logo: { maxWidth: 400, maxHeight: 200 } };
+const SIZES = { popup: { maxWidth: 800, maxHeight: 1600 }, banner: { maxWidth: 1200, maxHeight: 900 }, logo: { maxWidth: 400, maxHeight: 200 }, review: { maxWidth: 1000, maxHeight: 1000 } };
 
 router.post(
   "/",
