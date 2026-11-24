@@ -56,15 +56,16 @@ try {
   ok(r.status === 201 && l?.quote_internet_plan === hvRow.internet && l.quote_tv_plan === hv.priceTable.tvPlans[0] && l.quote_estimated_price === hvRow.prices[0] && l.quote_mobile_bundle === null,
     `LG헬로비전 ${hvRow.internet} + ${hv.priceTable.tvPlans[0]} → ${hvRow.prices[0]}원 저장, 결합 비움`, l);
 
-  const hv160 = hv.priceTable.rows.find((x) => x.internet.startsWith("160"));
-  ok(hv.priceNote === "결합할인 문의" && hv160?.internetOnly === 27610 && hv160.speed === null, "LG헬로비전: 예상 요금 옆 '결합할인 문의', 160메가 인터넷 단독 27,610원", { note: hv.priceNote, hv160 });
+  const hv100 = hv.priceTable.rows.find((x) => x.speed === "100M");
+  ok(hv.priceNote === "결합할인 문의" && !hv.priceTable.rows.some((x) => x.internet.startsWith("160")) && hv100?.internetOnly === 20790,
+    "LG헬로비전: 예상 요금 옆 '결합할인 문의', 160메가 없음, 100메가 인터넷 단독 20,790원", { note: hv.priceNote, rows: hv.priceTable.rows.map((x) => x.internet) });
   ok(hv.mobileSelect === true && by("skylife").mobileSelect === undefined, "LG헬로비전만 결합할인 꺼진 채 휴대폰 결합 선택 받음");
   r = await lead(42, { inquiryType: "consult", quote: { carrier: "hellovision", service: "internet_tv", internetPlan: hvRow.internet, tvPlan: hv.priceTable.tvPlans[0], mobileBundle: true } });
   l = await row(42);
   ok(r.status === 201 && l?.quote_mobile_bundle === true && l.quote_estimated_price === hvRow.prices[0], "LG헬로비전 휴대폰 결합 선택 저장, 요금은 할인 없이 기본 요금 (결합할인 문의)", l);
-  r = await lead(41, { inquiryType: "consult", quote: { carrier: "hellovision", service: "internet", internetPlan: hv160.internet } });
+  r = await lead(41, { inquiryType: "consult", quote: { carrier: "hellovision", service: "internet", internetPlan: hv100.internet } });
   l = await row(41);
-  ok(r.status === 201 && l?.quote_estimated_price === 27610, "LG헬로비전 160메가 인터넷만 → 27,610원 저장", l);
+  ok(r.status === 201 && l?.quote_estimated_price === 20790, "LG헬로비전 100메가 인터넷만 → 20,790원 저장", l);
   const only = { kt: [23100, 34100, 38500], lg: [22000, 33000, 38500], sk: [23100, 34100, 39600] };
   ok(Object.entries(only).every(([id, v]) => ["100M", "500M", "1G"].every((sp, i) => by(id).priceTable.rows.find((x) => x.speed === sp)?.internetOnly === v[i])),
     "KT·LG·SK 인터넷 단독 요금 (100M/500M/1G)");

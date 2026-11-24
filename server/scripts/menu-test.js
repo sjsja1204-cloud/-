@@ -49,7 +49,7 @@ try {
   const ids = () => plans.carriers.map((c) => c.id);
   const hv0 = plans.carriers.find((c) => c.id === "hellovision");
   const hvRows = hv0?.priceTable.rows || [];
-  ok(hvRows.length === 4 && hvRows.filter((x) => x.speed).length === 3 && hvRows.every((x) => x.internetOnly), "LG헬로비전 공개 + 속도별 요금 3행(간편 견적) + 160메가(인터넷 단독)", ids());
+  ok(hvRows.length === 3 && hvRows.every((x) => x.speed && x.internetOnly), "LG헬로비전 공개 + 속도별 요금 3행(간편 견적·인터넷 단독 요금)", ids());
   const adminPlans = (await admin("/admin/content/plans")).data.published;
   const ph = clone(adminPlans);
   ph.carriers.find((c) => c.id === "hellovision").hidden = true;

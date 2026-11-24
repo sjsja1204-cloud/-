@@ -464,15 +464,6 @@ export const content = {
               ]
             },
             {
-              "internet": "160메가",
-              "speed": null,
-              "internetOnly": 27610,
-              "bundleDiscount": null,
-              "prices": [
-                null
-              ]
-            },
-            {
               "internet": "500메가",
               "speed": "500M",
               "internetOnly": 31460,
