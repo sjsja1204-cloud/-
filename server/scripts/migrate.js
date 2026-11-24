@@ -59,6 +59,21 @@ try {
     }
     console.log(`seed  popups (${seed.popups.length})`);
   }
+  // 자주 묻는 질문 예시: 최초 1회, FAQ 가 비어 있을 때만 (관리자가 전부 지워도 다시 생기지 않도록 표시를 남김)
+  const faqMarked = await client.query("INSERT INTO site_settings (key, value) VALUES ('_seeded_faqs', 'true') ON CONFLICT (key) DO NOTHING");
+  if (faqMarked.rowCount) {
+    const { rows } = await client.query("SELECT count(*)::int AS n FROM faqs");
+    if (rows[0].n === 0) {
+      const { faqs } = await import("../seed/faqs.js");
+      for (const [i, [category, question, answer]] of faqs.entries()) {
+        await client.query(
+          "INSERT INTO faqs (category, question, answer, is_published, sort_order) VALUES ($1,$2,$3,true,$4)",
+          [category, question, answer, i]
+        );
+      }
+      console.log(`seed  faqs (${faqs.length})`);
+    }
+  }
 } finally {
   client.release();
   await pool.end();

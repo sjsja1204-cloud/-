@@ -25,7 +25,7 @@ server/   Node + Express API (Render)
   migrations/*.sql            DB 스키마 (순서대로 1회 실행)
   scripts/migrate.js          npm run migrate
   scripts/seed-admin.js       npm run seed:admin
-  scripts/seed-faq.js         npm run seed:faq — 자주 묻는 질문 예시 14개 (FAQ 가 비어 있을 때만)
+  scripts/seed-faq.js         npm run seed:faq — 자주 묻는 질문 예시 14개 (FAQ 가 비어 있을 때만. migrate 가 DB 최초 준비 때 자동으로 1회 넣음, 목록은 seed/faqs.js)
   seed/defaults.js            요금표·배너·사업자 정보·팝업 초기값 (최초 migrate 때 DB 에 1회 입력)
   scripts/api-test.js         완료 기준 자동 점검 (테스트 데이터 생성 — 운영 DB 금지)
   scripts/content-test.js     관리자 콘텐츠 관리 기능 점검 (44개, 끝나면 원래대로 되돌림)
