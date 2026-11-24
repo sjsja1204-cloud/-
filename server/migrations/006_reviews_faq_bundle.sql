@@ -1,7 +1,8 @@
 -- 추가 지시서 3: 결합할인 사용 여부, 메뉴 순서(후기·고객센터), 후기·FAQ 전용 관리, 접수 창 요금제 선택
 
 -- 1) 통신사별 '결합할인 사용' (스카이라이프·LG헬로비전은 끔, 그 외는 켬). 이미 값이 있으면 그대로 둔다.
-CREATE FUNCTION pg_temp.set_bundle(d jsonb) RETURNS jsonb LANGUAGE sql AS $$
+DROP FUNCTION IF EXISTS pg_temp.set_bundle;
+CREATE OR REPLACE FUNCTION pg_temp.set_bundle(d jsonb) RETURNS jsonb LANGUAGE sql AS $$
   SELECT CASE WHEN d IS NULL OR NOT (d ? 'carriers') THEN d ELSE
     jsonb_set(d, '{carriers}', COALESCE((
       SELECT jsonb_agg(
@@ -14,7 +15,8 @@ $$;
 UPDATE site_content SET draft = pg_temp.set_bundle(draft), published = pg_temp.set_bundle(published) WHERE key = 'plans';
 
 -- 2) 상단 메뉴: 아직 이전 기본 메뉴(커뮤니티 드롭다운)면 새 기본 순서로 교체. 관리자가 바꾼 메뉴는 건드리지 않음.
-CREATE FUNCTION pg_temp.new_menu() RETURNS jsonb LANGUAGE sql AS $$
+DROP FUNCTION IF EXISTS pg_temp.new_menu;
+CREATE OR REPLACE FUNCTION pg_temp.new_menu() RETURNS jsonb LANGUAGE sql AS $$
   SELECT '{"items":[
     {"label":"SK인터넷","to":"/internet/sk","enabled":true,"children":[]},
     {"label":"KT인터넷","to":"/internet/kt","enabled":true,"children":[]},

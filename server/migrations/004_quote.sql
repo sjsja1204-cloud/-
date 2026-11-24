@@ -11,7 +11,8 @@ ALTER TABLE leads ADD COLUMN IF NOT EXISTS quote_estimated_price INTEGER;
 CREATE INDEX IF NOT EXISTS leads_inquiry_type_idx ON leads (inquiry_type);
 
 -- 요금표: 통신사 color 삭제, 인터넷 상품에 speed(이름에서 추출)·internetOnly 추가
-CREATE FUNCTION pg_temp.fix_plans(d jsonb) RETURNS jsonb LANGUAGE sql AS $$
+DROP FUNCTION IF EXISTS pg_temp.fix_plans;
+CREATE OR REPLACE FUNCTION pg_temp.fix_plans(d jsonb) RETURNS jsonb LANGUAGE sql AS $$
   SELECT CASE WHEN d IS NULL OR NOT (d ? 'carriers') THEN d ELSE
     jsonb_set(d, '{carriers}', COALESCE((
       SELECT jsonb_agg(

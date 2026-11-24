@@ -53,7 +53,8 @@ ALTER TABLE leads DROP CONSTRAINT IF EXISTS leads_source_check;
 ALTER TABLE leads ADD CONSTRAINT leads_source_check CHECK (source IN ('web','staff','upload','qna'));
 
 -- 상단 메뉴: 고객센터가 아직 하위 없는 단일 링크(/support)면 드롭다운으로. 관리자가 바꾼 메뉴는 그대로.
-CREATE FUNCTION pg_temp.cs_menu(d jsonb) RETURNS jsonb LANGUAGE sql AS $$
+DROP FUNCTION IF EXISTS pg_temp.cs_menu;
+CREATE OR REPLACE FUNCTION pg_temp.cs_menu(d jsonb) RETURNS jsonb LANGUAGE sql AS $$
   SELECT CASE WHEN d IS NULL OR jsonb_typeof(d->'items') <> 'array' THEN d ELSE
     jsonb_set(d, '{items}', COALESCE((
       SELECT jsonb_agg(

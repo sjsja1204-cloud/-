@@ -1,5 +1,6 @@
 -- LG헬로비전: 결합할인표는 끈 채로 '휴대폰 결합' 선택만 받기 (예상 요금 옆 '결합할인 문의'). 이미 정한 값은 그대로.
-CREATE FUNCTION pg_temp.set_mobile(d jsonb) RETURNS jsonb LANGUAGE sql AS $$
+DROP FUNCTION IF EXISTS pg_temp.set_mobile;
+CREATE OR REPLACE FUNCTION pg_temp.set_mobile(d jsonb) RETURNS jsonb LANGUAGE sql AS $$
   SELECT CASE WHEN d IS NULL OR NOT (d ? 'carriers') THEN d ELSE
     jsonb_set(d, '{carriers}', COALESCE((
       SELECT jsonb_agg(

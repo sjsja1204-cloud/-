@@ -1,5 +1,6 @@
 -- LG헬로비전 160메가(인터넷 단독) 행 삭제. 007에서 넣은 그대로(속도 분류 없음 · TV 요금 모두 비어 있음)일 때만 지운다.
-CREATE FUNCTION pg_temp.drop_160(d jsonb) RETURNS jsonb LANGUAGE sql AS $$
+DROP FUNCTION IF EXISTS pg_temp.drop_160;
+CREATE OR REPLACE FUNCTION pg_temp.drop_160(d jsonb) RETURNS jsonb LANGUAGE sql AS $$
   SELECT CASE WHEN d IS NULL OR NOT (d ? 'carriers') THEN d ELSE
     jsonb_set(d, '{carriers}', COALESCE((
       SELECT jsonb_agg(

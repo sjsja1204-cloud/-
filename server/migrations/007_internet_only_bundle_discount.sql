@@ -1,7 +1,8 @@
 -- 인터넷 단독 요금 · 휴대폰 결합 할인액(예상 요금에 반영) · 예상 요금 옆 안내(priceNote) · LG헬로비전 160메가
 -- 관리자가 이미 입력한 값은 덮어쓰지 않는다 (비어 있는 단독 요금, 아직 없는 항목만 채움).
 
-CREATE FUNCTION pg_temp.plan_val(cid text, speed text, OUT internet_only int, OUT bundle_discount int) LANGUAGE sql AS $$
+DROP FUNCTION IF EXISTS pg_temp.plan_val;
+CREATE OR REPLACE FUNCTION pg_temp.plan_val(cid text, speed text, OUT internet_only int, OUT bundle_discount int) LANGUAGE sql AS $$
   SELECT v.io, v.bd FROM (VALUES
     ('kt','100M',23100,3300), ('kt','500M',34100,5500), ('kt','1G',38500,5500),
     ('lg','100M',22000,5500), ('lg','500M',33000,9900), ('lg','1G',38500,13200),
@@ -10,7 +11,8 @@ CREATE FUNCTION pg_temp.plan_val(cid text, speed text, OUT internet_only int, OU
   ) v(cid, speed, io, bd) WHERE v.cid = $1 AND v.speed = $2
 $$;
 
-CREATE FUNCTION pg_temp.fix_carrier(c jsonb) RETURNS jsonb LANGUAGE plpgsql AS $$
+DROP FUNCTION IF EXISTS pg_temp.fix_carrier;
+CREATE OR REPLACE FUNCTION pg_temp.fix_carrier(c jsonb) RETURNS jsonb LANGUAGE plpgsql AS $$
 DECLARE
   cid text := c->>'id';
   rows jsonb := '[]'::jsonb;
@@ -53,7 +55,8 @@ BEGIN
 END
 $$;
 
-CREATE FUNCTION pg_temp.fix_plans(d jsonb) RETURNS jsonb LANGUAGE sql AS $$
+DROP FUNCTION IF EXISTS pg_temp.fix_plans;
+CREATE OR REPLACE FUNCTION pg_temp.fix_plans(d jsonb) RETURNS jsonb LANGUAGE sql AS $$
   SELECT CASE WHEN d IS NULL OR NOT (d ? 'carriers') THEN d ELSE
     jsonb_set(d, '{carriers}', COALESCE((
       SELECT jsonb_agg(pg_temp.fix_carrier(c) ORDER BY n)
