@@ -711,9 +711,25 @@ export const content = {
       },
       {
         "label": "고객센터",
-        "to": "/support",
+        "to": "",
         "enabled": true,
-        "children": []
+        "children": [
+          {
+            "label": "고객센터 안내",
+            "to": "/support",
+            "enabled": true
+          },
+          {
+            "label": "자주 묻는 질문",
+            "to": "/support/faq",
+            "enabled": true
+          },
+          {
+            "label": "질문/답변",
+            "to": "/support/qna",
+            "enabled": true
+          }
+        ]
       },
       {
         "label": "꿀팁게시판",
@@ -757,6 +773,10 @@ export const settings = {
   },
   "telegram": {
     "chatId": ""
+  },
+  "qna": {
+    "bannedWords": [],
+    "staffAnswer": false
   },
   "brand": {
     "color": "#0E8F7E"

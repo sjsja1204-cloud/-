@@ -12,7 +12,7 @@ import { distributeUnassigned } from "../../lib/distribute.js";
 import { INQUIRY_LABELS, quoteSummary } from "../../lib/constants.js";
 
 const router = Router();
-const SOURCE_LABEL = { web: "홈페이지", staff: "직원접수", upload: "엑셀업로드" };
+const SOURCE_LABEL = { web: "홈페이지", staff: "직원접수", upload: "엑셀업로드", qna: "질문/답변" };
 
 // 목록
 router.get(
@@ -81,7 +81,7 @@ router.get(
         ...r,
         created_at: kst(r.created_at),
         assigned_at: kst(r.assigned_at),
-        inquiry: r.source === "web" ? INQUIRY_LABELS[r.inquiry_type] || "" : "",
+        inquiry: r.source === "web" || r.source === "qna" ?INQUIRY_LABELS[r.inquiry_type] || "" : "",
         quote: quoteSummary(r),
         phone: formatPhone(r.phone),
         products: (r.products || []).join(", "),

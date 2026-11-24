@@ -10,6 +10,9 @@ function matches(pathname, to) {
   return pathname === to || pathname.startsWith(to.replace(/\/$/, "") + "/");
 }
 const isCurrent = (pathname, m) => matches(pathname, m.to) || (m.children || []).some((c) => matches(pathname, c.to));
+/** 하위 메뉴 중 지금 위치 (/support 와 /support/qna 가 같이 맞으면 더 긴 쪽 하나만) */
+const currentChild = (pathname, children) =>
+  children.filter((c) => matches(pathname, c.to)).sort((a, b) => b.to.length - a.to.length)[0] || null;
 
 /** 메뉴 링크: 내부 경로는 Link, https:// 는 새 창 */
 function MenuLink({ to, children, ...rest }) {
@@ -127,13 +130,16 @@ function Dropdown({ item, current, pathname }) {
         {item.to && (
           <li><MenuLink to={item.to} className={matches(pathname, item.to) && pathname === item.to ? "on" : ""}>{item.label} 전체</MenuLink></li>
         )}
-        {item.children.map((c, k) => (
-          <li key={k}>
-            <MenuLink to={c.to} className={matches(pathname, c.to) ? "on" : ""} aria-current={matches(pathname, c.to) ? "page" : undefined}>
-              {c.label}
-            </MenuLink>
-          </li>
-        ))}
+        {item.children.map((c, k) => {
+          const on = c === currentChild(pathname, item.children);
+          return (
+            <li key={k}>
+              <MenuLink to={c.to} className={on ? "on" : ""} aria-current={on ? "page" : undefined}>
+                {c.label}
+              </MenuLink>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
@@ -196,11 +202,14 @@ function MobileNav({ menu, pathname, onClose }) {
                   </button>
                   <ul id={pid} className="mnav-sub" hidden={!open}>
                     {m.to && <li><MenuLink to={m.to} className={pathname === m.to ? "on" : ""}>{m.label} 전체</MenuLink></li>}
-                    {m.children.map((c, k) => (
-                      <li key={k}>
-                        <MenuLink to={c.to} className={matches(pathname, c.to) ? "on" : ""} aria-current={matches(pathname, c.to) ? "page" : undefined}>{c.label}</MenuLink>
-                      </li>
-                    ))}
+                    {m.children.map((c, k) => {
+                      const on = c === currentChild(pathname, m.children);
+                      return (
+                        <li key={k}>
+                          <MenuLink to={c.to} className={on ? "on" : ""} aria-current={on ? "page" : undefined}>{c.label}</MenuLink>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </li>
               );

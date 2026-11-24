@@ -25,6 +25,19 @@ function cookieOptions(maxAge) {
   };
 }
 
+/** 로그인돼 있으면 사용자, 아니면 null (공개 API 에서 관리자 여부만 확인할 때. 응답은 건드리지 않음) */
+export async function readUser(req) {
+  const token = req.cookies?.[COOKIE_NAME];
+  if (!token) return null;
+  try {
+    const payload = jwt.verify(token, config.jwtSecret);
+    const { rows } = await query("SELECT id, name, role, is_active FROM users WHERE id = $1", [payload.sub]);
+    return rows[0]?.is_active ? rows[0] : null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * 로그인 필수 + 역할 검사. 매 요청마다 DB 에서 사용자 상태를 다시 확인하므로
  * 비활성화/역할 변경이 즉시 반영된다.

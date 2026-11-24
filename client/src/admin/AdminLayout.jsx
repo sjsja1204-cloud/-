@@ -13,6 +13,7 @@ export default function AdminLayout() {
         ["/admin/posts", "게시판 관리"],
         ["/admin/reviews", "후기"],
         ["/admin/faq", "자주 묻는 질문"],
+        ["/admin/qna", "질문/답변"],
         ["/admin/plans", "요금표"],
         ["/admin/popups", "팝업"],
         ["/admin/site", "메인 화면"],

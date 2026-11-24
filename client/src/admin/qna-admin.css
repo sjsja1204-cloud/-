@@ -1,0 +1,26 @@
+/* 관리자·직원 질문/답변 — 상태 배지는 브랜드색·회색만 (빨강·주황 금지) */
+.qa-b-waiting { background: #eef2f7; color: #374151; }
+.qa-b-answered { background: var(--brand-soft); color: var(--brand-strong); }
+.qa-b-review { background: #fff; color: var(--ink); box-shadow: inset 0 0 0 1px #9aa3af; }
+.qa-b-hidden { background: #e5e7eb; color: #6b7280; text-decoration: line-through; }
+.qa-b-notice { background: var(--ink); color: #fff; }
+
+.qa-sel { width: auto; min-height: 32px; padding: 4px 8px; font-size: 13px; }
+.qa-search { display: flex; gap: 6px; }
+.qa-search .input { min-height: 32px; padding: 4px 10px; font-size: 13px; width: 200px; }
+
+.qa-d-badges { display: flex; gap: 6px; margin: 0 0 8px; }
+.qa-d-title { font-size: 17px !important; color: var(--ink) !important; margin: 0 0 10px !important; overflow-wrap: anywhere; }
+.qa-d-body { margin-top: 12px; padding: 12px; background: var(--bg-soft); border-radius: 8px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14.5px; line-height: 1.6; }
+.qa-actions { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.qa-a-tools { display: flex; gap: 4px; margin-top: 6px; }
+.qa-answer-form { margin-top: 10px; }
+
+.qa-guard { display: grid; gap: 12px; max-width: 760px; }
+.qa-guard .card { display: grid; gap: 6px; }
+.qa-guard .card p { margin: 0; }
+.qa-ipform { display: flex; gap: 6px; flex-wrap: wrap; }
+.qa-ipform .input { flex: 1 1 160px; min-height: 34px; padding: 4px 10px; font-size: 14px; }
+.qa-iplist { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; }
+.qa-iplist li { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 6px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+.qa-iplist li .btn { margin-left: auto; }

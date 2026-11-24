@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { query } from "../db.js";
-import { SOURCES, INQUIRY_TYPES } from "./constants.js";
+import { SOURCES, LEAD_INQUIRY_TYPES } from "./constants.js";
 import { digitsOnly, isValidMobile } from "./phone.js";
 
 /** 목록/상세 공통 SELECT (상태명, 담당자명, 중복 여부, 최근 메모 포함) */
@@ -60,7 +60,7 @@ export const leadFilterSchema = z.object({
   status: z.coerce.number().int().positive().optional().or(z.literal("").transform(() => undefined)),
   assignee: z.union([z.literal("none"), z.coerce.number().int().positive()]).optional().or(z.literal("").transform(() => undefined)),
   source: z.enum(SOURCES).optional().or(z.literal("").transform(() => undefined)),
-  inquiryType: z.enum(INQUIRY_TYPES).optional().or(z.literal("").transform(() => undefined)),
+  inquiryType: z.enum(LEAD_INQUIRY_TYPES).optional().or(z.literal("").transform(() => undefined)),
   utm: z.string().trim().max(200).optional(),
   unassigned: z.enum(["1", "true", "0", "false", ""]).optional(),
   duplicate: z.enum(["1", "true", "0", "false", ""]).optional(),
@@ -88,7 +88,7 @@ export function buildLeadWhere(f) {
   if (f.assignee === "none" || f.unassigned === "1" || f.unassigned === "true") where.push(`l.assignee_id IS NULL`);
   else if (f.assignee) where.push(`l.assignee_id = ${p(f.assignee)}`);
   if (f.source) where.push(`l.source = ${p(f.source)}`);
-  if (f.inquiryType) where.push(`l.source = 'web' AND l.inquiry_type = ${p(f.inquiryType)}`);
+  if (f.inquiryType) where.push(`l.source IN ('web','qna') AND l.inquiry_type = ${p(f.inquiryType)}`);
   if (f.utm) {
     if (f.utm === "(direct)") where.push(`l.utm_source IS NULL`);
     else where.push(`l.utm_source = ${p(f.utm)}`);

@@ -124,11 +124,11 @@ export default function Home() {
           <div className="board-box">
             <div className="sec-head sm">
               <h3>자주 묻는 질문</h3>
-              <Link to="/support#faq" className="more">더보기 <Icon name="chevronRight" size={14} /></Link>
+              <Link to="/support/faq" className="more">더보기 <Icon name="chevronRight" size={14} /></Link>
             </div>
             <ul className="board-list">
               {faqs.items.slice(0, 4).map((f) => (
-                <li key={f.id}><Link to={`/support#q${f.id}`}><b style={{ color: "var(--brand)" }}>Q.</b> {f.question}</Link></li>
+                <li key={f.id}><Link to={`/support/faq#q${f.id}`}><b style={{ color: "var(--brand)" }}>Q.</b> {f.question}</Link></li>
               ))}
               {!faqs.loading && !faqs.items.length && <li className="hint">자주 묻는 질문을 준비 중입니다.</li>}
             </ul>

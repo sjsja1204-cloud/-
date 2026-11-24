@@ -40,7 +40,7 @@ export function RequireRole({ role, children }) {
   }, [user, refresh]);
 
   if (user === undefined) return <div className="center-msg">확인 중…</div>;
-  if (!user) return <Navigate to={`/login?next=${encodeURIComponent(loc.pathname)}`} replace />;
+  if (!user) return <Navigate to={`/login?next=${encodeURIComponent(loc.pathname + loc.search)}`} replace />;
   if (user.role !== role) {
     return (
       <div className="center-msg">

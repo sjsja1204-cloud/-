@@ -40,3 +40,9 @@ services:
         value: "2" # Cloudflare Pages Functions 프록시 + Render
       - key: COOKIE_SAMESITE
         value: lax
+      - key: TURNSTILE_SITE_KEY
+        sync: false # 질문/답변 캡차 (Cloudflare Turnstile)
+      - key: TURNSTILE_SECRET_KEY
+        sync: false
+      - key: SITE_URL
+        sync: false # 예: https://www.도메인 (텔레그램 알림 링크)

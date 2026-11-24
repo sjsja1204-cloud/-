@@ -15,6 +15,10 @@ import NoticeList from "./pages/support/NoticeList";
 import PostDetail from "./pages/support/PostDetail";
 import ReviewsPage from "./pages/support/ReviewsPage";
 import SupportPage from "./pages/support/SupportPage";
+import FaqPage from "./pages/support/FaqPage";
+import QnaListPage from "./pages/support/QnaListPage";
+import QnaWritePage from "./pages/support/QnaWritePage";
+import QnaViewPage from "./pages/support/QnaViewPage";
 import ApplyPage from "./pages/support/ApplyPage";
 import ComingSoonPage from "./pages/ComingSoonPage";
 
@@ -34,6 +38,7 @@ const SitePage = lazy(() => import("./admin/SitePage"));
 const SettingsPage = lazy(() => import("./admin/SettingsPage"));
 const ReviewsAdminPage = lazy(() => import("./admin/ReviewsAdminPage"));
 const FaqAdminPage = lazy(() => import("./admin/FaqAdminPage"));
+const QnaAdminPage = lazy(() => import("./admin/QnaAdminPage"));
 const AccountPage = lazy(() => import("./pages/AccountPage"));
 
 export default function App() {
@@ -51,17 +56,20 @@ export default function App() {
         <Route path="/event" element={<EventPage />} />
         <Route path="/event/:id" element={<PostDetail board="event" />} />
         <Route path="/support" element={<SupportPage />} />
+        <Route path="/support/faq" element={<FaqPage />} />
+        <Route path="/support/qna" element={<QnaListPage />} />
+        <Route path="/support/qna/write" element={<QnaWritePage />} />
+        <Route path="/support/qna/:id" element={<QnaViewPage />} />
         <Route path="/support/notice" element={<NoticeList />} />
         <Route path="/support/notice/:id" element={<PostDetail board="notice" />} />
         <Route path="/reviews" element={<ReviewsPage />} />
         {/* 예전 주소 → 새 주소 */}
         <Route path="/support/reviews" element={<Navigate to="/reviews" replace />} />
-        <Route path="/support/faq" element={<Navigate to="/support#faq" replace />} />
         <Route path="/apply" element={<ApplyPage />} />
         {/* 꿀팁게시판·커뮤니티: 게시판은 2차 범위, 지금은 준비중 안내 */}
         <Route path="/tips" element={<ComingSoonPage title="꿀팁게시판" />} />
         <Route path="/community" element={<Navigate to="/support" replace />} />
-        <Route path="/community/faq" element={<Navigate to="/support#faq" replace />} />
+        <Route path="/community/faq" element={<Navigate to="/support/faq" replace />} />
         <Route path="/community/reviews" element={<Navigate to="/reviews" replace />} />
         <Route path="/community/events" element={<Navigate to="/event" replace />} />
 
@@ -77,12 +85,14 @@ export default function App() {
           <Route path="settings" element={<SettingsPage />} />
           <Route path="reviews" element={<ReviewsAdminPage />} />
           <Route path="faq" element={<FaqAdminPage />} />
+          <Route path="qna" element={<QnaAdminPage />} />
           <Route path="account" element={<AccountPage />} />
         </Route>
 
         <Route path="/staff" element={<RequireRole role="staff"><StaffLayout /></RequireRole>}>
           <Route index element={<MyLeadsPage />} />
           <Route path="new" element={<StaffCreatePage />} />
+          <Route path="qna" element={<QnaAdminPage admin={false} />} />
           <Route path="account" element={<AccountPage />} />
         </Route>
 

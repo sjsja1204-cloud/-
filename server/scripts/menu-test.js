@@ -40,7 +40,8 @@ try {
   ok(by("알뜰상품")?.children.map((c) => c.to).join() === "/internet/skylife,/internet/hellovision", "알뜰상품 드롭다운: 스카이라이프·LG헬로비전");
   ok(by("꿀팁게시판")?.to === "/tips" && by("꿀팁게시판").enabled === false, "꿀팁게시판 /tips, 기본 꺼짐");
   ok(items.map((m) => m.label).join("/") === "SK인터넷/KT인터넷/LG인터넷/알뜰상품/후기/고객센터/꿀팁게시판", "메뉴 순서: SK·KT·LG·알뜰상품·후기·고객센터 (+꿀팁 꺼짐)", items.map((m) => m.label));
-  ok(by("후기")?.to === "/reviews" && by("고객센터")?.to === "/support" && by("후기").enabled && by("고객센터").enabled, "후기 /reviews, 고객센터 /support");
+  ok(by("후기")?.to === "/reviews" && by("후기").enabled && by("고객센터")?.enabled
+    && by("고객센터").children.map((c) => c.to).join() === "/support,/support/faq,/support/qna", "후기 /reviews, 고객센터 드롭다운 (안내·FAQ·질문/답변)");
   ok(!by("커뮤니티"), "커뮤니티 드롭다운 삭제");
   ok(!items.some((m) => /렌탈/.test(m.label)), "렌탈 메뉴 없음");
 

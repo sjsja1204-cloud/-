@@ -1,37 +1,30 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import SiteLayout from "../../components/site/SiteLayout";
 import PageHero from "../../components/site/PageHero";
 import Icon from "../../components/site/Icon";
 import { useSiteData } from "../../lib/siteData";
-import { useFaqs } from "../../lib/reviews";
+import { csTabs } from "./csTabs";
+import "./qna.css";
 
 /**
- * 고객센터 (/support): 대표번호·운영시간·카카오톡 채널·상담 신청 → 자주 묻는 질문(카테고리 탭, 아코디언) → 이메일·약관 링크.
- * 값이 비어 있는 항목은 표시하지 않는다 (관리자 > 사이트 설정 > 사업자 정보, 관리자 > 자주 묻는 질문).
+ * 고객센터 안내 (/support): 대표번호·운영시간·카카오톡 채널·상담 신청·이메일.
+ * 자주 묻는 질문은 /support/faq, 질문/답변은 /support/qna. 값이 비어 있는 항목은 표시하지 않는다 (관리자 > 사이트 설정 > 사업자 정보).
  */
 export default function SupportPage() {
   const { business, openConsult } = useSiteData();
-  const faqs = useFaqs();
   const { hash } = useLocation();
-  const [cat, setCat] = useState("");
-  const [open, setOpen] = useState(null);
+  const nav = useNavigate();
   const tel = (business.phone || "").replace(/[^\d+]/g, "");
-  const list = cat ? faqs.items.filter((f) => f.category === cat) : faqs.items;
 
-  // /support#q12 로 오면 그 질문을 펼쳐서 보여줌
+  // 예전 주소 /support#faq, /support#q12 → 자주 묻는 질문
   useEffect(() => {
-    const m = hash.match(/^#q(\d+)$/);
-    if (m && faqs.items.length) {
-      setCat("");
-      setOpen(Number(m[1]));
-      setTimeout(() => document.getElementById(`q${m[1]}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 50);
-    }
-  }, [hash, faqs.items.length]);
+    if (hash === "#faq" || /^#q\d+$/.test(hash)) nav(`/support/faq${hash === "#faq" ? "" : hash}`, { replace: true });
+  }, [hash, nav]);
 
   return (
     <SiteLayout title="고객센터">
-      <PageHero title="고객센터" desc="궁금한 점은 상담 신청이나 전화로 편하게 문의해 주세요." crumbs={[["고객센터"]]} />
+      <PageHero title="고객센터" desc="궁금한 점은 상담 신청이나 전화로 편하게 문의해 주세요." crumbs={[["고객센터"]]} tabs={csTabs} />
 
       <section className="sec">
         <div className="site-inner narrow">
@@ -60,34 +53,18 @@ export default function SupportPage() {
             <button type="button" className="btn btn-primary btn-lg" onClick={() => openConsult("consult")}>상담 신청</button>
           </div>
 
-          <h2 className="cs-h2" id="faq">자주 묻는 질문</h2>
-          {faqs.items.length > 0 && (
-            <div className="chip-filter" role="group" aria-label="질문 분류">
-              {["", ...faqs.categories].map((c) => (
-                <button key={c || "all"} type="button" className={`chip ${cat === c ? "on" : ""}`} aria-pressed={cat === c} onClick={() => { setCat(c); setOpen(null); }}>
-                  {c || "전체"}
-                </button>
-              ))}
-            </div>
-          )}
-          {list.length > 0 && (
-            <div className="faq">
-              {list.map((f) => {
-                const on = open === f.id;
-                return (
-                  <div key={f.id} id={`q${f.id}`} className={`faq-item ${on ? "open" : ""}`}>
-                    <button type="button" aria-expanded={on} aria-controls={`qa${f.id}`} onClick={() => setOpen(on ? null : f.id)}>
-                      <b>Q</b><span>{f.question}</span><Icon name="chevronDown" size={18} />
-                    </button>
-                    <div id={`qa${f.id}`} className="faq-a" hidden={!on}><b>A</b><p>{f.answer}</p></div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-          {!faqs.loading && !list.length && (
-            <div className="empty-box">{faqs.items.length ? "이 분류에는 아직 질문이 없습니다." : "자주 묻는 질문을 준비 중입니다. 궁금한 점은 상담 신청으로 문의해 주세요."}</div>
-          )}
+          <div className="cs-go">
+            <Link to="/support/faq" className="cs-card">
+              <span className="cs-ic"><Icon name="question" size={24} /></span>
+              <span><small>자주 묻는 질문</small><b>많이 묻는 질문 모아보기</b></span>
+              <Icon name="chevronRight" size={18} className="cs-go-arrow" />
+            </Link>
+            <Link to="/support/qna" className="cs-card">
+              <span className="cs-ic"><Icon name="messageSquare" size={24} /></span>
+              <span><small>질문/답변</small><b>궁금한 점 직접 물어보기</b></span>
+              <Icon name="chevronRight" size={18} className="cs-go-arrow" />
+            </Link>
+          </div>
 
           <div className="cs-foot">
             {business.email && <p><Icon name="mail" size={18} /> 이메일 <a href={`mailto:${business.email}`}>{business.email}</a></p>}

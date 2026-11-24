@@ -27,7 +27,7 @@ export default function PageHero({ title, desc, crumbs = [], tabs }) {
         <div className="ph-tabs">
           <div className="site-inner ph-tabs-row">
             {tabs.map((t) => (
-              <NavLink key={t.to} to={t.to} end>{t.label}</NavLink>
+              <NavLink key={t.to} to={t.to} end={t.end !== false}>{t.label}</NavLink>
             ))}
           </div>
         </div>

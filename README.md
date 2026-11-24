@@ -32,6 +32,7 @@ server/   Node + Express API (Render)
   scripts/quote-test.js       브랜드 컬러·간편 견적·빠른 상담 메뉴 점검 (40개)
   scripts/menu-test.js        상단 메뉴·통신사 페이지 점검 (27개)
   scripts/support-test.js     결합할인 스위치·결합 할인 반영 요금·2단계 상담 창(요금제 저장)·후기·FAQ·카카오 채널 점검 (50개, 끝나면 정리)
+  scripts/qna-test.js         고객센터 질문/답변 점검 — 비밀글·연락처 비노출·스팸 방지·답변·접수 DB 등록·직원 권한 (56개, 끝나면 정리)
   uploads/                    R2 미설정 시 이미지 저장 위치 (로컬 개발용, git 제외)
 docs/관리자_매뉴얼.md           운영자용 사용 설명서
 docs/납품_체크리스트.md          계정 소유권·환경변수·백업 확인
@@ -76,6 +77,7 @@ API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> 
 API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> node --env-file=.env scripts/quote-test.js
 API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> node --env-file=.env scripts/menu-test.js
 API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> node --env-file=.env scripts/support-test.js
+API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> node --env-file=.env scripts/qna-test.js
 ```
 브랜드 컬러(소스 전체에서 빨강·주황·마젠타 계열 색 검사), 속도 분류·단독 요금, 간편 견적 접수·요금 재계산, 접수 유형 저장·필터·엑셀, 빠른 메뉴·창 문구·브랜드 색 변경, 권한 39개 항목. 테스트 접수(010-5550-xxxx)는 끝나면 지웁니다.
 
@@ -110,7 +112,8 @@ API=http://localhost:4000 ADMIN_ID=<관리자아이디> ADMIN_PW=<비밀번호> 
 - **간편 견적 · 접수 유형**: 메인 배너 아래 `QuoteWidget`. 접수 시 서버가 게시된 요금표로 예상 요금을 다시 계산해 `leads.quote_*`(통신사·서비스·속도·`quote_internet_plan`·`quote_tv_plan`·휴대폰 결합·예상요금) 에 글자 그대로 저장. 빠른 메뉴·견적·통신사 페이지는 공통 2단계 창(`ConsultModal`: 1단계 통신사·서비스·요금제 선택 + 월 요금, 2단계 이름·연락처·동의, 휴대폰은 하단 시트)을 쓰고 `leads.inquiry_type`(form/subsidy/consult/recommend/quote)으로 구분. 관리자 DB 목록 '접수 유형' 필터, 엑셀 '접수유형·견적조건' 열, 텔레그램 알림에 포함.
 - **인터넷 단독 요금·결합 할인**(migration 007): 요금표 행마다 `internetOnly`(인터넷만 월 요금, 홈페이지에 '인터넷 요금' 표로 따로 표시)·`bundleDiscount`(휴대폰 결합 시 인터넷 월 할인액). 휴대폰 결합을 고르면 예상 요금 = 요금 − 할인액(서버도 같은 규칙으로 다시 계산해 저장). 통신사 `priceNote`는 예상 요금 옆 안내(LG헬로비전 "결합할인 문의"). `mobileSelect`(migration 008)는 휴대폰 결합 선택 받기 — 없으면 `bundle` 을 따르고, LG헬로비전은 결합할인 끈 채 선택만 받음. migration 009는 007이 넣은 LG헬로비전 160메가 행을 (손대지 않았을 때만) 지움.
 - **결합할인 사용**(`plans.carriers[].bundle`): 끄면 그 통신사의 결합할인표·혜택 박스가 숨겨지고, 견적·상담 창에서 휴대폰 결합과 인터넷+TV+유심 선택이 빠집니다(서버도 거부).
-- **후기·FAQ**: `reviews`·`faqs` 테이블(migration 006). 공개 API `/api/public/reviews`(이름은 서버에서 가려서 내보냄)·`/api/public/faqs`.
+- **후기·FAQ**: `reviews`·`faqs` 테이블(migration 006). 공개 API `/api/public/reviews`(이름은 서버에서 가려서 내보냄)·`/api/public/faqs`. FAQ 화면은 `/support/faq` (예전 `/support#faq`·`#q12` 는 자동 이동).
+- **고객센터 질문/답변**(migration 010): 상단 메뉴 '고객센터' 드롭다운(안내 `/support` · FAQ `/support/faq` · 질문/답변 `/support/qna`, 관리자가 바꾼 메뉴는 그대로). `qna_posts`(작성자 비밀번호 bcrypt, `phone` 은 관리자 전용 — 공개 API 는 SELECT 하지 않음)·`qna_answers`·`qna_views`(같은 브라우저 하루 1회)·`blocked_ips`. 공개 API `/api/public/qna` — 비밀글은 목록에 제목만, 본문·답변은 `POST /qna/:id/unlock`(비밀번호, 5회 틀리면 10분 잠금) 또는 관리자 로그인일 때만. 제목·본문 전화번호는 공개 응답에서 `010-****-1234` 로 가림. 스팸: Turnstile(`TURNSTILE_SITE_KEY`·`TURNSTILE_SECRET_KEY` 둘 다 있을 때) + honeypot + 같은 IP 10분 3개 + 차단 IP + 금지어(`site_settings.qna.bannedWords`), 링크가 있으면 `review`(검토중) 상태로 저장해 승인 전 비공개. 새 글 텔레그램 알림(제목·비밀글 여부·관리자 링크, `SITE_URL`). 관리자 `/api/admin/qna`(답변·숨김·공지·승인·IP 차단·[접수 DB로 등록] → `leads.source='qna'`, `inquiry_type='qna'`), 직원 `/api/staff/qna`(설정 `qna.staffAnswer` 켰을 때 목록·답변만, 연락처 가림).
 - **상단 메뉴**: `site_content` 키 `menu`. 기본: SK인터넷 / KT인터넷 / LG인터넷 / 알뜰상품(스카이라이프·LG헬로비전) / 후기 / 고객센터 (+꿀팁게시판 꺼짐). 숨김 통신사(`/api/plans` 에 없는 통신사)로 가는 `/internet/:id` 링크는 화면에서 자동으로 빠지고, 하위가 모두 빠진 드롭다운도 사라집니다. 같은 데이터로 푸터 링크도 만듭니다. PC 는 hover·클릭으로 드롭다운(ESC·↓ 키 지원), 모바일은 오른쪽 전체 메뉴 + 아코디언.
 - **유입경로**: 광고 링크에 `?utm_source=naver&utm_medium=cpc&utm_campaign=11월` 처럼 붙이면 접수 시 저장됩니다.
 

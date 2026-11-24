@@ -5,6 +5,7 @@ import { query } from "../db.js";
 import { ah } from "../lib/http.js";
 import { getPublished } from "../lib/content.js";
 import { getSetting } from "../lib/settings.js";
+import { config } from "../config.js";
 
 const router = Router();
 const noCache = (res) => res.set("Cache-Control", "no-cache");
@@ -39,7 +40,7 @@ router.get("/settings/public", ah(async (req, res) => {
     ["business", "form_options", "brand", "consult"].map((k) => getSetting(k))
   );
   noCache(res);
-  res.json({ business, formOptions, brand, consult });
+  res.json({ business, formOptions, brand, consult, turnstileSiteKey: config.turnstile.enabled ? config.turnstile.siteKey : "" });
 }));
 
 export default router;

@@ -28,13 +28,26 @@ export const config = {
       return Boolean(this.accountId && this.accessKeyId && this.secretAccessKey && this.bucket && this.publicUrl);
     },
   },
-  trustProxy: Number(process.env.TRUST_PROXY ?? 1),
+  // Cloudflare Turnstile (질문/답변 글쓰기 캡차). 둘 다 있어야 켜짐 — 없으면 캡차 없이 honeypot·IP 제한만
+  turnstile: {
+    siteKey: process.env.TURNSTILE_SITE_KEY || "",
+    secretKey: process.env.TURNSTILE_SECRET_KEY || "",
+    get enabled() {
+      return Boolean(this.siteKey && this.secretKey);
+    },
+  },
+  // 텔레그램 알림의 관리자 링크용 사이트 주소 (비우면 CLIENT_ORIGIN 첫 번째)
+  siteUrl: (process.env.SITE_URL || (process.env.CLIENT_ORIGIN || "http://localhost:5173").split(",")[0]).trim().replace(/\/$/, ""),
+  trustProxy:Number(process.env.TRUST_PROXY ?? 1),
   cookieSameSite: (process.env.COOKIE_SAMESITE || "lax").toLowerCase(),
   isProd: process.env.NODE_ENV === "production",
 };
 
 if (config.isProd && config.jwtSecret.length < 32) {
   throw new Error("운영 환경에서는 JWT_SECRET 을 32자 이상으로 설정하세요.");
+}
+if (config.isProd && !config.turnstile.enabled) {
+  console.warn("[경고] TURNSTILE_SITE_KEY / TURNSTILE_SECRET_KEY 가 없어 질문/답변 글쓰기에 캡차가 꺼져 있습니다.");
 }
 if (config.isProd && !config.r2.enabled) {
   console.warn("[경고] R2 환경변수가 없어 업로드 이미지를 서버 폴더에 저장합니다. Render 는 재시작 시 파일이 지워지니 R2 를 설정하세요.");

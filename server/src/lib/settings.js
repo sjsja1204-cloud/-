@@ -51,6 +51,12 @@ export const settingSchemas = {
   telegram: z.object({
     chatId: z.string().trim().max(50).refine((v) => !v || /^-?\d+$|^@[\w]+$/.test(v), "Chat ID 는 숫자(그룹은 -로 시작)입니다.").default(""),
   }),
+  // 질문/답변 게시판: 금지어(포함되면 등록 차단) · 직원 답변 권한
+  qna: z.object({
+    bannedWords: z.array(z.string().trim().min(1, "빈 금지어가 있습니다.").max(50, "금지어는 50자 이내로 입력하세요.")).max(500, "금지어는 500개까지 등록할 수 있습니다.")
+      .default([]).transform((a) => [...new Set(a)]),
+    staffAnswer: z.boolean().default(false),
+  }),
 };
 export const SETTING_KEYS = Object.keys(settingSchemas);
 

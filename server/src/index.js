@@ -21,6 +21,7 @@ import adminSettingsRoutes from "./routes/admin/settings.js";
 import adminPopupRoutes from "./routes/admin/popups.js";
 import adminMediaRoutes from "./routes/admin/media.js";
 import { publicRouter as reviewFaqPublic, adminReviewRouter, adminFaqRouter } from "./routes/reviewsFaq.js";
+import { publicQnaRouter, qnaManageRouter } from "./routes/qna.js";
 import { LOCAL_DIR } from "./lib/storage.js";
 
 const app = express();
@@ -52,6 +53,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/public", publicRoutes);
 app.use("/api/public", contentRoutes);
 app.use("/api/public", reviewFaqPublic); // /api/public/reviews, /api/public/faqs
+app.use("/api/public", publicQnaRouter); // /api/public/qna
 app.use("/api", siteRoutes); // /api/plans, /api/site, /api/popups, /api/settings/public
 // R2 미설정 시 업로드 이미지 (로컬 개발용)
 app.use("/api/uploads", express.static(LOCAL_DIR, { maxAge: "30d", immutable: true, fallthrough: false }));
@@ -67,7 +69,9 @@ app.get(
 );
 
 // 권한 검사는 라우터 단위로 서버에서 강제
+app.use("/api/staff/qna", requireAuth("staff"), qnaManageRouter({ admin: false })); // 답변 권한은 관리자 설정
 app.use("/api/staff", requireAuth("staff"), staffRoutes);
+app.use("/api/admin/qna", requireAuth("admin"), qnaManageRouter({ admin: true }));
 app.use("/api/admin/leads", requireAuth("admin"), adminLeadRoutes);
 app.use("/api/admin/users", requireAuth("admin"), adminUserRoutes);
 app.use("/api/admin/upload", requireAuth("admin"), adminUploadRoutes);

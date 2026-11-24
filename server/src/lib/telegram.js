@@ -23,8 +23,22 @@ export async function notifyNewLead(lead) {
     `유입: ${escapeHtml([lead.utm_source, lead.utm_medium, lead.utm_campaign].filter(Boolean).join(" / ") || "직접")}`,
     `접수번호: #${lead.id}`,
   ].filter(Boolean);
-  const text = lines.join("\n");
+  return send(lines.join("\n"));
+}
 
+/** 질문/답변 새 글 알림 (연락처·본문은 보내지 않음) */
+export async function notifyNewQna(post) {
+  const lines = [
+    "❓ <b>[담아가넷] 질문/답변 새 글</b>",
+    `제목: ${escapeHtml(post.title)}`,
+    `비밀글: ${post.is_secret ? "예" : "아니오"}${post.phone ? " · 연락처 남김" : ""}`,
+    post.status === "review" ? "⚠ 링크가 있어 <b>검토중</b> (승인 전 비공개)" : null,
+    `답변하기: ${escapeHtml(`${config.siteUrl}/admin/qna?id=${post.id}`)}`,
+  ].filter(Boolean);
+  return send(lines.join("\n"));
+}
+
+async function send(text) {
   // Chat ID: 관리자 > 사이트 설정 값 우선, 비어 있으면 .env 값
   const chatId = (await getSetting("telegram").catch(() => ({}))).chatId || config.telegram.chatId;
   if (!config.telegram.token || !chatId) {
