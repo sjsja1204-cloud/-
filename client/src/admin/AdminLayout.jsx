@@ -19,6 +19,7 @@ export default function AdminLayout() {
         ["/admin/site", "메인 화면"],
         ["/admin/settings", "사이트 설정"],
         ["/admin/account", "내 계정"],
+        ["/staff", "직원 화면"],
       ]}
     />
   );

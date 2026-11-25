@@ -23,7 +23,10 @@ export default function Login() {
       const user = await login(loginId.trim(), password);
       const next = sp.get("next");
       const home = user.role === "admin" ? "/admin" : "/staff";
-      nav(next && next.startsWith(home) ? next : home, { replace: true });
+      // 관리자는 직원 화면(/staff)으로 돌아가는 것도 허용
+      const allowed = user.role === "admin" ? ["/admin", "/staff"] : ["/staff"];
+      const ok = next && allowed.some((p) => next === p || next.startsWith(p + "/") || next.startsWith(p + "?"));
+      nav(ok ? next : home, { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {

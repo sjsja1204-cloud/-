@@ -69,8 +69,9 @@ app.get(
 );
 
 // 권한 검사는 라우터 단위로 서버에서 강제
-app.use("/api/staff/qna", requireAuth("staff"), qnaManageRouter({ admin: false })); // 답변 권한은 관리자 설정
-app.use("/api/staff", requireAuth("staff"), staffRoutes);
+// 관리자도 직원 화면을 볼 수 있음 (본인에게 배정된 DB 기준)
+app.use("/api/staff/qna", requireAuth("staff", "admin"), qnaManageRouter({ admin: false })); // 답변 권한은 관리자 설정
+app.use("/api/staff", requireAuth("staff", "admin"), staffRoutes);
 app.use("/api/admin/qna", requireAuth("admin"), qnaManageRouter({ admin: true }));
 app.use("/api/admin/leads", requireAuth("admin"), adminLeadRoutes);
 app.use("/api/admin/users", requireAuth("admin"), adminUserRoutes);

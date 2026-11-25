@@ -41,7 +41,8 @@ export function RequireRole({ role, children }) {
 
   if (user === undefined) return <div className="center-msg">확인 중…</div>;
   if (!user) return <Navigate to={`/login?next=${encodeURIComponent(loc.pathname + loc.search)}`} replace />;
-  if (user.role !== role) {
+  // 관리자는 직원 화면도 볼 수 있음 (직원은 관리자 화면 불가)
+  if (user.role !== role && !(role === "staff" && user.role === "admin")) {
     return (
       <div className="center-msg">
         <p>이 화면에 접근할 권한이 없습니다.</p>
